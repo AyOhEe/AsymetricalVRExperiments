@@ -49,7 +49,6 @@ public class NonVRPlayerController : MonoBehaviour
         float horizontalRot = Input.GetAxis("Mouse X") + Input.GetAxis("Joystick X");
         desiredRotationEuler.x = Mathf.Clamp(desiredRotationEuler.x + (verticalRot * cameraRotSpeedUpDown), -maxCamXRot, maxCamXRot);
         desiredRotationEuler.y += horizontalRot * cameraRotSpeedLeftRight;
-        Debug.Log(new Vector2(horizontalRot, verticalRot).ToString());
 
         //rotate the gameobjects
         playerMainObject.transform.localEulerAngles = new Vector3(0, desiredRotationEuler.y, 0);
