@@ -6,6 +6,9 @@ public class NonVRPlayerController : MonoBehaviour
 {
     //the acceleration modifier of the player
     public float playerAccel;
+    //the slowdown multiplier
+    [Range(0.0f, 1.0f)]
+    public float playerSlowdown;
     //the maximum rotation of the camera on the x axis
     public float maxCamXRot;
     //rotation speed multipliers
@@ -31,10 +34,14 @@ public class NonVRPlayerController : MonoBehaviour
     {
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();
+
+        //lock and hide the mouse
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
     
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //player rotation: get the new desired rotation and rotate the camera and main object
         //get the new desired rotation
@@ -68,7 +75,8 @@ public class NonVRPlayerController : MonoBehaviour
         //if there was no keys pressed add a (horizontal) counterforce to the velocity
         if (!movedThisFrame)
         {
-            playerRB.AddForce(new Vector3(-playerRB.velocity.x * 1.0f, 0.0f, -playerRB.velocity.z * 1.0f), ForceMode.Acceleration);
+            //playerRB.AddForce(new Vector3(-playerRB.velocity.x * 1.0f, 0.0f, -playerRB.velocity.z * 1.0f), ForceMode.Acceleration);
+            playerRB.velocity = (new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z) * playerSlowdown) + new Vector3(0, playerRB.velocity.y, 0);
         }
     }
 }
