@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class SyncedObject : MonoBehaviour
 {
     //how often(in seconds) the object should sync
-    public float syncInterval;
+    public float syncInterval = 1.0f;
     //id
     public int ID;
 
-    GameClient client;
-    GameServer server;
-    bool serverObject;
+    public GameClient client;
+    public GameServer server;
+    public bool localOwned;
 
     //function pointer type to sendmessage on either client or server, whatever we're on
     public delegate void SendMessageToOtherDelegate(string _message);
@@ -25,13 +26,13 @@ public class SyncedObject : MonoBehaviour
         if (gameServer == null)
         {
             //no, get the client as that *must* exist if there isn't a server and add our messageReceived listener
-            serverObject = false;
             gameClient = GameObject.FindWithTag("GameClient");
             client = gameClient.GetComponent<GameClient>();
             client.MessageReceived += MessageReceived;
             SendMessageToOther += client.SendMessageToServer;
-            //also add ourselves to the list of synced objects
-            client.syncedObjects.Add(this);
+            //also store our ID add ourselves to the list of synced objects
+            ID = client.syncedObjects.Count;
+            client.syncedObjects.Add(client.syncedObjects.Count, this);
         }
         else
         {
@@ -39,8 +40,9 @@ public class SyncedObject : MonoBehaviour
             server = gameServer.GetComponent<GameServer>();
             server.MessageReceived += MessageReceived;
             SendMessageToOther += server.SendMessageToClient;
-            //also add ourselves to the list of synced objects
-            server.syncedObjects.Add(this);
+            //also store our ID add ourselves to the list of synced objects
+            ID = server.syncedObjects.Count;
+            server.syncedObjects.Add(server.syncedObjects.Count, this);
         }
         
         SyncObject();
@@ -49,12 +51,16 @@ public class SyncedObject : MonoBehaviour
     //sends a sync message
     public void SyncObject()
     {
-        string message = "";
-        message += PossibleRequest.SyncObject.ToString() + '"';
-        message += '"' + ID.ToString() + '"';
-        message += '"' + (transform.position + new Vector3(0, 1, 0)).ToString() + '"';
-        message += '"' + transform.rotation.ToString();
-        SendMessageToOther(message);
+        if (localOwned)
+        {
+            string message = "";
+            message += PossibleRequest.SyncObject.ToString() + '"';
+            message += '"' + ID.ToString() + '"';
+            message += '"' + transform.position.ToString() + '"';
+            message += '"' + transform.rotation.ToString();
+            SendMessageToOther(message);
+            Invoke("SyncObject", syncInterval);
+        }
     }
 
     //called when a message is received on either the game client or game server, whichever is present

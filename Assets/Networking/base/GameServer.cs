@@ -47,7 +47,7 @@ public class GameServer : MonoBehaviour
     public bool keepListening = true;
 
     //list of all synced objects
-    public List<SyncedObject> syncedObjects;
+    public Dictionary<int, SyncedObject> syncedObjects = new Dictionary<int, SyncedObject>();
 
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -61,7 +61,8 @@ public class GameServer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
             string message = PossibleRequest.SpawnObject.ToString() + '"';
-            message += '"' + "0";
+            message += '"' + "0" + '"';
+            message += '"' + false.ToString();
             SendMessageToClient(message);
         }
 
@@ -76,9 +77,10 @@ public class GameServer : MonoBehaviour
     }
 
     //spawns an object in spawnable objects from an id
-    public GameObject SpawnObject(int id)
+    public GameObject SpawnObject(int id, bool localSpawn)
     {
         GameObject retVal = Instantiate(spawnableObjects[id]);
+        retVal.GetComponent<SyncedObject>().localOwned = localSpawn;
         return retVal;
     }
 
@@ -191,12 +193,20 @@ public class GameServer : MonoBehaviour
         string[] splitMessage = Regex.Split(_message, "\"\"");
         switch (splitMessage[0])
         {
+            //the client would like to spawn an object
             case "SpawnObject":
-                actions.Enqueue(() => SpawnObject(int.Parse(splitMessage[1])));
+                //queue an object spawn
+                actions.Enqueue(() => SpawnObject(int.Parse(splitMessage[1]), bool.Parse(splitMessage[2])));
+                //was this actually just the response to us?
+                if(!bool.Parse(splitMessage[2]))
+                    SendMessageToClient(splitMessage[0] + "\"\"" + splitMessage[1] + "\"\"" + true.ToString()); //yes, say as such in OUR response
                 break;
+            //the client would like to sync an object
             case "SyncObject":
-                syncedObjects[int.Parse(splitMessage[1])].transform.position = StringToVector3(splitMessage[2]);
-                syncedObjects[int.Parse(splitMessage[1])].transform.rotation = StringToQuaternion(splitMessage[3]);
+                //queue rotation being set
+                actions.Enqueue(() => syncedObjects[int.Parse(splitMessage[1])].transform.position = StringToVector3(splitMessage[2]));
+                //queue rotation being set
+                actions.Enqueue(() => syncedObjects[int.Parse(splitMessage[1])].transform.rotation = StringToQuaternion(splitMessage[3]));
                 break;
         }
     }

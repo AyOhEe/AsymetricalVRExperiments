@@ -44,6 +44,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConnectionIP: localhost
-  syncedObjects: []
   spawnableObjects:
-  - {fileID: 902199399192783875, guid: 29a53d72fbb67ae469e28368ffbf5279, type: 3}
+  - {fileID: 6389891768679873775, guid: 29a53d72fbb67ae469e28368ffbf5279, type: 3}
