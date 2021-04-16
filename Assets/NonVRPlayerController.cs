@@ -57,7 +57,7 @@ public class NonVRPlayerController : MonoBehaviour
 
         //has the player been moved this frame?
         bool movedThisFrame = false;
-        //player movement: clamp magnitude, get the movement key states then add forces accordingly
+        //player movement: clamp magnitude, get the movement axis states then add forces accordingly
         playerRB.velocity = Vector3.ClampMagnitude(new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z), playerSpeedCap)
             + new Vector3(0, playerRB.velocity.y, 0);
         if (Input.GetAxis("Horizontal") != 0 | Input.GetAxis("Joystick Horizontal") != 0)
@@ -74,7 +74,6 @@ public class NonVRPlayerController : MonoBehaviour
         //if there was no keys pressed add a (horizontal) counterforce to the velocity
         if (!movedThisFrame)
         {
-            //playerRB.AddForce(new Vector3(-playerRB.velocity.x * 1.0f, 0.0f, -playerRB.velocity.z * 1.0f), ForceMode.Acceleration);
             playerRB.velocity = (new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z) * playerSlowdown) + new Vector3(0, playerRB.velocity.y, 0);
         }
     }

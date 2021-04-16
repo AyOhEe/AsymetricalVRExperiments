@@ -883,7 +883,7 @@ GameObject:
   - component: {fileID: 979630553}
   - component: {fileID: 979630552}
   m_Layer: 0
-  m_Name: Non-Player
+  m_Name: Non-VR Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
