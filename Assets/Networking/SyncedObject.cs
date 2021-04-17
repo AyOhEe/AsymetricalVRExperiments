@@ -45,20 +45,22 @@ public class SyncedObject : MonoBehaviour
             server.syncedObjects.Add(server.syncedObjects.Count, this);
         }
         
+        //start syncing the object every syncInterval seconds
         SyncObject();
     }
 
     //sends a sync message
     public void SyncObject()
     {
+        //only sync to this instance of the object if it's locally owned
         if (localOwned)
         {
-            string message = "";
-            message += PossibleRequest.SyncObject.ToString() + '"';
-            message += '"' + ID.ToString() + '"';
-            message += '"' + transform.position.ToString() + '"';
-            message += '"' + transform.rotation.ToString();
-            SendMessageToOther(message);
+            //crete sync and base requests
+            SyncRequest syncRequest = new SyncRequest(ID, transform);
+            BaseRequest baseRequest = new BaseRequest(PossibleRequest.SyncObject, JsonUtility.ToJson(syncRequest));
+            //send the message away
+            SendMessageToOther(JsonUtility.ToJson(baseRequest));
+            //sync again after syncInterval seconds
             Invoke("SyncObject", syncInterval);
         }
     }

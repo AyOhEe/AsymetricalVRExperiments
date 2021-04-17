@@ -28,12 +28,25 @@ public class NonVRPlayerController : MonoBehaviour
     //the desired euler rotation of the rigidbody
     private Vector3 desiredRotationEuler;
 
+    //the synced object for this player
+    SyncedObject syncedObject;
+
 
     //run on the first frame the object is active
     private void Start()
     {
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();
+
+        //don't run if this instance isn't locally owned
+        if (!syncedObject.localOwned)
+        {
+            //destroy the rigidbody if this isn't the local instance
+            Destroy(playerRB);
+            //disable the camera too
+            playerCamera.SetActive(false);
+            return;
+        }
 
         //lock and hide the mouse
         Cursor.lockState = CursorLockMode.Locked;
@@ -43,6 +56,10 @@ public class NonVRPlayerController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        //don't run if this instance isn't locally owned
+        if (!syncedObject.localOwned)
+            return;
+
         //player rotation: get the new desired rotation and rotate the camera and main object
         //get the new desired rotation
         float verticalRot = -Input.GetAxis("Mouse Y") + Input.GetAxis("Joystick Y");

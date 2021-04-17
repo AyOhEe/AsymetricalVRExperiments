@@ -6,6 +6,8 @@ TagManager:
   tags:
   - GameClient
   - GameServer
+  - NonVRPlayer
+  - NonVRShadesParent
   layers:
   - Default
   - TransparentFX

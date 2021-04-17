@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/ExperimentSelector.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/Reality Selector.unity
     guid: 771401ade2df6ba41ba08f871c8a7f45
+  - enabled: 1
+    path: Assets/Scenes/ExperimentSelector.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
