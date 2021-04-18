@@ -67,14 +67,6 @@ public class GameServer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            SpawnRequest spawnRequest = new SpawnRequest(0, true);
-            BaseRequest baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
-            string message = JsonUtility.ToJson(baseRequest);
-            SendMessageToClient(message);
-        }
-
         //run all actions queued
         if (actions.Count != 0)
         {

@@ -15,6 +15,8 @@ public class NonVRPlayerController : MonoBehaviour
     public float cameraRotSpeedLeftRight, cameraRotSpeedUpDown;
     //player speed cap
     public float playerSpeedCap;
+    //the multiplier for jump force
+    public float playerJumpMultiplier;
 
     //the parent of the "shades"
     public GameObject playerShadesParent;
@@ -91,6 +93,11 @@ public class NonVRPlayerController : MonoBehaviour
         {
             playerRB.AddForce(transform.forward * playerAccel * Time.deltaTime * (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")));
             movedThisFrame = true;
+        }
+        if (Input.GetAxis("Jump") != 0)
+        {
+            Debug.Log("jump: " + Input.GetAxis("Jump").ToString());
+            playerRB.AddForce(0, 600 * playerJumpMultiplier, 0);
         }
 
         //if there was no keys pressed add a (horizontal) counterforce to the velocity

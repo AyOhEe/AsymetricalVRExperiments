@@ -52,14 +52,6 @@ public class GameClient : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SpawnRequest spawnRequest = new SpawnRequest(0, true);
-            BaseRequest baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
-            string message = JsonUtility.ToJson(baseRequest);
-            SendMessageToServer(message);
-        }
-
         //run all actions queued
         if (actions.Count != 0)
         {
@@ -244,7 +236,12 @@ public class GameClient : MonoBehaviour
                     SerializableTransform serializableTransform = JsonUtility.FromJson<SerializableTransform>(syncRequest.transform);
 
                     //queue the transform copy
-                    actions.Enqueue(() => serializableTransform.CopyToTransform(syncedObjects[syncRequest.ID].transform));
+                    try
+                    {
+                        actions.Enqueue(() => serializableTransform.CopyToTransform(syncedObjects[syncRequest.ID].transform));
+                    }
+                    //we don't really care if this fails for now
+                    catch { }
                     break;
 
                 //the server would like to change scenes
