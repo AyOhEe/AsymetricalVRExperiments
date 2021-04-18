@@ -45,4 +45,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ConnectionIP: localhost
   spawnableObjects:
-  - {fileID: 6389891768679873775, guid: 29a53d72fbb67ae469e28368ffbf5279, type: 3}
+  - {fileID: 2340705227373076467, guid: 4cef2776ae010204582b9112e87b8fbe, type: 3}
+  - {fileID: 1006868883727806159, guid: e08d3a6610b239e42855d94d77b8d0f1, type: 3}
+  possibleScenes: []
+  inputMethod: 0
+  vrMainObject: {fileID: 1501595393866718763, guid: 559dbe15057162348ab51e66d394e907,
+    type: 3}
+  vrCameraRig: {fileID: 146900, guid: 4d293c8e162f3874b982baadd71153d2, type: 3}
+  playerSpawned: 0

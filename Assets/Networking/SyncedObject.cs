@@ -13,6 +13,7 @@ public class SyncedObject : MonoBehaviour
     public GameClient client;
     public GameServer server;
     public bool localOwned;
+    public GameObject parent;
 
     //function pointer type to sendmessage on either client or server, whatever we're on
     public delegate void SendMessageToOtherDelegate(string _message);
@@ -20,6 +21,10 @@ public class SyncedObject : MonoBehaviour
 
     private void Start()
     {
+        if (parent)
+        {
+            localOwned = parent.GetComponent<SyncedObject>().localOwned;
+        }
         //get the gameServer/Client
         GameObject gameClient = null, gameServer = GameObject.FindWithTag("GameServer");
         //does the server exist?

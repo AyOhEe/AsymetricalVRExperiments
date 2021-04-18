@@ -50,7 +50,7 @@ public class NetworkHandler : MonoBehaviour
         GameObject client = Instantiate(gameClientPrefab);
         client.GetComponent<GameClient>().ConnectionIP = IP;
         client.GetComponent<GameClient>().inputMethod = inputMethod;
-        client.GetComponent<GameClient>().spawnableObjects = spawnableObjects;
+        //client.GetComponent<GameClient>().spawnableObjects = spawnableObjects;
         client.GetComponent<GameClient>().possibleScenes = loadableScenes;
         client.GetComponent<GameClient>().ConnectToTcpServer();
         //keep client between scenes
@@ -65,7 +65,7 @@ public class NetworkHandler : MonoBehaviour
         server.GetComponent<GameServer>().HostIP = IP;
         server.GetComponent<GameServer>().StartServer();
         server.GetComponent<GameServer>().inputMethod = inputMethod;
-        server.GetComponent<GameServer>().spawnableObjects = spawnableObjects;
+        //server.GetComponent<GameServer>().spawnableObjects = spawnableObjects;
         server.GetComponent<GameServer>().possibleScenes = loadableScenes;
         server.GetComponent<GameServer>().keepListening = true;
         //keep server between scenes

@@ -46,6 +46,9 @@ public class GameClient : MonoBehaviour
     //camerarig prefab
     public GameObject vrCameraRig;
 
+    //has the player been spawned?
+    public bool playerSpawned;
+
     // Update is called once per frame
     void Update()
     {
@@ -125,39 +128,24 @@ public class GameClient : MonoBehaviour
                     int length;
                     Byte[] bytes = new Byte[1024];
                     string clientMessage = "";
+                    string[] messages;
                     while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
                         var incommingData = new byte[length];
                         Array.Copy(bytes, 0, incommingData, 0, length);
                         // Convert byte array to string message. 							
-                        clientMessage = Encoding.ASCII.GetString(incommingData); 
-                        //get length of message
-                        int messageLength = int.Parse(clientMessage.Substring(0, 8), System.Globalization.NumberStyles.Integer);
-                        Debug.Log(clientMessage.Substring(0, 8) + " from string, " + messageLength.ToString() + ", bytes: " + length.ToString());
-                        //is the message shorter than the entire string?
-                        if ((length - 8) > messageLength)
-                        {
-                            //yes, there's multiple messages here
-                            Debug.Log("MULTIPLE MESSAGES RECEIVED");
-                            int messageStart = 8, messageEnd = messageLength;
-                            int nMessages = 1;
-                            while ((length - (nMessages * 8)) > messageEnd)
-                            {
-                                //call the message received event
-                                MessageReceived(clientMessage.Substring(messageStart, messageEnd));
-                                messageStart = messageEnd + 8;
-                                Debug.Log(clientMessage.Substring(messageEnd + 1, messageEnd + 8));
-                                messageLength = int.Parse(clientMessage.Substring(messageEnd, messageEnd + 8), System.Globalization.NumberStyles.Integer);
-                                messageEnd = messageLength;
-                                nMessages++;
-                            }
-                        }
-                        else
+                        clientMessage = Encoding.ASCII.GetString(incommingData);
+
+                        //get all messages in the string
+                        messages = clientMessage.Split(new string[] {",,,"}, StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (string message in messages)
                         {
                             //call the message received event
-                            Debug.Log("SINGLE MESSAGE RECEIVED");
-                            MessageReceived(clientMessage.Substring(8));
+                            MessageReceived(message);
                         }
+
+                        //reset the bytes array
                         bytes = new Byte[1024];
                     }
                 }
@@ -192,10 +180,10 @@ public class GameClient : MonoBehaviour
             if (stream.CanWrite)
             {
                 // Convert string message to byte array.                 
-                byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message.Length.ToString("00000000") + _message);
+                byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message + ",,,");
                 // Write byte array to socketConnection stream.               
                 stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
-                Debug.Log("Server Sent: '" + _message.Length.ToString("00000000") + _message + "'");
+                Debug.Log("client Sent: '" + _message + ",,," + "'");
             }
         }
         catch (SocketException socketException)
@@ -267,7 +255,7 @@ public class GameClient : MonoBehaviour
                     int sceneIndex = changeSceneRequest.Index;
 
                     //load the scene
-                    SceneManager.LoadScene(possibleScenes[sceneIndex].name);
+                    actions.Enqueue(() => SceneManager.LoadSceneAsync("ExperimentSelector"));
                     break;
             }
         }
@@ -287,13 +275,17 @@ public class GameClient : MonoBehaviour
     //spawns the selected player based on the chosen input method
     private void SpawnPlayer(InputMethod inputMethod)
     {
-        if (inputMethod == InputMethod.NonVR)
+        if (!playerSpawned)
         {
-            StartCoroutine(SpawnNonVRPlayer());
-        }
-        else if (inputMethod == InputMethod.VR)
-        {
-            StartCoroutine(SpawnVRPlayer());
+            playerSpawned = true;
+            if (inputMethod == InputMethod.NonVR)
+            {
+                StartCoroutine(SpawnNonVRPlayer());
+            }
+            else if (inputMethod == InputMethod.VR)
+            {
+                StartCoroutine(SpawnVRPlayer());
+            }
         }
     }
 
@@ -310,67 +302,28 @@ public class GameClient : MonoBehaviour
         //set it's position
         player.transform.localPosition = new Vector3(0.0f, 1.5f, 0.0f);
 
-        //spawn the shadesParent 
-        spawnRequest = new SpawnRequest(1, true);
-        baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
-        message = JsonUtility.ToJson(baseRequest);
-        SendMessageToServer(message);
-        //wait and get the object after it's probably spawned
-        yield return new WaitForSeconds(1);
-        GameObject shadesParent = GameObject.FindGameObjectWithTag("NonVRShadesParent");
-        //set it's parent and position
-        shadesParent.transform.SetParent(player.transform);
-        shadesParent.transform.localPosition = new Vector3(0.0f, 0.5f, 0.0f);
-
         //don't destroy the player on load
         DontDestroyOnLoad(player);
     }
 
     private IEnumerator SpawnVRPlayer()
     {
-        //spawn the camerarig
-        GameObject camRig = Instantiate(vrCameraRig);
-
-        //instantiate the main object
-        GameObject mainObject = Instantiate(vrMainObject);
-
-        //spawn the Head
-        SpawnRequest spawnRequest = new SpawnRequest(2, true);
+        //spawn the object
+        SpawnRequest spawnRequest = new SpawnRequest(1, true);
         BaseRequest baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
         string message = JsonUtility.ToJson(baseRequest);
         SendMessageToServer(message);
         //wait and get the object after it's probably spawned
         yield return new WaitForSeconds(1);
-        GameObject Head = GameObject.FindGameObjectWithTag("VRHead");
-        //set it's parent
-        Head.transform.SetParent(mainObject.transform);
-
-        //spawn the Hands
-        spawnRequest = new SpawnRequest(3, true);
-        baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
-        message = JsonUtility.ToJson(baseRequest);
-        SendMessageToServer(message);
-        //wait and get the object after it's probably spawned
-        yield return new WaitForSeconds(1);
-        GameObject LeftHand = GameObject.FindGameObjectWithTag("VRLeftHand");
-        //set it's parent
-        LeftHand.transform.SetParent(mainObject.transform);
-
-        //spawn the playerobject
-        spawnRequest = new SpawnRequest(4, true);
-        baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
-        message = JsonUtility.ToJson(baseRequest);
-        SendMessageToServer(message);
-        //wait and get the object after it's probably spawned
-        yield return new WaitForSeconds(1);
-        GameObject RightHand = GameObject.FindGameObjectWithTag("VRRightHand");
-        //set it's parent
-        RightHand.transform.SetParent(mainObject.transform);
+        Debug.Log("Spawning VR");
+        GameObject vr = GameObject.FindGameObjectWithTag("VRHead");
 
         //don't destroy the player on load
-        DontDestroyOnLoad(vrMainObject);
+        DontDestroyOnLoad(vr);
 
         //enable vr
         UnityEngine.XR.XRSettings.enabled = true;
+        UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
+        Valve.VR.SteamVR.Initialize(true);
     }
 }

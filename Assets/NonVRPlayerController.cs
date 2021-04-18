@@ -29,7 +29,7 @@ public class NonVRPlayerController : MonoBehaviour
     private Vector3 desiredRotationEuler;
 
     //the synced object for this player
-    SyncedObject syncedObject;
+    public SyncedObject syncedObject;
 
 
     //run on the first frame the object is active
