@@ -35,6 +35,9 @@ public class NonVRPlayerController : MonoBehaviour
     //run on the first frame the object is active
     private void Start()
     {
+        //don't destroy this object on load
+        DontDestroyOnLoad(gameObject);
+
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();
 
@@ -59,6 +62,8 @@ public class NonVRPlayerController : MonoBehaviour
         //don't run if this instance isn't locally owned
         if (!syncedObject.localOwned)
             return;
+
+        Debug.Log("player local");
 
         //player rotation: get the new desired rotation and rotate the camera and main object
         //get the new desired rotation
@@ -93,5 +98,10 @@ public class NonVRPlayerController : MonoBehaviour
         {
             playerRB.velocity = (new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z) * playerSlowdown) + new Vector3(0, playerRB.velocity.y, 0);
         }
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log("destroyed player");
     }
 }

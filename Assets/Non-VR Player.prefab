@@ -247,7 +247,7 @@ MonoBehaviour:
   cameraRotSpeedLeftRight: 5
   cameraRotSpeedUpDown: 3
   playerSpeedCap: 5
-  playerShadesParent: {fileID: 0}
+  playerShadesParent: {fileID: 2930650647521737901}
   playerCamera: {fileID: 379301966875363279}
   playerMainObject: {fileID: 2340705227373076467}
   syncedObject: {fileID: 7909042211002713421}

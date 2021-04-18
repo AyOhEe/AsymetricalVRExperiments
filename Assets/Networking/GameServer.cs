@@ -318,31 +318,29 @@ public class GameServer : MonoBehaviour
         yield return new WaitForSeconds(1);
         GameObject player = GameObject.FindGameObjectWithTag("NonVRPlayer");
         //set it's position
-        player.transform.localPosition = new Vector3(0.0f, 1.5f, 0.0f);
-
-        //don't destroy the player on load
-        DontDestroyOnLoad(player);
+        player.transform.localPosition = new Vector3(0.0f, 2.5f, 0.0f);
     }
 
     private IEnumerator SpawnVRPlayer()
     {
+        //enable vr
+        UnityEngine.XR.XRSettings.enabled = true;
+        UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
+        Valve.VR.SteamVR.Initialize(true);
+        yield return new WaitForSeconds(1);
+
         //spawn the object
         SpawnRequest spawnRequest = new SpawnRequest(1, true);
         BaseRequest baseRequest = new BaseRequest(PossibleRequest.SpawnObject, JsonUtility.ToJson(spawnRequest));
         string message = JsonUtility.ToJson(baseRequest);
         SendMessageToClient(message);
         //wait and get the object after it's probably spawned
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         Debug.Log("Spawning VR");
         GameObject vr = GameObject.FindGameObjectWithTag("VRHead");
 
         //don't destroy the player on load
         DontDestroyOnLoad(vr);
-
-        //enable vr
-        UnityEngine.XR.XRSettings.enabled = true;
-        UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
-        Valve.VR.SteamVR.Initialize(true);
     }
 
     public void ChangeScene(int Index)
