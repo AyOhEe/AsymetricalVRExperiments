@@ -54,10 +54,7 @@ public class GameServer : MonoBehaviour
 
     //input method the server is using
     public InputMethod inputMethod;
-
-    //the main parent object for the vr player
-    public GameObject vrMainObject;
-
+    
     //camerarig prefab
     public GameObject vrCameraRig;
 

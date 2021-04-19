@@ -15,8 +15,12 @@ public class NonVRPlayerController : MonoBehaviour
     public float cameraRotSpeedLeftRight, cameraRotSpeedUpDown;
     //player speed cap
     public float playerSpeedCap;
-    //the multiplier for jump force
-    public float playerJumpMultiplier;
+    //the force applied when the player tries to jump 
+    public float playerJumpForce;
+    //can the player jump?
+    public bool jumpEnabled = true;
+    //what tags should reset the jump
+    public string[] jumpResetTags;
 
     //the parent of the "shades"
     public GameObject playerShadesParent;
@@ -46,8 +50,8 @@ public class NonVRPlayerController : MonoBehaviour
         //don't run if this instance isn't locally owned
         if (!syncedObject.localOwned)
         {
-            //destroy the rigidbody if this isn't the local instance
-            Destroy(playerRB);
+            //make the rigidbody kinematic if this isn't the local instance
+            playerRB.isKinematic = true;
             //disable the camera too
             playerCamera.SetActive(false);
             return;
@@ -59,7 +63,7 @@ public class NonVRPlayerController : MonoBehaviour
     }
     
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         //don't run if this instance isn't locally owned
         if (!syncedObject.localOwned)
@@ -81,7 +85,7 @@ public class NonVRPlayerController : MonoBehaviour
 
         //has the player been moved this frame?
         bool movedThisFrame = false;
-        //player movement: clamp magnitude, get the movement axis states then add forces accordingly
+        //player movement: clamp velocity magnitude, get the movement axis states then add forces accordingly
         playerRB.velocity = Vector3.ClampMagnitude(new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z), playerSpeedCap)
             + new Vector3(0, playerRB.velocity.y, 0);
         if (Input.GetAxis("Horizontal") != 0 | Input.GetAxis("Joystick Horizontal") != 0)
@@ -94,10 +98,13 @@ public class NonVRPlayerController : MonoBehaviour
             playerRB.AddForce(transform.forward * playerAccel * Time.deltaTime * (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")));
             movedThisFrame = true;
         }
-        if (Input.GetAxis("Jump") != 0)
+        //jump if we are allowed to and the player wants to
+        if (Input.GetAxis("Jump") != 0 & jumpEnabled)
         {
-            Debug.Log("jump: " + Input.GetAxis("Jump").ToString());
-            playerRB.AddForce(0, 600 * playerJumpMultiplier, 0);
+            //disable jumping until it's reset
+            jumpEnabled = false;
+            //add a vertical force
+            playerRB.AddForce(0, playerJumpForce, 0);
         }
 
         //if there was no keys pressed add a (horizontal) counterforce to the velocity
@@ -107,8 +114,13 @@ public class NonVRPlayerController : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    //reset the jump if we hit something with a tag in jumpResetTags
+    public void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("destroyed player");
+        foreach (string s in jumpResetTags)
+        {
+            if (collision.transform.CompareTag(s))
+                jumpEnabled = true;
+        }
     }
 }

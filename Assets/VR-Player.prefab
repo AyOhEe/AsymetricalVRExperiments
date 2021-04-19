@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 5026454104388667393}
   m_Layer: 0
   m_Name: VR-Player
-  m_TagString: VRHead
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -122,7 +122,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1006868883727806159}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -28, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -132,7 +132,7 @@ Transform:
   - {fileID: 359204652213439332}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &5026454104388667393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,6 +418,7 @@ GameObject:
   - component: {fileID: 8462871640125068914}
   - component: {fileID: 240731637561571803}
   - component: {fileID: 8889964520339072254}
+  - component: {fileID: 2331591066402004334}
   m_Layer: 0
   m_Name: Head
   m_TagString: VRHead
@@ -533,6 +534,22 @@ MonoBehaviour:
   mTag: CamRigHead
   syncedObject: {fileID: 240731637561571803}
   toMimic: {fileID: 0}
+--- !u!54 &2331591066402004334
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4152247773379289681}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &4577917409009572639
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,6 +564,7 @@ GameObject:
   - component: {fileID: 3825998932124651653}
   - component: {fileID: 4745923958357258006}
   - component: {fileID: 351459918219976335}
+  - component: {fileID: 2778384266351821958}
   m_Layer: 0
   m_Name: LeftHand
   m_TagString: VRLeftHand
@@ -661,6 +679,22 @@ MonoBehaviour:
   mTag: CamRigLeftHand
   syncedObject: {fileID: 4745923958357258006}
   toMimic: {fileID: 0}
+--- !u!54 &2778384266351821958
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4577917409009572639}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &6426613552696388578
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,6 +805,7 @@ GameObject:
   - component: {fileID: 3702185501795015435}
   - component: {fileID: 6679031394292717726}
   - component: {fileID: 3556399008553665709}
+  - component: {fileID: 3688540356647921884}
   m_Layer: 0
   m_Name: RightHand
   m_TagString: VRRightHand
@@ -885,6 +920,22 @@ MonoBehaviour:
   mTag: CamRigRightHand
   syncedObject: {fileID: 6679031394292717726}
   toMimic: {fileID: 0}
+--- !u!54 &3688540356647921884
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6698532798915715648}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7876171485577213103
 GameObject:
   m_ObjectHideFlags: 0

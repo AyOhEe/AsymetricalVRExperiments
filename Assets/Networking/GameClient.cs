@@ -40,9 +40,6 @@ public class GameClient : MonoBehaviour
     //input method the client is using
     public InputMethod inputMethod;
 
-    //the main parent object for the vr player
-    public GameObject vrMainObject;
-
     //camerarig prefab
     public GameObject vrCameraRig;
 

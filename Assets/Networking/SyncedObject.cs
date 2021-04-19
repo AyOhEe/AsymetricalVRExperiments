@@ -12,19 +12,23 @@ public class SyncedObject : MonoBehaviour
 
     public GameClient client;
     public GameServer server;
+    //is the syncedObject owned locally?
     public bool localOwned;
+    //parent object of this gameobject, if it exists.
     public GameObject parent;
 
     //function pointer type to sendmessage on either client or server, whatever we're on
     public delegate void SendMessageToOtherDelegate(string _message);
     public event SendMessageToOtherDelegate SendMessageToOther;
 
-    private void Start()
+    public void Start()
     {
+        //if the parent is locally owned, so are we
         if (parent)
         {
             localOwned = parent.GetComponent<SyncedObject>().localOwned;
         }
+
         //get the gameServer/Client
         GameObject gameClient = null, gameServer = GameObject.FindWithTag("GameServer");
         //does the server exist?
