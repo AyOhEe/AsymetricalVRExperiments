@@ -12,6 +12,8 @@ public class SceneSyncedObject : SyncedObject
 
         //if a server exists, we're locally owned, otherwise it can be set false
         localOwned = server != null;
-        Debug.LogError(localOwned.ToString());
+
+        //start syncing the object every syncInterval seconds
+        SyncObject();
     }
 }

@@ -249,7 +249,7 @@ public class GameClient : MonoBehaviour
                     int sceneIndex = changeSceneRequest.Index;
 
                     //load the scene
-                    actions.Enqueue(() => SceneManager.LoadSceneAsync("ExperimentSelector"));
+                    actions.Enqueue(() => StartCoroutine(ChangeScene("ExperimentSelector")));
                     break;
             }
         }
@@ -317,5 +317,20 @@ public class GameClient : MonoBehaviour
 
         //don't destroy the player on load
         DontDestroyOnLoad(vr);
+    }
+
+    private IEnumerator ChangeScene(string sceneName)
+    {
+        //change the scene
+        SceneManager.LoadScene(sceneName);
+        //wait for two frames or so
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        //get all of the synced objects that should be in the scene and spawn them in
+        SceneSyncedObjectList sceneSyncedObjectList = GameObject.FindObjectOfType<SceneSyncedObjectList>();
+        foreach (GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
+        {
+
+        }
     }
 }
