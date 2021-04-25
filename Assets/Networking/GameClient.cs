@@ -27,6 +27,7 @@ public class GameClient : MonoBehaviour
 
     //list of all synced objects
     public Dictionary<int, SyncedObject> syncedObjects = new Dictionary<int, SyncedObject>();
+    public Dictionary<int, SyncedObject> sceneSyncedObjects = new Dictionary<int, SyncedObject>();
 
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -246,10 +247,25 @@ public class GameClient : MonoBehaviour
                     //get the scene change request object
                     ChangeSceneRequest changeSceneRequest = JsonUtility.FromJson<ChangeSceneRequest>(baseRequest.Request);
                     //get the scene index
-                    int sceneIndex = changeSceneRequest.Index;
+                    string sceneName = changeSceneRequest.Name;
 
                     //load the scene
-                    actions.Enqueue(() => StartCoroutine(ChangeScene("ExperimentSelector")));
+                    actions.Enqueue(() => StartCoroutine(ChangeScene(sceneName)));
+                    break;
+
+                //the server would like to sync a scene object
+                case "SceneSyncObject":
+                    //get the scene sync object
+                    SceneSyncRequest sceneSyncRequest = JsonUtility.FromJson<SceneSyncRequest>(baseRequest.Request);
+                    //get the serializable transform
+                    SerializableTransform aSerializableTransform = JsonUtility.FromJson<SerializableTransform>(sceneSyncRequest.transform);
+                    //sync the object
+                    try
+                    {
+                        actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[sceneSyncRequest.ID].transform));
+                    }
+                    //we don't really care if this fails for now
+                    catch { }
                     break;
             }
         }
@@ -314,9 +330,6 @@ public class GameClient : MonoBehaviour
         yield return new WaitForSeconds(2);
         Debug.Log("Spawning VR");
         GameObject vr = GameObject.FindGameObjectWithTag("VRHead");
-
-        //don't destroy the player on load
-        DontDestroyOnLoad(vr);
     }
 
     private IEnumerator ChangeScene(string sceneName)
@@ -328,9 +341,11 @@ public class GameClient : MonoBehaviour
         yield return new WaitForEndOfFrame();
         //get all of the synced objects that should be in the scene and spawn them in
         SceneSyncedObjectList sceneSyncedObjectList = GameObject.FindObjectOfType<SceneSyncedObjectList>();
+        //make the scene syncedobject list accurate
+        sceneSyncedObjects.Clear();
         foreach (GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
         {
-
+            sceneSyncedObjects.Add(sceneSyncedObjects.Count, Instantiate(g).GetComponent<SceneSyncedObject>());
         }
     }
 }

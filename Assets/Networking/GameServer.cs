@@ -42,6 +42,7 @@ public class GameServer : MonoBehaviour
 
     //list of all synced objects
     public Dictionary<int, SyncedObject> syncedObjects = new Dictionary<int, SyncedObject>();
+    public Dictionary<int, SyncedObject> sceneSyncedObjects = new Dictionary<int, SyncedObject>();
 
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -130,8 +131,8 @@ public class GameServer : MonoBehaviour
                             actions.Enqueue(() => SpawnPlayer(inputMethod));
 
                             //load into the lobby scene
-                            actions.Enqueue(() => ChangeScene(0));
-                            actions.Enqueue(() => SceneManager.LoadSceneAsync("ExperimentSelector"));
+                            actions.Enqueue(() => SceneManager.LoadScene("ExperimentSelector"));
+                            actions.Enqueue(() => StartCoroutine(ChangeScene("ExperimentSelector")));
 
                             // Read incomming stream into byte arrary. 	
                             string[] messages;
@@ -264,6 +265,21 @@ public class GameServer : MonoBehaviour
                     //queue the transform copy
                     actions.Enqueue(() => serializableTransform.CopyToTransform(syncedObjects[syncRequest.ID].transform));
                     break;
+
+                //the client would like to sync a scene object
+                case "SceneSyncObject":
+                    //get the scene sync object
+                    SceneSyncRequest sceneSyncRequest = JsonUtility.FromJson<SceneSyncRequest>(baseRequest.Request);
+                    //get the serializable transform
+                    SerializableTransform aSerializableTransform = JsonUtility.FromJson<SerializableTransform>(sceneSyncRequest.transform);
+                    //sync the object
+                    try
+                    {
+                        actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[sceneSyncRequest.ID].transform));
+                    }
+                    //we don't really care if this fails for now
+                    catch { }
+                    break;
             }
         }
         catch (Exception ex)
@@ -327,19 +343,27 @@ public class GameServer : MonoBehaviour
         yield return new WaitForSeconds(2);
         Debug.Log("Spawning VR");
         GameObject vr = GameObject.FindGameObjectWithTag("VRHead");
-
-        //don't destroy the player on load
-        DontDestroyOnLoad(vr);
     }
 
-    public void ChangeScene(int Index)
+    public IEnumerator ChangeScene(string name)
     {
         //ask the client to change scenes
-        ChangeSceneRequest changeSceneRequest = new ChangeSceneRequest(0);
+        ChangeSceneRequest changeSceneRequest = new ChangeSceneRequest(name);
         BaseRequest baseRequest = new BaseRequest(PossibleRequest.ChangeScene, JsonUtility.ToJson(changeSceneRequest));
         string message = JsonUtility.ToJson(baseRequest);
         SendMessageToClient(message);
-        //change the scene ourselves
-        SceneManager.LoadSceneAsync("ExperimentSelector");
+
+        //wait for two frames or so
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+
+        //get all of the synced objects that should be in the scene and spawn them in
+        SceneSyncedObjectList sceneSyncedObjectList = GameObject.FindObjectOfType<SceneSyncedObjectList>();
+        //make the scene syncedobject list accurate
+        sceneSyncedObjects.Clear();
+        foreach (GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
+        {
+            sceneSyncedObjects.Add(sceneSyncedObjects.Count, Instantiate(g).GetComponent<SceneSyncedObject>());
+        }
     }
 }

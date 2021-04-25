@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NonVRPlayerController : MonoBehaviour
 {
@@ -41,8 +42,8 @@ public class NonVRPlayerController : MonoBehaviour
     //run on the first frame the object is active
     private void Start()
     {
-        //don't destroy this object on load
-        DontDestroyOnLoad(gameObject);
+        //add our levelwasloaded event to activeSceneChanged so we can update our transform
+        SceneManager.activeSceneChanged += LevelWasLoaded;
 
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();
@@ -122,5 +123,17 @@ public class NonVRPlayerController : MonoBehaviour
             if (collision.transform.CompareTag(s))
                 jumpEnabled = true;
         }
+    }
+
+    private void LevelWasLoaded(Scene current, Scene next)
+    {
+        //get the scene info object
+        GameObject sceneInfo = GameObject.Find("SceneInfo");
+        //get the startingpos info
+        PlayerStartingPos startingPos = sceneInfo.GetComponent<PlayerStartingPos>();
+        //update our position, rotation and scale
+        transform.localPosition = startingPos.NonVRPos;
+        transform.localEulerAngles = startingPos.NonVRRot;
+        transform.localScale = startingPos.NonVRScale;
     }
 }

@@ -10,7 +10,8 @@ public enum PossibleRequest
     DisconnectRequest,
     SyncObject,
     SpawnObject,
-    ChangeScene
+    ChangeScene,
+    SceneSyncObject,
 }
 
 //surface of mosts requests, contains type of request and request
@@ -83,6 +84,24 @@ public struct SyncRequest
         transform = JsonUtility.ToJson(new SerializableTransform(_transform));
     }
 }
+//request to sync a scene object
+[Serializable]
+public struct SceneSyncRequest
+{
+    //id of object to sync
+    [SerializeField]
+    public int ID;
+    //serialized transform
+    [SerializeField]
+    public string transform;
+
+    //construct a scene sync request
+    public SceneSyncRequest(int _id, Transform _transform)
+    {
+        ID = _id;
+        transform = JsonUtility.ToJson(new SerializableTransform(_transform));
+    }
+}
 //request to spawn an object
 [Serializable]
 public struct SpawnRequest
@@ -107,11 +126,11 @@ public struct ChangeSceneRequest
 {
     //index of the scene to change to
     [SerializeField]
-    public int Index;
+    public string Name;
 
     //construct a new scene change request
-    public ChangeSceneRequest(int _index)
+    public ChangeSceneRequest(string _name)
     {
-        Index = _index;
+        Name = _name;
     }
 }
