@@ -11,21 +11,7 @@ using UnityEngine.SceneManagement;
 
 public class GameServer : MonoBehaviour
 {
-    #region private members 	
-    /// <summary> 	
-    /// TCPListener to listen for incomming TCP connection 	
-    /// requests. 	
-    /// </summary> 	
-    private TcpListener tcpListener;
-    /// <summary> 
-    /// Background thread for TcpServer workload. 	
-    /// </summary> 	
-    private Thread tcpListenerThread;
-    /// <summary> 	
-    /// Create handle to connected tcp client. 	
-    /// </summary> 	
     private TcpClient connectedTcpClient;
-    #endregion
 
     //the ip to host the server on
     public string HostIP;
@@ -41,8 +27,8 @@ public class GameServer : MonoBehaviour
     public bool keepListening = true;
 
     //list of all synced objects
-    public Dictionary<int, SyncedObject> syncedObjects = new Dictionary<int, SyncedObject>();
-    public Dictionary<int, SyncedObject> sceneSyncedObjects = new Dictionary<int, SyncedObject>();
+    public SerializableDictionary<int, SyncedObject> syncedObjects = new SerializableDictionary<int, SyncedObject>();
+    public SerializableDictionary<int, SyncedObject> sceneSyncedObjects = new SerializableDictionary<int, SyncedObject>();
 
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -55,9 +41,6 @@ public class GameServer : MonoBehaviour
 
     //input method the server is using
     public InputMethod inputMethod;
-    
-    //camerarig prefab
-    public GameObject vrCameraRig;
 
     //has the player been spawned?
     public bool playerSpawned;
@@ -87,7 +70,7 @@ public class GameServer : MonoBehaviour
     public void StartServer()
     {
         // Start TcpServer background thread 		
-        tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
+        Thread tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
         tcpListenerThread.IsBackground = true;
         tcpListenerThread.Start();
     }
@@ -99,8 +82,8 @@ public class GameServer : MonoBehaviour
     {
         try
         {
-            // Create listener on localhost port 25565. 			
-            tcpListener = new TcpListener(IPAddress.Any, 25565);
+            // Create listener on localhost port 25565. 	
+            TcpListener tcpListener = new TcpListener(IPAddress.Any, 25565);
             tcpListener.Start();
             Debug.Log("Server is listening");
             Byte[] bytes = new Byte[1024];
@@ -140,16 +123,26 @@ public class GameServer : MonoBehaviour
                             {
                                 var incommingData = new byte[length];
                                 Array.Copy(bytes, 0, incommingData, 0, length);
-                                // Convert byte array to string message. 							
+
                                 clientMessage = Encoding.ASCII.GetString(incommingData);
 
                                 //get all messages in the string
-                                messages = clientMessage.Split(new string[] { ",,," }, StringSplitOptions.RemoveEmptyEntries);
+                                messages = clientMessage.Split(new string[] { "\0" }, StringSplitOptions.RemoveEmptyEntries);
 
-                                foreach (string message in messages)
+                                for(int i = 0; i < messages.Length; i++)
                                 {
-                                    //call the message received event
-                                    MessageReceived(message);
+                                    try
+                                    {
+                                        // Convert byte array to string message. 					
+                                        messages[i] = Encoding.ASCII.GetString(Convert.FromBase64String(messages[i]));
+                                        //call the message received event
+                                        MessageReceived(messages[i]);
+                                    }
+                                    catch (FormatException formatExcept)
+                                    {
+                                        Debug.Log(messages[i]);
+                                        Debug.Log(formatExcept);
+                                    }
                                 }
 
                                 //reset the bytes array
@@ -191,10 +184,13 @@ public class GameServer : MonoBehaviour
             if (stream.CanWrite)
             {
                 // Convert string message to byte array.                 
-                byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message + ",,,");
+                byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message + "\0");
+                //encode into base 64
+                string serverMessageAsB64String = Convert.ToBase64String(serverMessageAsByteArray);
+                byte[] serverMessageAsB64Bytes = Encoding.ASCII.GetBytes(serverMessageAsB64String + "\0");
                 // Write byte array to socketConnection stream.               
-                stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
-                Debug.Log("Server Sent: '" + _message + ",,," + "'");
+                stream.Write(serverMessageAsB64Bytes, 0, serverMessageAsB64Bytes.Length);
+                Debug.Log("Server Sent: '" + _message + "\0" + "'");
             }
         }
         catch (SocketException socketException)
@@ -273,12 +269,7 @@ public class GameServer : MonoBehaviour
                     //get the serializable transform
                     SerializableTransform aSerializableTransform = JsonUtility.FromJson<SerializableTransform>(sceneSyncRequest.transform);
                     //sync the object
-                    try
-                    {
-                        actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[sceneSyncRequest.ID].transform));
-                    }
-                    //we don't really care if this fails for now
-                    catch { }
+                    actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[sceneSyncRequest.ID].transform));
                     break;
             }
         }
@@ -359,11 +350,10 @@ public class GameServer : MonoBehaviour
 
         //get all of the synced objects that should be in the scene and spawn them in
         SceneSyncedObjectList sceneSyncedObjectList = GameObject.FindObjectOfType<SceneSyncedObjectList>();
-        //make the scene syncedobject list accurate
-        sceneSyncedObjects.Clear();
-        foreach (GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
+        sceneSyncedObjects = new SerializableDictionary<int, SyncedObject>();
+        foreach(GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
         {
-            sceneSyncedObjects.Add(sceneSyncedObjects.Count, Instantiate(g).GetComponent<SceneSyncedObject>());
+            Instantiate(g);
         }
     }
 }

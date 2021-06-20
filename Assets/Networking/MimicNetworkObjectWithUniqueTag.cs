@@ -28,6 +28,14 @@ public class MimicNetworkObjectWithUniqueTag : MonoBehaviour
         if (!syncedObject.localOwned)
             return;
 
+        //make sure we know what we're mimicing
+        if (Time.frameCount % 60 == 0)
+        {
+            //get the object to mimic if it's unknown
+            if (!toMimic)
+                toMimic = GameObject.FindGameObjectWithTag(mTag);
+        }
+
         //mimic the object's position and rotation
         transform.position = toMimic.transform.position;
         transform.rotation = toMimic.transform.rotation;

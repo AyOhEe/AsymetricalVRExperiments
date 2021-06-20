@@ -11,7 +11,7 @@ public enum PossibleRequest
     SyncObject,
     SpawnObject,
     ChangeScene,
-    SceneSyncObject,
+    SceneSyncObject
 }
 
 //surface of mosts requests, contains type of request and request

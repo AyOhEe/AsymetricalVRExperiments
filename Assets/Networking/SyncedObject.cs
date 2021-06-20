@@ -21,14 +21,8 @@ public class SyncedObject : MonoBehaviour
     public delegate void SendMessageToOtherDelegate(string _message);
     public event SendMessageToOtherDelegate SendMessageToOther;
 
-    public void Start()
+    public void Awake()
     {
-        //if the parent is locally owned, so are we
-        if (parent)
-        {
-            localOwned = parent.GetComponent<SyncedObject>().localOwned;
-        }
-
         //get the gameServer/Client
         GameObject gameClient = null, gameServer = GameObject.FindWithTag("GameServer");
         //does the server exist?
@@ -53,10 +47,19 @@ public class SyncedObject : MonoBehaviour
             ID = server.syncedObjects.Count;
             server.syncedObjects.Add(server.syncedObjects.Count, this);
         }
-        
+
         //start syncing the object every syncInterval seconds
         SyncObject();
     }
+	
+	public void Start()
+	{
+		//if the parent is locally owned, so are we
+        if (parent)
+        {
+            localOwned = localOwned | parent.GetComponent<SyncedObject>().localOwned;
+        }
+	}
 
     //sends a sync message
     public void SyncObject()
@@ -69,9 +72,11 @@ public class SyncedObject : MonoBehaviour
             BaseRequest baseRequest = new BaseRequest(PossibleRequest.SyncObject, JsonUtility.ToJson(syncRequest));
             //send the message away
             SendMessageToOther(JsonUtility.ToJson(baseRequest));
-            //sync again after syncInterval seconds
-            Invoke("SyncObject", syncInterval);
+            Debug.Log("Object " + ID.ToString() + " sent sync request");
         }
+
+        //sync again after syncInterval seconds
+        Invoke("SyncObject", syncInterval);
     }
 
     //called when a message is received on either the game client or game server, whichever is present

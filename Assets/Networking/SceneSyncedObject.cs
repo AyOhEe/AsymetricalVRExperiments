@@ -26,22 +26,22 @@ public class SceneSyncedObject : SyncedObject
         switch (localWhenXPresent)
         {
             case LocalWhen.Client:
-                retVal = GameObject.FindWithTag("GameClient") != null;
+                retVal = client;
                 break;
             case LocalWhen.Server:
-                retVal = GameObject.FindWithTag("GameServer") != null;
+                retVal = server;
                 break;
             case LocalWhen.VR:
-                retVal = GameObject.Find("VR-Player") != null;
+                retVal = GameObject.FindObjectOfType<VRPlayer>().GetComponent<SyncedObject>().localOwned;
                 break;
             case LocalWhen.NonVR:
-                retVal = GameObject.Find("Non-VR Player") != null;
+                retVal = GameObject.FindObjectOfType<NonVRPlayerController>().GetComponent<SyncedObject>().localOwned;
                 break;
         }
         return retVal;
     }
 
-    public new void Start()
+    public new void Awake()
     {
         //do all the normal stuff for a synced object
         //get the gameServer/Client
@@ -73,7 +73,7 @@ public class SceneSyncedObject : SyncedObject
         localOwned = isLocal();
 
         //start syncing the object every syncInterval seconds
-        SyncObject();
+        Invoke("SyncObject", 0);
     }
 
     //sends a sync message
@@ -87,8 +87,10 @@ public class SceneSyncedObject : SyncedObject
             BaseRequest baseRequest = new BaseRequest(PossibleRequest.SceneSyncObject, JsonUtility.ToJson(syncRequest));
             //send the message away
             SendMessageToOther(JsonUtility.ToJson(baseRequest));
-            //sync again after syncInterval seconds
-            Invoke("SyncObject", syncInterval);
+            Debug.Log("Scene Object " + ID.ToString() + " sent sync request");
         }
+
+        //sync again after syncInterval seconds
+        Invoke("SyncObject", syncInterval);
     }
 }

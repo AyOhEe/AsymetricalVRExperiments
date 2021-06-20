@@ -11,11 +11,8 @@ using UnityEngine.SceneManagement;
 
 public class GameClient : MonoBehaviour
 {
-    #region private members 	
     private TcpClient socketConnection;
-    private Thread clientReceiveThread;
     NetworkStream stream;
-    #endregion
 
     //ip to connect to
     public string ConnectionIP;
@@ -26,8 +23,8 @@ public class GameClient : MonoBehaviour
     public event MessageReceiveEvent MessageReceived;
 
     //list of all synced objects
-    public Dictionary<int, SyncedObject> syncedObjects = new Dictionary<int, SyncedObject>();
-    public Dictionary<int, SyncedObject> sceneSyncedObjects = new Dictionary<int, SyncedObject>();
+    public SerializableDictionary<int, SyncedObject> syncedObjects = new SerializableDictionary<int, SyncedObject>();
+    public SerializableDictionary<int, SyncedObject> sceneSyncedObjects = new SerializableDictionary<int, SyncedObject>();
 
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -40,9 +37,6 @@ public class GameClient : MonoBehaviour
 
     //input method the client is using
     public InputMethod inputMethod;
-
-    //camerarig prefab
-    public GameObject vrCameraRig;
 
     //has the player been spawned?
     public bool playerSpawned;
@@ -75,7 +69,7 @@ public class GameClient : MonoBehaviour
     {
         try
         {
-            clientReceiveThread = new Thread(new ThreadStart(ListenForData));
+            Thread clientReceiveThread = new Thread(new ThreadStart(ListenForData));
             clientReceiveThread.IsBackground = true;
             clientReceiveThread.Start();
         }
@@ -123,16 +117,26 @@ public class GameClient : MonoBehaviour
                     {
                         var incommingData = new byte[length];
                         Array.Copy(bytes, 0, incommingData, 0, length);
-                        // Convert byte array to string message. 							
+                        
                         clientMessage = Encoding.ASCII.GetString(incommingData);
 
                         //get all messages in the string
-                        messages = clientMessage.Split(new string[] {",,,"}, StringSplitOptions.RemoveEmptyEntries);
+                        messages = clientMessage.Split(new string[] {"\0"}, StringSplitOptions.RemoveEmptyEntries);
 
-                        foreach (string message in messages)
+                        for (int i = 0; i < messages.Length; i++)
                         {
-                            //call the message received event
-                            MessageReceived(message);
+                            try
+                            {
+                                // Convert byte array to string message. 					
+                                messages[i] = Encoding.ASCII.GetString(Convert.FromBase64String(messages[i]));
+                                //call the message received event
+                                MessageReceived(messages[i]);
+                            }
+                            catch (FormatException formatExcept)
+                            {
+                                Debug.Log(messages[i]);
+                                Debug.Log(formatExcept);
+                            }
                         }
 
                         //reset the bytes array
@@ -170,10 +174,13 @@ public class GameClient : MonoBehaviour
             if (stream.CanWrite)
             {
                 // Convert string message to byte array.                 
-                byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message + ",,,");
+                byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message);
+                //encode into base 64
+                string serverMessageAsB64String = Convert.ToBase64String(serverMessageAsByteArray);
+                byte[] serverMessageAsB64Bytes = Encoding.ASCII.GetBytes(serverMessageAsB64String + "\0");
                 // Write byte array to socketConnection stream.               
-                stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
-                Debug.Log("client Sent: '" + _message + ",,," + "'");
+                stream.Write(serverMessageAsB64Bytes, 0, serverMessageAsB64Bytes.Length);
+                Debug.Log("client Sent: '" + _message + "\0" + "'");
             }
         }
         catch (SocketException socketException)
@@ -260,12 +267,7 @@ public class GameClient : MonoBehaviour
                     //get the serializable transform
                     SerializableTransform aSerializableTransform = JsonUtility.FromJson<SerializableTransform>(sceneSyncRequest.transform);
                     //sync the object
-                    try
-                    {
-                        actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[sceneSyncRequest.ID].transform));
-                    }
-                    //we don't really care if this fails for now
-                    catch { }
+                    actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[sceneSyncRequest.ID].transform));
                     break;
             }
         }
@@ -339,13 +341,13 @@ public class GameClient : MonoBehaviour
         //wait for two frames or so
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
+
         //get all of the synced objects that should be in the scene and spawn them in
         SceneSyncedObjectList sceneSyncedObjectList = GameObject.FindObjectOfType<SceneSyncedObjectList>();
-        //make the scene syncedobject list accurate
-        sceneSyncedObjects.Clear();
+        sceneSyncedObjects = new SerializableDictionary<int, SyncedObject>();
         foreach (GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
         {
-            sceneSyncedObjects.Add(sceneSyncedObjects.Count, Instantiate(g).GetComponent<SceneSyncedObject>());
+            Instantiate(g);
         }
     }
 }

@@ -43,7 +43,7 @@ public class NonVRPlayerController : MonoBehaviour
     private void Start()
     {
         //add our levelwasloaded event to activeSceneChanged so we can update our transform
-        SceneManager.activeSceneChanged += LevelWasLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();
@@ -61,6 +61,16 @@ public class NonVRPlayerController : MonoBehaviour
         //lock and hide the mouse
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        
+        //get the startingpos info
+        PlayerStartingPos startingPos = GameObject.FindObjectOfType<PlayerStartingPos>();
+        if (startingPos)
+        {
+            //update our position, rotation and scale
+            transform.localPosition = startingPos.NonVRPos;
+            transform.localEulerAngles = startingPos.NonVRRot;
+            transform.localScale = startingPos.NonVRScale;
+        }
     }
     
     // Update is called once per frame
@@ -125,15 +135,24 @@ public class NonVRPlayerController : MonoBehaviour
         }
     }
 
-    private void LevelWasLoaded(Scene current, Scene next)
+    IEnumerator SetTransformInfo(Scene scene, LoadSceneMode mode)
     {
         //get the scene info object
-        GameObject sceneInfo = GameObject.Find("SceneInfo");
+        List<GameObject> sceneObjects = new List<GameObject>();
+        scene.GetRootGameObjects(sceneObjects);
+        GameObject sceneInfo = sceneObjects[0];
         //get the startingpos info
         PlayerStartingPos startingPos = sceneInfo.GetComponent<PlayerStartingPos>();
         //update our position, rotation and scale
         transform.localPosition = startingPos.NonVRPos;
         transform.localEulerAngles = startingPos.NonVRRot;
         transform.localScale = startingPos.NonVRScale;
+
+        yield return new WaitForSeconds(0.1f);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(SetTransformInfo(scene, mode));
     }
 }
