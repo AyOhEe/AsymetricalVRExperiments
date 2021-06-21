@@ -44,18 +44,21 @@ public class MultiNetworkHandler : MonoBehaviour
         GameObject client = Instantiate(gameClientPrefab);
         client.GetComponent<MultiClient>().ConnectionIP = IP;
         client.GetComponent<MultiClient>().inputMethod = inputMethod;
-        //client.GetComponent<GameClient>().spawnableObjects = spawnableObjects;
+        client.GetComponent<MultiClient>().spawnableObjects = spawnableObjects;
         client.GetComponent<MultiClient>().possibleScenes = loadableScenes;
         client.GetComponent<MultiClient>().ConnectToTcpServer();
         //keep client between scenes
+
+        client.GetComponent<MultiClient>().LocalSpawnObject(0);
+
         DontDestroyOnLoad(client);
     }
 
     public void Host()
     {
         Debug.Log("Hosting " + inputMethod.ToString() + " at " + IP);
-        Connect();
         GameObject server = Instantiate(gameServerPrefab);
+        Connect();
         DontDestroyOnLoad(server);
     }
 
