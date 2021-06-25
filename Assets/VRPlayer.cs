@@ -35,21 +35,19 @@ public class VRPlayer : MonoBehaviour
         
         //get the startingpos info
         PlayerStartingPos startingPos = GameObject.FindObjectOfType<PlayerStartingPos>();
-        if (startingPos)
-        {
-            //update our position, rotation and scale
-            transform.localPosition = startingPos.VrPos;
-            transform.localEulerAngles = startingPos.VrRot;
-            transform.localScale = startingPos.VrScale;
-        }
+
+        //update our position, rotation and scale
+        transform.localPosition = startingPos.VrPos;
+        transform.localEulerAngles = startingPos.VrRot;
+        transform.localScale = startingPos.VrScale;
     }
 
     void Update()
     {
         //if the vr object isn't locally owned, disable this object so there is only 1 active camera 
-        if (!GetComponent<SyncedObject>().localOwned)
+        if (GetComponent<MultiSyncedObject>().localOwned)
         {
-            cameraRig.SetActive(false);
+            cameraRig.SetActive(true);
         }
     }
 }

@@ -39,25 +39,49 @@ public class MultiNetworkHandler : MonoBehaviour
 
     public void Connect()
     {
+        StartCoroutine(_Connect());
+    }
+
+    private IEnumerator _Connect()
+    {
         Debug.Log("Connecting " + inputMethod.ToString() + " at " + IP);
         //make client and connect
         GameObject client = Instantiate(gameClientPrefab);
-        client.GetComponent<MultiClient>().ConnectionIP = IP;
-        client.GetComponent<MultiClient>().inputMethod = inputMethod;
-        client.GetComponent<MultiClient>().spawnableObjects = spawnableObjects;
-        client.GetComponent<MultiClient>().possibleScenes = loadableScenes;
-        client.GetComponent<MultiClient>().ConnectToTcpServer();
+        MultiClient multiClient = client.GetComponent<MultiClient>();
+        multiClient.ConnectionIP = IP;
+        multiClient.inputMethod = inputMethod;
+        multiClient.spawnableObjects = spawnableObjects;
+        multiClient.possibleScenes = loadableScenes;
+        multiClient.ConnectToTcpServer();
+
         //keep client between scenes
-
-        client.GetComponent<MultiClient>().LocalSpawnObject(0);
-
         DontDestroyOnLoad(client);
+        
+        yield return new WaitForSeconds(1);
+        multiClient.LocalSpawnObject((int)inputMethod);
+        multiClient.ChangeScene("ExperimentSelector");
+
+        if(inputMethod == InputMethod.VR)
+        {
+            //enable vr
+            UnityEngine.XR.XRSettings.enabled = true;
+            UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
+            Valve.VR.SteamVR.Initialize(true);
+        }
     }
 
     public void Host()
     {
+        StartCoroutine(_Host());
+    }
+
+    private IEnumerator _Host()
+    {
         Debug.Log("Hosting " + inputMethod.ToString() + " at " + IP);
         GameObject server = Instantiate(gameServerPrefab);
+        server.GetComponent<MultiServer>().IPString = IP;
+        server.GetComponent<MultiServer>().StartServer();
+        yield return new WaitForSeconds(1);
         Connect();
         DontDestroyOnLoad(server);
     }

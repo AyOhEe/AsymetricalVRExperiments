@@ -36,12 +36,16 @@ public class NonVRPlayerController : MonoBehaviour
     private Vector3 desiredRotationEuler;
 
     //the synced object for this player
-    public SyncedObject syncedObject;
+    public MultiSyncedObject syncedObject;
 
 
     //run on the first frame the object is active
     private void Start()
     {
+        //make ourselves a cool colour
+        GetComponent<MeshRenderer>().material = new Material(GetComponent<MeshRenderer>().material);
+        GetComponent<MeshRenderer>().material.SetColor("_Color", new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)255));
+
         //add our levelwasloaded event to activeSceneChanged so we can update our transform
         SceneManager.sceneLoaded += OnSceneLoaded;
 
@@ -79,8 +83,6 @@ public class NonVRPlayerController : MonoBehaviour
         //don't run if this instance isn't locally owned
         if (!syncedObject.localOwned)
             return;
-
-        Debug.Log("player local");
 
         //player rotation: get the new desired rotation and rotate the camera and main object
         //get the new desired rotation

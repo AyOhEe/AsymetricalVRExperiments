@@ -21,8 +21,9 @@ public class MultiClient : MonoBehaviour
     public event MessageReceiveEvent MessageReceived;
 
     //dicts of all synced objects
-    public SerializableDictionary<int, MultiSyncedObject> syncedObjects = new SerializableDictionary<int, MultiSyncedObject>();
-    public SerializableDictionary<int, MultiSyncedObject> sceneSyncedObjects = new SerializableDictionary<int, MultiSyncedObject>();
+    public Dictionary<int, MultiSyncedObject> syncedObjects = new Dictionary<int, MultiSyncedObject>();
+    public Dictionary<int, MultiSyncedObject> sceneSyncedObjects = new Dictionary<int, MultiSyncedObject>();
+    public MultiSyncedObject[] syncedObjectsList = new MultiSyncedObject[10];
     public int syncedObjectsTotal = 0;
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -38,9 +39,9 @@ public class MultiClient : MonoBehaviour
     public bool playerSpawned;
 
     public bool hostAuthority;
-    public string currentScene;
+    public string currentScene = "ExperimentSelector";
 
-    private GameObject lastSyncedObjectSpawned;
+    private GameObject lastSOSpawnedWOSetup;
     private int spawnsWithoutInstantiate;
 
     // Update is called once per frame
@@ -54,13 +55,23 @@ public class MultiClient : MonoBehaviour
                 while (actions.Count != 0) actions.Dequeue().Invoke();
             }
         }
+
+        //this only exists to see it in the editor
+#if UNITY_EDITOR
+        syncedObjects.Values.CopyTo(syncedObjectsList, 0);
+#endif
     }
 
     //spawns an object in spawnable objects from an id
     public GameObject SpawnObject(int index)
     {
+        //increment the synced objects total
+        syncedObjectsTotal += 1;
+
+        //spawn in the new synced object instance
         GameObject instance = Instantiate(spawnableObjects[index]);
         MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
+        //store its index and tell it to do dictionary setup
         syncedObject.doSyncedObjectsDictSetup = true;
         syncedObject.index = index;
         return instance;
@@ -68,38 +79,46 @@ public class MultiClient : MonoBehaviour
     //spawns an object in spawnable objects from an id
     public GameObject SpawnObjectWithoutSetup(int index, int ID)
     {
-        if (index == -1)
-        {
-            List<MultiSyncedObject> lastSpawnChildren = new List<MultiSyncedObject>();
-            lastSyncedObjectSpawned.GetComponentsInChildren<MultiSyncedObject>(true, lastSpawnChildren);
+        //increment the synced objects total
+        syncedObjectsTotal += 1;
 
-            MultiSyncedObject current = lastSpawnChildren[spawnsWithoutInstantiate++];
-            current.doSyncedObjectsDictSetup = false;
-            current.ID = ID;
+        //it's not a child, spawn in a new instance of the synced object
+        GameObject instance = Instantiate(spawnableObjects[index]);
+        MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
+        //it shouldn't do dict setup
+        syncedObject.doSyncedObjectsDictSetup = false;
+        //store index and id
+        syncedObject.index = index;
+        syncedObject.ID = ID;
+        //this is the last synced object spawned by this method
+        lastSOSpawnedWOSetup = instance;
 
-            return current.gameObject;
-        }
-        else
+        //if this object has children, make sure they don't do dict setup
+        if (instance.GetComponentsInChildren<MultiSyncedObject>().Length > 0)
         {
-            GameObject instance = Instantiate(spawnableObjects[index]);
-            MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
-            syncedObject.doSyncedObjectsDictSetup = false;
-            syncedObject.index = index;
-            syncedObject.ID = ID;
-            lastSyncedObjectSpawned = instance;
-            return instance;
+            foreach (MultiSyncedObject m in instance.GetComponentsInChildren<MultiSyncedObject>())
+            {
+                m.doSyncedObjectsDictSetup = false;
+            }
         }
+
+        return instance;
     }
 
     //spawns a local object
     public GameObject LocalSpawnObject(int index)
     {
+        //increment the total synced objects count
+        syncedObjectsTotal += 1;
+
+        //spawn in the new synced object instance
         GameObject instance = Instantiate(spawnableObjects[index]);
         MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
+        //store its index and its local status
         syncedObject.localOwned = true;
         syncedObject.index = index;
-        syncedObjects.Add(syncedObjectsTotal, syncedObject);
 
+        //send a request to all other clients to spawn in this object
         MultiSpawnRequest spawnRequest = new MultiSpawnRequest(index);
         MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnObject, JsonUtility.ToJson(spawnRequest));
         SendMessageToServer(JsonUtility.ToJson(baseRequest));
@@ -113,6 +132,7 @@ public class MultiClient : MonoBehaviour
     {
         try
         {
+            //create the background thread to listen to the tcp server
             Thread clientReceiveThread = new Thread(new ThreadStart(ListenForData));
             clientReceiveThread.IsBackground = true;
             clientReceiveThread.Start();
@@ -132,7 +152,7 @@ public class MultiClient : MonoBehaviour
         // Connect to a Remote server  
         // Get Host IP Address that is used to establish a connection   
         IPAddress ipAddress = IPAddress.Parse(ConnectionIP);
-        IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
+        IPEndPoint remoteEP = new IPEndPoint(ipAddress, 25565);
 
         // Create a TCP/IP  socket.    
         sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -147,7 +167,7 @@ public class MultiClient : MonoBehaviour
         {
             // Receive the response from the remote device.    
             int bytesRec = sender.Receive(bytes);
-            string data = Encoding.ASCII.GetString(Convert.FromBase64String(Encoding.ASCII.GetString(bytes)));
+            string data = Encoding.ASCII.GetString(bytes);// Convert.FromBase64String(Encoding.ASCII.GetString(bytes)));
             MessageReceived(data);
             data = null;
         }
@@ -159,9 +179,14 @@ public class MultiClient : MonoBehaviour
 
     public void SendMessageToServer(string _message)
     {
-        Debug.Log(String.Format("<<<Client>>>: sent \"{0}\"", _message));
-        byte[] messageBytes = Encoding.ASCII.GetBytes(Convert.ToBase64String(Encoding.ASCII.GetBytes(_message)) + "\0");
-        sender.Send(messageBytes);
+        //only send a message if we're connected
+        if (sender.Connected)
+        {
+            //send the message, we're connected
+            Debug.Log(String.Format("<<<Client>>>: sent \"{0}\"", _message));
+            byte[] messageBytes = Encoding.ASCII.GetBytes(_message);//Convert.ToBase64String(Encoding.ASCII.GetBytes(_message)) + "\0");
+            sender.Send(messageBytes);
+        }
     }
 
     //listen for requests
@@ -185,11 +210,9 @@ public class MultiClient : MonoBehaviour
                 //the server would like to sync an object
                 case MultiPossibleRequest.MultiSyncObject:
                     MultiSyncRequest multiSyncRequest = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.Request);
-                    //get the serialized transform object
-                    SerializableTransform serializableTransform = JsonUtility.FromJson<SerializableTransform>(multiSyncRequest.transform);
 
-                    //queue the transform copy
-                    actions.Enqueue(() => serializableTransform.CopyToTransform(syncedObjects[multiSyncRequest.ID].transform));
+                    //queue the synced object handle
+                    actions.Enqueue(() => syncedObjects[multiSyncRequest.ID].HandleSyncRequest(multiSyncRequest));
                     break;
 
                 //the server would like to change scenes
@@ -203,12 +226,10 @@ public class MultiClient : MonoBehaviour
 
                 //the server would like to sync a scene object
                 case MultiPossibleRequest.MultiSceneSyncObject:
-                    MultiSceneSyncRequest multiSceneSync = JsonUtility.FromJson<MultiSceneSyncRequest>(baseRequest.Request);
-
-                    //get the serializable transform
-                    SerializableTransform aSerializableTransform = JsonUtility.FromJson<SerializableTransform>(multiSceneSync.transform);
-                    //queue the transform copy
-                    actions.Enqueue(() => aSerializableTransform.CopyToTransform(sceneSyncedObjects[multiSceneSync.ID].transform));
+                    MultiSyncRequest multiSceneSync = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.Request);
+                    
+                    //queue the synced object handle
+                    actions.Enqueue(() => sceneSyncedObjects[multiSceneSync.ID].HandleSyncRequest(multiSceneSync));
                     break;
 
                 //the server wants us to take host authority
@@ -229,6 +250,7 @@ public class MultiClient : MonoBehaviour
                     //Send the request
                     MultiSceneObjects sceneObjects = new MultiSceneObjects(idIndexes, currentScene, syncedObjectsTotal, newConnection.threadN);
                     MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiSceneObjects, JsonUtility.ToJson(sceneObjects));
+                    SendMessageToServer(JsonUtility.ToJson(request));
 
                     break;
 
@@ -236,18 +258,27 @@ public class MultiClient : MonoBehaviour
                 case MultiPossibleRequest.MultiSceneObjects:
                     MultiSceneObjects multiSceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.Request);
 
-                    //store the new synced objects total
-                    syncedObjectsTotal = multiSceneObjects.syncedObjectsTotal;
 
                     //queue the scene change
                     actions.Enqueue(() => ChangeScene(multiSceneObjects.sceneName));
                     currentScene = multiSceneObjects.sceneName;
 
-                    //queue spawning the objects
-                    foreach (int key in multiSceneObjects.syncedObjects.Keys)
+                    //clear the old synced objects dict and destroy the old synced objects
+                    foreach (int key in syncedObjects.Keys)
                     {
-                        actions.Enqueue(() => SpawnObjectWithoutSetup(multiSceneObjects.syncedObjects[key], key));
+                        actions.Enqueue(() => Destroy(syncedObjects[key].gameObject));
+                        syncedObjects.Remove(key);
                     }
+
+                    //queue spawning the new objects
+                    Dictionary<int, int> newSyncedObjects = multiSceneObjects.syncedObjDict();
+                    foreach (int key in newSyncedObjects.Keys)
+                    {
+                        actions.Enqueue(() => syncedObjects.Add(key, SpawnObjectWithoutSetup(newSyncedObjects[key], key).GetComponent<MultiSyncedObject>()));
+                    }
+
+                    //reset the synced objects total, it'll get fixed by spawning the objects
+                    syncedObjectsTotal = 0;
 
                     break;
             }
@@ -300,20 +331,18 @@ public class MultiClient : MonoBehaviour
         GameObject vr = GameObject.FindGameObjectWithTag("VRHead");
     }
 
-    private IEnumerator ChangeScene(string sceneName)
+    public void ChangeScene(string sceneName)
     {
         //change the scene
         SceneManager.LoadScene(sceneName);
-        //wait for two frames or so
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
 
-        //get all of the synced objects that should be in the scene and spawn them in
-        SceneSyncedObjectList sceneSyncedObjectList = GameObject.FindObjectOfType<SceneSyncedObjectList>();
-        sceneSyncedObjects = new SerializableDictionary<int, MultiSyncedObject>();
-        foreach (GameObject g in sceneSyncedObjectList.sceneSyncedObjects)
+        //only order a scene change if we're host
+        if (hostAuthority)
         {
-            Instantiate(g);
+            //send a change scene request
+            MultiChangeSceneRequest sceneRequest = new MultiChangeSceneRequest("ExperimentSelector");
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, JsonUtility.ToJson(sceneRequest));
+
         }
     }
 }

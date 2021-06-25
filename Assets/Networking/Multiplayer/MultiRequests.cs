@@ -58,13 +58,18 @@ public struct MultiSyncRequest
     public int ID;
     //serialized transform
     [SerializeField]
-    public string transform;
+    public List<SerializableTransform> transforms;
 
     //construct a sync request
-    public MultiSyncRequest(int _id, Transform _transform)
+    public MultiSyncRequest(int _id, Transform[] _transforms)
     {
         ID = _id;
-        transform = JsonUtility.ToJson(new SerializableTransform(_transform));
+        transforms = new List<SerializableTransform>();
+
+        foreach (Transform T in _transforms)
+        {
+            transforms.Add(new SerializableTransform(T));
+        }
     }
 }
 
@@ -80,25 +85,6 @@ public struct MultiChangeSceneRequest
     public MultiChangeSceneRequest(string _name)
     {
         Name = _name;
-    }
-}
-
-//request to sync a scene object
-[Serializable]
-public struct MultiSceneSyncRequest
-{
-    //id of object to sync
-    [SerializeField]
-    public int ID;
-    //serialized transform
-    [SerializeField]
-    public string transform;
-
-    //construct a scene sync request
-    public MultiSceneSyncRequest(int _id, Transform _transform)
-    {
-        ID = _id;
-        transform = JsonUtility.ToJson(new SerializableTransform(_transform));
     }
 }
 
@@ -122,7 +108,9 @@ public struct MultiSceneObjects
 {
     //dict of synced object ids with their prefab indexes
     [SerializeField]
-    public Dictionary<int, int> syncedObjects;
+    public int[] syncedObjectIndices;
+    [SerializeField]
+    public int[] syncedObjectKeys;
 
     //current scene name
     [SerializeField]
@@ -139,9 +127,22 @@ public struct MultiSceneObjects
     //construct a scene objects request
     public MultiSceneObjects(Dictionary<int, int> _syncedObjects, string _sceneName, int _syncedObjectsTotal, int _threadN)
     {
-        syncedObjects = _syncedObjects;
+        syncedObjectKeys = new int[_syncedObjects.Count];
+        syncedObjectIndices = new int[_syncedObjects.Count];
+        _syncedObjects.Keys.CopyTo(syncedObjectKeys, 0);
+        _syncedObjects.Values.CopyTo(syncedObjectIndices, 0);
         sceneName = _sceneName;
         syncedObjectsTotal = _syncedObjectsTotal;
         threadN = _threadN;
+    }
+
+    public Dictionary<int, int> syncedObjDict()
+    {
+        Dictionary<int, int> retVal = new Dictionary<int, int>();
+        for (int i = 0; i < syncedObjectKeys.Length; i++)
+        {
+            retVal.Add(syncedObjectKeys[i], syncedObjectIndices[i]);
+        }
+        return retVal;
     }
 }

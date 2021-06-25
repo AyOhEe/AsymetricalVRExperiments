@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1322113365173761694}
   - component: {fileID: 1322113365173761689}
   - component: {fileID: 1322113365173761688}
-  - component: {fileID: 1322113365173761682}
+  - component: {fileID: 2156554278170999401}
   m_Layer: 0
   m_Name: TriggerElevator
   m_TagString: Ground
@@ -128,8 +128,8 @@ MonoBehaviour:
   overIterations: 400
   interpolationPoint: 0
   onElevator: []
-  syncedObject: {fileID: 1322113365173761682}
---- !u!114 &1322113365173761682
+  syncedObject: {fileID: 2156554278170999401}
+--- !u!114 &2156554278170999401
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,13 +138,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1322113365173761691}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb02ab70a3f9e5a49ba48b842f9193df, type: 3}
+  m_Script: {fileID: 11500000, guid: dbb25dd068408b347b8b09d3391b9903, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
+  doSyncedObjectsDictSetup: 0
+  syncedTransforms:
+  - {fileID: 1322113365173761693}
   ID: 0
+  index: 0
   client: {fileID: 0}
-  server: {fileID: 0}
   localOwned: 0
   parent: {fileID: 0}
-  localWhenXPresent: 3

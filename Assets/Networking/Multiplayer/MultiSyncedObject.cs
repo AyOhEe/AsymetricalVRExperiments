@@ -9,6 +9,10 @@ public class MultiSyncedObject : MonoBehaviour
     public float syncInterval = 1.0f;
     //do we do the synced object dict setup: MultiSyncedObject.cs:Awake
     public bool doSyncedObjectsDictSetup = true;
+
+    //all of the transforms we need to sync
+    public Transform[] syncedTransforms = new Transform[0];
+
     //id
     public int ID;
     //index of the prefab
@@ -24,7 +28,7 @@ public class MultiSyncedObject : MonoBehaviour
     public delegate void SendMessageToOtherDelegate(string _message);
     public event SendMessageToOtherDelegate SendMessageToOther;
 
-    public void Awake()
+    public void Start()
     {
         //get the gameServer/Client
         GameObject gameClient = GameObject.FindWithTag("GameClient");
@@ -38,20 +42,16 @@ public class MultiSyncedObject : MonoBehaviour
         {
             ID = client.syncedObjectsTotal;
             client.syncedObjects.Add(client.syncedObjectsTotal, this);
-            client.syncedObjectsTotal++;
         }
 
-        //start syncing the object every syncInterval seconds
-        SyncObject();
-    }
-
-    public void Start()
-    {
         //if the parent is locally owned, so are we
         if (parent)
         {
             localOwned = localOwned | parent.GetComponent<MultiSyncedObject>().localOwned;
         }
+
+        //start syncing the object every syncInterval seconds
+        SyncObject();
     }
 
     //sends a sync message
@@ -60,8 +60,8 @@ public class MultiSyncedObject : MonoBehaviour
         //only sync to this instance of the object if it's locally owned
         if (localOwned)
         {
-            //crete sync and base requests
-            MultiSyncRequest syncRequest = new MultiSyncRequest(ID, transform);
+            //create sync and base requests
+            MultiSyncRequest syncRequest = new MultiSyncRequest(ID, syncedTransforms);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncObject, JsonUtility.ToJson(syncRequest));
             //send the message away
             SendMessageToOther(JsonUtility.ToJson(baseRequest));
@@ -70,6 +70,17 @@ public class MultiSyncedObject : MonoBehaviour
 
         //sync again after syncInterval seconds
         Invoke("SyncObject", syncInterval);
+    }
+
+    //syncs all of the synced transforms in transforms to the request
+    public void HandleSyncRequest(MultiSyncRequest request)
+    {
+        //iterate through the transforms in the request
+        for (int i = 0; i < request.transforms.Count; i++)
+        {
+            //copy the transforms from the request to the objects
+            request.transforms[i].CopyToTransform(syncedTransforms[i]);
+        }
     }
 
     //called when a message is received on either the game client or game server, whichever is present

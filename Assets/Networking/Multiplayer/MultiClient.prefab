@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3282553153062857306}
   m_Layer: 0
   m_Name: MultiClient
-  m_TagString: Untagged
+  m_TagString: GameClient
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,6 +44,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConnectionIP: 
+  syncedObjectsList:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   syncedObjectsTotal: 0
   spawnableObjects: []
   possibleScenes: []

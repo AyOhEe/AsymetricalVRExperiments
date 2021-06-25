@@ -107,9 +107,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8319322476640392901}
-  - component: {fileID: 5026454104388667393}
   - component: {fileID: -2972889337891402068}
   - component: {fileID: 8094067873123433379}
+  - component: {fileID: 5062948309360485106}
   m_Layer: 0
   m_Name: VR-Player
   m_TagString: Untagged
@@ -135,24 +135,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5026454104388667393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1006868883727806159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca214b2c508371a44bae2ad451f0e006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 1
-  ID: 0
-  client: {fileID: 0}
-  server: {fileID: 0}
-  localOwned: 0
-  parent: {fileID: 0}
 --- !u!114 &-2972889337891402068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +160,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraRig: {fileID: 1869203802204221052}
+--- !u!114 &5062948309360485106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006868883727806159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2974b20e81b34da43a927b2487d6e3c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
+  doSyncedObjectsDictSetup: 1
+  syncedTransforms:
+  - {fileID: 7408087449779402897}
+  - {fileID: 7194257431609180991}
+  - {fileID: 1935004164917448635}
+  ID: 0
+  index: 1
+  client: {fileID: 0}
+  localOwned: 0
+  parent: {fileID: 0}
 --- !u!1 &1869203802204221052
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,6 +193,7 @@ GameObject:
   m_Component:
   - component: {fileID: 359204652213439332}
   - component: {fileID: 8953893372337720751}
+  - component: {fileID: 3744305775467307903}
   - component: {fileID: 8342408404205569929}
   - component: {fileID: 4014550976944367867}
   m_Layer: 0
@@ -196,7 +202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &359204652213439332
 Transform:
   m_ObjectHideFlags: 0
@@ -253,6 +259,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3744305775467307903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869203802204221052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ec07b353eeb73b41bd8ed57e9729332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monoBehaviours: []
+  syncedObject: {fileID: 0}
 --- !u!33 &8342408404205569929
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -430,7 +450,6 @@ GameObject:
   - component: {fileID: 7602198333460817680}
   - component: {fileID: 4153294115185910955}
   - component: {fileID: 8462871640125068914}
-  - component: {fileID: 240731637561571803}
   - component: {fileID: 8889964520339072254}
   - component: {fileID: 2331591066402004334}
   m_Layer: 0
@@ -515,24 +534,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &240731637561571803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4152247773379289681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca214b2c508371a44bae2ad451f0e006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  ID: 0
-  client: {fileID: 0}
-  server: {fileID: 0}
-  localOwned: 0
-  parent: {fileID: 1006868883727806159}
 --- !u!114 &8889964520339072254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,7 +547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mTag: CamRigHead
-  syncedObject: {fileID: 240731637561571803}
+  syncedObject: {fileID: 5062948309360485106}
   toMimic: {fileID: 0}
 --- !u!54 &2331591066402004334
 Rigidbody:
@@ -576,7 +577,6 @@ GameObject:
   - component: {fileID: 1625021701749309965}
   - component: {fileID: 2235006595888050188}
   - component: {fileID: 3825998932124651653}
-  - component: {fileID: 4745923958357258006}
   - component: {fileID: 351459918219976335}
   - component: {fileID: 2778384266351821958}
   m_Layer: 0
@@ -660,24 +660,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4745923958357258006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4577917409009572639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca214b2c508371a44bae2ad451f0e006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  ID: 0
-  client: {fileID: 0}
-  server: {fileID: 0}
-  localOwned: 0
-  parent: {fileID: 1006868883727806159}
 --- !u!114 &351459918219976335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -691,7 +673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mTag: CamRigLeftHand
-  syncedObject: {fileID: 4745923958357258006}
+  syncedObject: {fileID: 5062948309360485106}
   toMimic: {fileID: 0}
 --- !u!54 &2778384266351821958
 Rigidbody:
@@ -817,7 +799,6 @@ GameObject:
   - component: {fileID: 4866206421366614118}
   - component: {fileID: 8357582540056114009}
   - component: {fileID: 3702185501795015435}
-  - component: {fileID: 6679031394292717726}
   - component: {fileID: 3556399008553665709}
   - component: {fileID: 3688540356647921884}
   m_Layer: 0
@@ -901,24 +882,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6679031394292717726
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6698532798915715648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca214b2c508371a44bae2ad451f0e006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  ID: 0
-  client: {fileID: 0}
-  server: {fileID: 0}
-  localOwned: 0
-  parent: {fileID: 1006868883727806159}
 --- !u!114 &3556399008553665709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -932,7 +895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mTag: CamRigRightHand
-  syncedObject: {fileID: 6679031394292717726}
+  syncedObject: {fileID: 5062948309360485106}
   toMimic: {fileID: 0}
 --- !u!54 &3688540356647921884
 Rigidbody:

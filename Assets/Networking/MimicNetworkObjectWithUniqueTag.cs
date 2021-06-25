@@ -8,7 +8,7 @@ public class MimicNetworkObjectWithUniqueTag : MonoBehaviour
     public string mTag;
 
     //the synced object on this object
-    public SyncedObject syncedObject;
+    public MultiSyncedObject syncedObject;
 
     public GameObject toMimic;
 

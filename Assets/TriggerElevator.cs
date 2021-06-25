@@ -21,7 +21,7 @@ public class TriggerElevator : MonoBehaviour
     public List<Transform> onElevator = new List<Transform>();
 
     //the scene synced object belonging to this object
-    public SceneSyncedObject syncedObject;
+    public MultiSceneSyncedObject syncedObject;
 
     private void Update()
     {

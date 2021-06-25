@@ -5,7 +5,7 @@ using UnityEngine;
 public class DeactivateIfNotLocal : MonoBehaviour
 {
     public List<MonoBehaviour> monoBehaviours = new List<MonoBehaviour>();
-    public SyncedObject syncedObject;
+    public MultiSyncedObject syncedObject;
 
     private void Start()
     {
