@@ -24,7 +24,7 @@ public class MultiNetworkHandler : MonoBehaviour
     public List<GameObject> spawnableObjects;
     //list of loadable scenese
     public List<Scene> loadableScenes;
-
+ 
     //updates the ip to the value in IPInput
     public void UpdateIP()
     {
@@ -39,10 +39,10 @@ public class MultiNetworkHandler : MonoBehaviour
 
     public void Connect()
     {
-        StartCoroutine(_Connect());
+        _Connect();
     }
 
-    private IEnumerator _Connect()
+    private MultiClient _Connect()
     {
         Debug.Log("Connecting " + inputMethod.ToString() + " at " + IP);
         //make client and connect
@@ -56,10 +56,6 @@ public class MultiNetworkHandler : MonoBehaviour
 
         //keep client between scenes
         DontDestroyOnLoad(client);
-        
-        yield return new WaitForSeconds(1);
-        multiClient.LocalSpawnObject((int)inputMethod);
-        multiClient.ChangeScene("ExperimentSelector");
 
         if(inputMethod == InputMethod.VR)
         {
@@ -68,6 +64,7 @@ public class MultiNetworkHandler : MonoBehaviour
             UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
             Valve.VR.SteamVR.Initialize(true);
         }
+        return multiClient;
     }
 
     public void Host()
@@ -82,7 +79,7 @@ public class MultiNetworkHandler : MonoBehaviour
         server.GetComponent<MultiServer>().IPString = IP;
         server.GetComponent<MultiServer>().StartServer();
         yield return new WaitForSeconds(1);
-        Connect();
+        _Connect().ChangeScene("ExperimentSelector");
         DontDestroyOnLoad(server);
     }
 

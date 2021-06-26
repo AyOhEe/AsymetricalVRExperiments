@@ -76,10 +76,10 @@ public class MultiSyncedObject : MonoBehaviour
     public void HandleSyncRequest(MultiSyncRequest request)
     {
         //iterate through the transforms in the request
-        for (int i = 0; i < request.transforms.Count; i++)
+        for (int i = 0; i < request.tfs.Count; i++)
         {
             //copy the transforms from the request to the objects
-            request.transforms[i].CopyToTransform(syncedTransforms[i]);
+            request.tfs[i].CopyToTransform(syncedTransforms[i]);
         }
     }
 
@@ -87,5 +87,17 @@ public class MultiSyncedObject : MonoBehaviour
     public void MessageReceived(string _message)
     {
 
+    }
+
+    public void OnDestroy()
+    {
+        Debug.Log(String.Format("{0} Destroyed!", gameObject.name));
+        //if we're locally owned, send a destroy object request
+        if (localOwned)
+        {
+            MultiDespawnObject destroyObject = new MultiDespawnObject(ID);
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiDespawnObject, JsonUtility.ToJson(destroyObject));
+            SendMessageToOther(JsonUtility.ToJson(baseRequest));
+        }
     }
 }

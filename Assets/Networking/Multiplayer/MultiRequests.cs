@@ -12,7 +12,8 @@ public enum MultiPossibleRequest
     MultiSceneSyncObject,
     MultiHostAuthChange,
     MultiNewConnection,
-    MultiSceneObjects
+    MultiSceneObjects,
+    MultiDespawnObject
 }
 
 //surface of mosts requests, contains type of request and request
@@ -21,16 +22,16 @@ public struct MultiBaseRequest
 {
     //type of request
     [SerializeField]
-    public int RequestType;
+    public int RT;
     //request
     [SerializeField]
-    public string Request;
+    public string R;
 
     //construct a request
     public MultiBaseRequest(MultiPossibleRequest _requestType, string _request)
     {
-        RequestType = (int)_requestType;
-        Request = _request;
+        RT = (int)_requestType;
+        R = _request;
     }
 }
 
@@ -40,12 +41,12 @@ public struct MultiSpawnRequest
 {
     //index of object to spawn in spawnable objects
     [SerializeField]
-    public int Index;
+    public int I;
 
     //construct a new spawn request
     public MultiSpawnRequest(int _index)
     {
-        Index = _index;
+        I = _index;
     }
 }
 
@@ -58,17 +59,17 @@ public struct MultiSyncRequest
     public int ID;
     //serialized transform
     [SerializeField]
-    public List<SerializableTransform> transforms;
+    public List<SerializableTransform> tfs;
 
     //construct a sync request
     public MultiSyncRequest(int _id, Transform[] _transforms)
     {
         ID = _id;
-        transforms = new List<SerializableTransform>();
+        tfs = new List<SerializableTransform>();
 
         foreach (Transform T in _transforms)
         {
-            transforms.Add(new SerializableTransform(T));
+            tfs.Add(new SerializableTransform(T));
         }
     }
 }
@@ -79,12 +80,12 @@ public struct MultiChangeSceneRequest
 {
     //index of the scene to change to
     [SerializeField]
-    public string Name;
+    public string N;
 
     //construct a new scene change request
     public MultiChangeSceneRequest(string _name)
     {
-        Name = _name;
+        N = _name;
     }
 }
 
@@ -94,11 +95,11 @@ public struct MultiNewConnection
 {
     //the connection requesting this
     [SerializeField]
-    public int threadN;
+    public int tN;
 
     public MultiNewConnection(int _threadN)
     {
-        threadN = _threadN;
+        tN = _threadN;
     }
 }
 
@@ -108,41 +109,55 @@ public struct MultiSceneObjects
 {
     //dict of synced object ids with their prefab indexes
     [SerializeField]
-    public int[] syncedObjectIndices;
+    public int[] sOI;
     [SerializeField]
-    public int[] syncedObjectKeys;
+    public int[] sOK;
 
     //current scene name
     [SerializeField]
-    public string sceneName;
+    public string sN;
 
     //total number of scene objects
     [SerializeField]
-    public int syncedObjectsTotal;
+    public int sOT;
 
     //the thread that requested this
     [SerializeField]
-    public int threadN;
+    public int tN;
 
     //construct a scene objects request
     public MultiSceneObjects(Dictionary<int, int> _syncedObjects, string _sceneName, int _syncedObjectsTotal, int _threadN)
     {
-        syncedObjectKeys = new int[_syncedObjects.Count];
-        syncedObjectIndices = new int[_syncedObjects.Count];
-        _syncedObjects.Keys.CopyTo(syncedObjectKeys, 0);
-        _syncedObjects.Values.CopyTo(syncedObjectIndices, 0);
-        sceneName = _sceneName;
-        syncedObjectsTotal = _syncedObjectsTotal;
-        threadN = _threadN;
+        sOK = new int[_syncedObjects.Count];
+        sOI = new int[_syncedObjects.Count];
+        _syncedObjects.Keys.CopyTo(sOK, 0);
+        _syncedObjects.Values.CopyTo(sOI, 0);
+        sN = _sceneName;
+        sOT = _syncedObjectsTotal;
+        tN = _threadN;
     }
 
     public Dictionary<int, int> syncedObjDict()
     {
         Dictionary<int, int> retVal = new Dictionary<int, int>();
-        for (int i = 0; i < syncedObjectKeys.Length; i++)
+        for (int i = 0; i < sOK.Length; i++)
         {
-            retVal.Add(syncedObjectKeys[i], syncedObjectIndices[i]);
+            retVal.Add(sOK[i], sOI[i]);
         }
         return retVal;
+    }
+}
+
+//sent when an object is destroyed
+[Serializable]
+public struct MultiDespawnObject
+{
+    //ID of the object to be despawned
+    [SerializeField]
+    public int ID;
+
+    public MultiDespawnObject(int _id)
+    {
+        ID = _id;
     }
 }

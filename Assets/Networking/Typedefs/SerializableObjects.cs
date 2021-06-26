@@ -9,36 +9,29 @@ public struct SerializableTransform
 {
     //the transform's position
     [SerializeField]
-    public Vector3 position;
+    public Vector3 p;
     //the transform's rotation
     [SerializeField]
-    public Quaternion rotation;
+    public Quaternion r;
     //the transform's scale
     [SerializeField]
-    public Vector3 scale;
+    public Vector3 s;
 
     //creates a serializable transform based on _transform
     public SerializableTransform(Transform _transform)
     {
         //copy over all attributes
-        position = _transform.localPosition;
-        rotation = _transform.localRotation;
-        scale = _transform.localScale;
+        p = _transform.localPosition;
+        r = _transform.localRotation;
+        s = _transform.localScale;
     }
 
     //copies the position, rotation and scale of this transform to the reference transform
     public void CopyToTransform(Transform transform)
     {
         //copy over all attributes
-        transform.localPosition = position;
-        transform.localRotation = rotation;
-        transform.localScale = scale;
-    }
-}
-
-public class SerializableObjects : MonoBehaviour
-{
-    private void Start()
-    {
+        transform.localPosition = p;
+        transform.localRotation = r;
+        transform.localScale = s;
     }
 }

@@ -2086,6 +2086,23 @@ PrefabInstance:
       propertyPath: VrScale.z
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 6534320007013080839, guid: e4c787badd3cf0548a8c2421b3912ae7,
+        type: 3}
+      propertyPath: playerPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6534320007013080839, guid: e4c787badd3cf0548a8c2421b3912ae7,
+        type: 3}
+      propertyPath: playerPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 1006868883727806159, guid: e08d3a6610b239e42855d94d77b8d0f1,
+        type: 3}
+    - target: {fileID: 6534320007013080839, guid: e4c787badd3cf0548a8c2421b3912ae7,
+        type: 3}
+      propertyPath: playerPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 2252660307449281911, guid: 4cef2776ae010204582b9112e87b8fbe,
+        type: 3}
     - target: {fileID: 8201348809055248259, guid: e4c787badd3cf0548a8c2421b3912ae7,
         type: 3}
       propertyPath: m_RootOrder

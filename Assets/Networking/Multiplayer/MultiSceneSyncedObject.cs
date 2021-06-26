@@ -9,7 +9,7 @@ public class MultiSceneSyncedObject : MultiSyncedObject
     public new delegate void SendMessageToOtherDelegate(string _message);
     public new event SendMessageToOtherDelegate SendMessageToOther;
 
-    private new void Awake()
+    private new void Start()
     {
         //get the gameServer/Client
         GameObject gameClient = GameObject.FindWithTag("GameClient");
@@ -50,7 +50,7 @@ public class MultiSceneSyncedObject : MultiSyncedObject
     public new void MessageReceived(string _message)
     {
         //check if it's a host auth change, otherwise we don't care
-        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RequestType == MultiPossibleRequest.MultiHostAuthChange)
+        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiHostAuthChange)
         {
             //it was, we're locally owned now
             localOwned = true;

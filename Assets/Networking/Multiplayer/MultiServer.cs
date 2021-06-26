@@ -164,12 +164,12 @@ public class MultiServer : MonoBehaviour
         Debug.Log(String.Format("<<<Thread {0}>>>: Recieved \"{1}\"", clientID, _message));
 
         //test if we've recieved a sceneObjects request
-        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RequestType == MultiPossibleRequest.MultiSceneObjects)
+        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiSceneObjects)
         {
             //we have, relay it to the thread requesting it(the most recent connection)
             MultiBaseRequest baseRequest = JsonUtility.FromJson<MultiBaseRequest>(_message);
-            MultiSceneObjects sceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.Request);
-            SendMessageToClient(_message, sceneObjects.threadN);
+            MultiSceneObjects sceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.R);
+            SendMessageToClient(_message, sceneObjects.tN);
             return;
         }
         //relay the message to all other clients

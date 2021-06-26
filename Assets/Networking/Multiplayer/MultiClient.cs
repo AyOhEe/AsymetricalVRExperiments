@@ -102,6 +102,8 @@ public class MultiClient : MonoBehaviour
             }
         }
 
+        syncedObjects.Add(ID, syncedObject.GetComponent<MultiSyncedObject>());
+
         return instance;
     }
 
@@ -197,19 +199,19 @@ public class MultiClient : MonoBehaviour
         {
             //get the base request object
             MultiBaseRequest baseRequest = JsonUtility.FromJson<MultiBaseRequest>(_message);
-            switch ((MultiPossibleRequest)baseRequest.RequestType)
+            switch ((MultiPossibleRequest)baseRequest.RT)
             {
                 //the server would like to spawn an object
                 case MultiPossibleRequest.MultiSpawnObject:
-                    MultiSpawnRequest multiSpawnRequest = JsonUtility.FromJson<MultiSpawnRequest>(baseRequest.Request);
+                    MultiSpawnRequest multiSpawnRequest = JsonUtility.FromJson<MultiSpawnRequest>(baseRequest.R);
 
                     //queue spawning the object
-                    actions.Enqueue(() => SpawnObject(multiSpawnRequest.Index));
+                    actions.Enqueue(() => SpawnObject(multiSpawnRequest.I));
                     break;
 
                 //the server would like to sync an object
                 case MultiPossibleRequest.MultiSyncObject:
-                    MultiSyncRequest multiSyncRequest = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.Request);
+                    MultiSyncRequest multiSyncRequest = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.R);
 
                     //queue the synced object handle
                     actions.Enqueue(() => syncedObjects[multiSyncRequest.ID].HandleSyncRequest(multiSyncRequest));
@@ -217,16 +219,16 @@ public class MultiClient : MonoBehaviour
 
                 //the server would like to change scenes
                 case MultiPossibleRequest.MultiChangeScene:
-                    MultiChangeSceneRequest multiChangeScene = JsonUtility.FromJson<MultiChangeSceneRequest>(baseRequest.Request);
+                    MultiChangeSceneRequest multiChangeScene = JsonUtility.FromJson<MultiChangeSceneRequest>(baseRequest.R);
 
                     //queue the scene change
-                    actions.Enqueue(() => ChangeScene(multiChangeScene.Name));
-                    currentScene = multiChangeScene.Name;
+                    actions.Enqueue(() => ChangeScene(multiChangeScene.N));
+                    currentScene = multiChangeScene.N;
                     break;
 
                 //the server would like to sync a scene object
                 case MultiPossibleRequest.MultiSceneSyncObject:
-                    MultiSyncRequest multiSceneSync = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.Request);
+                    MultiSyncRequest multiSceneSync = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.R);
                     
                     //queue the synced object handle
                     actions.Enqueue(() => sceneSyncedObjects[multiSceneSync.ID].HandleSyncRequest(multiSceneSync));
@@ -239,7 +241,7 @@ public class MultiClient : MonoBehaviour
 
                 //there's new connection to the game, send a dict of id's and indexes
                 case MultiPossibleRequest.MultiNewConnection:
-                    MultiNewConnection newConnection = JsonUtility.FromJson<MultiNewConnection>(baseRequest.Request);
+                    MultiNewConnection newConnection = JsonUtility.FromJson<MultiNewConnection>(baseRequest.R);
                     //dictionary of the sceneobjects with non negative indices(root objects)
                     Dictionary<int, int> idIndexes = new Dictionary<int, int>();
                     foreach (int key in syncedObjects.Keys)
@@ -248,7 +250,7 @@ public class MultiClient : MonoBehaviour
                     }
 
                     //Send the request
-                    MultiSceneObjects sceneObjects = new MultiSceneObjects(idIndexes, currentScene, syncedObjectsTotal, newConnection.threadN);
+                    MultiSceneObjects sceneObjects = new MultiSceneObjects(idIndexes, currentScene, syncedObjectsTotal, newConnection.tN);
                     MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiSceneObjects, JsonUtility.ToJson(sceneObjects));
                     SendMessageToServer(JsonUtility.ToJson(request));
 
@@ -256,36 +258,25 @@ public class MultiClient : MonoBehaviour
 
                 //we've recieved a list of scene objects. deal with it
                 case MultiPossibleRequest.MultiSceneObjects:
-                    MultiSceneObjects multiSceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.Request);
+                    MultiSceneObjects multiSceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.R);
 
+                    actions.Enqueue(() => StartCoroutine(HandleMultiSceneObjects(multiSceneObjects)));
 
-                    //queue the scene change
-                    actions.Enqueue(() => ChangeScene(multiSceneObjects.sceneName));
-                    currentScene = multiSceneObjects.sceneName;
+                    break;
 
-                    //clear the old synced objects dict and destroy the old synced objects
-                    foreach (int key in syncedObjects.Keys)
-                    {
-                        actions.Enqueue(() => Destroy(syncedObjects[key].gameObject));
-                        syncedObjects.Remove(key);
-                    }
+                //the server would like us to despawn an object
+                case MultiPossibleRequest.MultiDespawnObject:
+                    MultiDespawnObject despawnObject = JsonUtility.FromJson<MultiDespawnObject>(baseRequest.R);
 
-                    //queue spawning the new objects
-                    Dictionary<int, int> newSyncedObjects = multiSceneObjects.syncedObjDict();
-                    foreach (int key in newSyncedObjects.Keys)
-                    {
-                        actions.Enqueue(() => syncedObjects.Add(key, SpawnObjectWithoutSetup(newSyncedObjects[key], key).GetComponent<MultiSyncedObject>()));
-                    }
-
-                    //reset the synced objects total, it'll get fixed by spawning the objects
-                    syncedObjectsTotal = 0;
-
+                    //destroy the object
+                    Debug.Log(String.Format("MultiClient.cs:291 Destroying {0}", syncedObjects[despawnObject.ID].gameObject.name));
+                    actions.Enqueue(() => Destroy(syncedObjects[despawnObject.ID].gameObject));
                     break;
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("\"" + _message + "\" Gave Exception: " + ex.ToString());
+            Debug.LogError(ex);
         }
     }
     private void Start()
@@ -331,16 +322,44 @@ public class MultiClient : MonoBehaviour
         GameObject vr = GameObject.FindGameObjectWithTag("VRHead");
     }
 
+    private IEnumerator HandleMultiSceneObjects(MultiSceneObjects multiSceneObjects)
+    {
+        //clear the old synced objects dict and destroy the old synced objects
+        foreach (int key in syncedObjects.Keys)
+        {
+            Debug.Log(String.Format("MultiClient.cs:269 Destroying {0}", syncedObjects[key].gameObject.name));
+            Destroy(syncedObjects[key].gameObject);
+            syncedObjects.Remove(key);
+        }
+
+        //queue the scene change
+        SceneManager.LoadScene("ExperimentSelector");
+        currentScene = multiSceneObjects.sN;
+
+        yield return new WaitForSeconds(0.5f);
+
+        //queue spawning the new objects
+        Dictionary<int, int> newSyncedObjects = multiSceneObjects.syncedObjDict();
+        foreach (int key in newSyncedObjects.Keys)
+        {
+            SpawnObjectWithoutSetup(newSyncedObjects[key], key);
+        }
+
+        //reset the synced objects total, it'll get fixed by spawning the objects
+        syncedObjectsTotal = 0;
+    }
+
     public void ChangeScene(string sceneName)
     {
         //change the scene
-        SceneManager.LoadScene(sceneName);
+        actions.Enqueue(() => SceneManager.LoadScene(sceneName));
+        currentScene = sceneName;
 
         //only order a scene change if we're host
         if (hostAuthority)
         {
             //send a change scene request
-            MultiChangeSceneRequest sceneRequest = new MultiChangeSceneRequest("ExperimentSelector");
+            MultiChangeSceneRequest sceneRequest = new MultiChangeSceneRequest(currentScene);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, JsonUtility.ToJson(sceneRequest));
 
         }

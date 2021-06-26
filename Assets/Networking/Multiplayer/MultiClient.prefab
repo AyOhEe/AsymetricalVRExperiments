@@ -61,4 +61,4 @@ MonoBehaviour:
   inputMethod: 0
   playerSpawned: 0
   hostAuthority: 0
-  currentScene: 
+  currentScene: ExperimentSelector

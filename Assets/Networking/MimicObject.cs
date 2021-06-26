@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MimicNetworkObjectWithUniqueTag : MonoBehaviour
+public class MimicObject : MonoBehaviour
 {
     //tag of object to mimic
     public string mTag;
