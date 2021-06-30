@@ -20,17 +20,10 @@ public class TriggerElevator : MonoBehaviour
     //list of transforms on the elevator
     public List<Transform> onElevator = new List<Transform>();
 
-    //the scene synced object belonging to this object
-    public MultiSceneSyncedObject syncedObject;
-
     private void Update()
     {
-        //only move if we're locally owned(move objects ontop regardless) as the synced object will handle that for us
-        if (syncedObject.localOwned)
-        {
-            //set the position of the transform to where 
-            transform.position = Vector3.Lerp(initialPosition, finalPosition, interpolationPoint / overIterations);
-        }
+        //set the position of the transform to where 
+        transform.position = Vector3.Lerp(initialPosition, finalPosition, interpolationPoint / overIterations);
 
         //iterate through all of the transforms on the elevator
         foreach (Transform t in onElevator)
@@ -74,31 +67,24 @@ public class TriggerElevator : MonoBehaviour
     //start 'moving' the elevator from its starting point to it's ending point
     private IEnumerator InitialToFinal()
     {
-        //only run if we're locally owned
-        if (syncedObject.localOwned)
+        //deal with elevator stuff
+        for (int i = 0; i < overIterations; i++)
         {
-            //deal with elevator stuff
-            for (int i = 0; i < overIterations; i++)
-            {
-                yield return new WaitForSecondsRealtime(overTime / overIterations);
-                Debug.Log("initialtofinal increment");
-                interpolationPoint++;
-            }
+            yield return new WaitForSecondsRealtime((overTime / overIterations));
+            Debug.Log("initialtofinal increment");
+            interpolationPoint++;
         }
+        
     }
 
     //start 'moving' the elevator from its ending point to it's starting point
     private IEnumerator FinalToInitial()
     {
-        //only run if we're locally owned
-        if (syncedObject.localOwned)
+        for (int i = 0; i < overIterations; i++)
         {
-            for (int i = 0; i < overIterations; i++)
-            {
-                yield return new WaitForSecondsRealtime(overTime / overIterations);
-                Debug.Log("initialtofinal increment");
-                interpolationPoint--;
-            }
+            yield return new WaitForSecondsRealtime((overTime / overIterations));
+            Debug.Log("initialtofinal increment");
+            interpolationPoint--;
         }
     }
 }

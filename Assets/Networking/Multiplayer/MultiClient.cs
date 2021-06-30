@@ -222,7 +222,7 @@ public class MultiClient : MonoBehaviour
                     MultiChangeSceneRequest multiChangeScene = JsonUtility.FromJson<MultiChangeSceneRequest>(baseRequest.R);
 
                     //queue the scene change
-                    actions.Enqueue(() => ChangeScene(multiChangeScene.N));
+                    actions.Enqueue(() => SceneManager.LoadScene(multiChangeScene.N));
                     currentScene = multiChangeScene.N;
                     break;
 
@@ -351,13 +351,13 @@ public class MultiClient : MonoBehaviour
 
     public void ChangeScene(string sceneName)
     {
-        //change the scene
-        actions.Enqueue(() => SceneManager.LoadScene(sceneName));
-        currentScene = sceneName;
-
         //only order a scene change if we're host
         if (hostAuthority)
         {
+            //change the scene
+            actions.Enqueue(() => SceneManager.LoadScene(sceneName));
+            currentScene = sceneName;
+
             //send a change scene request
             MultiChangeSceneRequest sceneRequest = new MultiChangeSceneRequest(currentScene);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, JsonUtility.ToJson(sceneRequest));
