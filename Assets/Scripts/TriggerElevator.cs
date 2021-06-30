@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TriggerElevator : MonoBehaviour
@@ -19,21 +20,12 @@ public class TriggerElevator : MonoBehaviour
     private bool initialToFinal, finalToInitial;
 
     //list of transforms on the elevator
-    public List<Transform> onElevator = new List<Transform>();
+    public Dictionary<Transform, Transform> onElevator = new Dictionary<Transform, Transform>();
 
     private void Update()
     {
         //set the position of the transform to where 
         transform.position = Vector3.Lerp(initialPosition, finalPosition, interpolationPoint / overIterations);
-
-        //iterate through all of the transforms on the elevator
-        foreach (Transform t in onElevator)
-        {
-            //move the transform by the same amount the elevator moved this frame
-            t.Translate(transform.position - lastPosition);
-        }
-        //set the last position of the elevator to it's current position, as it will have moved by next frame and will become the last position
-        lastPosition = transform.position;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -54,15 +46,21 @@ public class TriggerElevator : MonoBehaviour
         }
 
         //add the transform to the list of transforms on the elevator, but only if it has a rigidbody
-        if (other.transform.GetComponent<Rigidbody>())
-            onElevator.Add(other.transform);
+        if (other.transform.GetComponent<Rigidbody>() & !(other.transform.CompareTag("VRRightHand") | other.transform.CompareTag("VRLeftHand")))
+        {
+            onElevator.Add(other.transform.parent, other.transform);
+            other.transform.SetParent(transform);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         //if it's a rigidbody, remove it from the list of transforms
-        if (other.transform.GetComponent<Rigidbody>())
-            onElevator.Remove(other.transform);
+        if (other.transform.GetComponent<Rigidbody>() & !(other.transform.CompareTag("VRRightHand") | other.transform.CompareTag("VRLeftHand")))
+        {
+            other.transform.SetParent(onElevator.First(kvp => kvp.Value == other.transform).Key);
+            onElevator.Remove(onElevator.First(kvp => kvp.Value == other.transform).Key);
+        }
     }
 
     private void FixedUpdate()
