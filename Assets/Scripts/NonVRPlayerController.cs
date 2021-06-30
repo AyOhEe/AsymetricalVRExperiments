@@ -38,7 +38,6 @@ public class NonVRPlayerController : MonoBehaviour
     //the synced object for this player
     public MultiSyncedObject syncedObject;
 
-
     //run on the first frame the object is active
     private void Start()
     {
@@ -98,19 +97,43 @@ public class NonVRPlayerController : MonoBehaviour
 
         //has the player been moved this frame?
         bool movedThisFrame = false;
-        //player movement: clamp velocity magnitude, get the movement axis states then add forces accordingly
-        playerRB.velocity = Vector3.ClampMagnitude(new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z), playerSpeedCap)
-            + new Vector3(0, playerRB.velocity.y, 0);
+
+        //calculate force directions
+        Physics.Raycast(transform.position + transform.forward * 0.001f, Vector3.down, out RaycastHit forwardHit);
+        Physics.Raycast(transform.position + transform.right * 0.001f, Vector3.down, out RaycastHit rightHit);
+        Physics.Raycast(transform.position - transform.right * 0.001f, Vector3.down, out RaycastHit leftHit);
+        Physics.Raycast(transform.position - transform.forward * 0.001f, Vector3.down, out RaycastHit backwardHit);
+        Physics.Raycast(transform.position, Vector3.down, out RaycastHit downwardHit);
+        Vector3 leftVector = (leftHit.point - downwardHit.point).normalized;
+        Vector3 rightVector = (rightHit.point - downwardHit.point).normalized;
+        Vector3 forwardVector = (forwardHit.point - downwardHit.point).normalized;
+        Vector3 backwardVector = (backwardHit.point - downwardHit.point).normalized;
+
         if (Input.GetAxis("Horizontal") != 0 | Input.GetAxis("Joystick Horizontal") != 0)
         {
-            playerRB.AddForce(transform.right * playerAccel * Time.deltaTime * (Input.GetAxis("Horizontal") + Input.GetAxis("Joystick Horizontal")));
+            if ((Input.GetAxis("Horizontal") + -Input.GetAxis("Joystick Horizontal")) > 0)
+            {
+                playerRB.AddForce(rightVector * playerAccel * Time.deltaTime * (Input.GetAxis("Horizontal") + Input.GetAxis("Joystick Horizontal")));
+            }
+            else
+            {
+                playerRB.AddForce(-leftVector * playerAccel * Time.deltaTime * (Input.GetAxis("Horizontal") + Input.GetAxis("Joystick Horizontal")));
+            }
             movedThisFrame = true;
         }
         if (Input.GetAxis("Vertical") != 0 | Input.GetAxis("Joystick Vertical") != 0)
         {
-            playerRB.AddForce(transform.forward * playerAccel * Time.deltaTime * (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")));
+            if ((Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")) > 0)
+            {
+                playerRB.AddForce(forwardVector * playerAccel * Time.deltaTime * (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")));
+            }
+            else
+            {
+                playerRB.AddForce(-backwardVector * playerAccel * Time.deltaTime * (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")));
+            }
             movedThisFrame = true;
         }
+        Debug.Log("Horizontal: " + (Input.GetAxis("Horizontal") + -Input.GetAxis("Joystick Horizontal")) + ", Vertical: " + (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")).ToString());
         //jump if we are allowed to and the player wants to
         if (Input.GetAxis("Jump") != 0 & jumpEnabled)
         {
@@ -119,6 +142,10 @@ public class NonVRPlayerController : MonoBehaviour
             //add a vertical force
             playerRB.AddForce(0, playerJumpForce, 0);
         }
+        
+        //player movement: clamp velocity magnitude, get the movement axis states then add forces accordingly
+        playerRB.velocity = Vector3.ClampMagnitude(new Vector3(playerRB.velocity.x, 0, playerRB.velocity.z), playerSpeedCap)
+            + new Vector3(0, playerRB.velocity.y, 0);
 
         //if there was no keys pressed add a (horizontal) counterforce to the velocity
         if (!movedThisFrame)
