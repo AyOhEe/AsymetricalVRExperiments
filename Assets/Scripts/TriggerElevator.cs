@@ -10,12 +10,13 @@ public class TriggerElevator : MonoBehaviour
     public Vector3 finalPosition;
     //the position of the elevator last frame
     public Vector3 lastPosition;
-    //how long should the elevator take 
-    public float overTime;
-    //how many iterations should the elevator take to get there?
+    //how many fixed update cycles should the elevator take 
     public float overIterations;
     //what iteration are we on?
     public float interpolationPoint;
+
+    //is the elevator going from initialToFinal or from finalToInitial?
+    private bool initialToFinal, finalToInitial;
 
     //list of transforms on the elevator
     public List<Transform> onElevator = new List<Transform>();
@@ -45,11 +46,11 @@ public class TriggerElevator : MonoBehaviour
             //is the elevator at the start of it's path?
             if (interpolationPoint == 0)
                 //yeah, so start moving it from the start to the end
-                StartCoroutine(InitialToFinal());
+                initialToFinal = true;
             //how about the end of it's path?
             else if (interpolationPoint == overIterations)
                 //yeah, so start moving it from the end to the start
-                StartCoroutine(FinalToInitial());
+                finalToInitial = true;
         }
 
         //add the transform to the list of transforms on the elevator, but only if it has a rigidbody
@@ -64,27 +65,16 @@ public class TriggerElevator : MonoBehaviour
             onElevator.Remove(other.transform);
     }
 
-    //start 'moving' the elevator from its starting point to it's ending point
-    private IEnumerator InitialToFinal()
+    private void FixedUpdate()
     {
-        //deal with elevator stuff
-        for (int i = 0; i < overIterations; i++)
+        interpolationPoint += initialToFinal ? 1 : (finalToInitial ? -1 : 0);
+        if (interpolationPoint == 0)
         {
-            yield return new WaitForSecondsRealtime((overTime / overIterations));
-            Debug.Log("initialtofinal increment");
-            interpolationPoint++;
+            finalToInitial = false;
         }
-        
-    }
-
-    //start 'moving' the elevator from its ending point to it's starting point
-    private IEnumerator FinalToInitial()
-    {
-        for (int i = 0; i < overIterations; i++)
+        else if (interpolationPoint == overIterations)
         {
-            yield return new WaitForSecondsRealtime((overTime / overIterations));
-            Debug.Log("initialtofinal increment");
-            interpolationPoint--;
+            initialToFinal = false;
         }
     }
 }

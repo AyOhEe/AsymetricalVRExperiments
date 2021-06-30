@@ -39,10 +39,13 @@ public class MultiClient : MonoBehaviour
     public bool playerSpawned;
 
     public bool hostAuthority;
-    public string currentScene = "ExperimentSelector";
+    public string currentScene;
 
     private GameObject lastSOSpawnedWOSetup;
     private int spawnsWithoutInstantiate;
+
+    //queue of objects that need to be locally spawned
+    private Queue<Action> localSpawnActions = new Queue<Action>();
 
     // Update is called once per frame
     void Update()
@@ -65,23 +68,16 @@ public class MultiClient : MonoBehaviour
     //spawns an object in spawnable objects from an id
     public GameObject SpawnObject(int index)
     {
-        //increment the synced objects total
-        syncedObjectsTotal += 1;
-
         //spawn in the new synced object instance
         GameObject instance = Instantiate(spawnableObjects[index]);
         MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
-        //store its index and tell it to do dictionary setup
-        syncedObject.doSyncedObjectsDictSetup = true;
+        //store it's index
         syncedObject.index = index;
         return instance;
     }
     //spawns an object in spawnable objects from an id
     public GameObject SpawnObjectWithoutSetup(int index, int ID)
     {
-        //increment the synced objects total
-        syncedObjectsTotal += 1;
-
         //it's not a child, spawn in a new instance of the synced object
         GameObject instance = Instantiate(spawnableObjects[index]);
         MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
@@ -110,9 +106,6 @@ public class MultiClient : MonoBehaviour
     //spawns a local object
     public GameObject LocalSpawnObject(int index)
     {
-        //increment the total synced objects count
-        syncedObjectsTotal += 1;
-
         //spawn in the new synced object instance
         GameObject instance = Instantiate(spawnableObjects[index]);
         MultiSyncedObject syncedObject = instance.GetComponent<MultiSyncedObject>();
@@ -332,11 +325,12 @@ public class MultiClient : MonoBehaviour
             syncedObjects.Remove(key);
         }
 
-        //queue the scene change
-        SceneManager.LoadScene("ExperimentSelector");
+        //queue the scene change(maybe)
+        if (multiSceneObjects.sN != null)
+            SceneManager.LoadScene(multiSceneObjects.sN);
         currentScene = multiSceneObjects.sN;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         //queue spawning the new objects
         Dictionary<int, int> newSyncedObjects = multiSceneObjects.syncedObjDict();
@@ -345,8 +339,8 @@ public class MultiClient : MonoBehaviour
             SpawnObjectWithoutSetup(newSyncedObjects[key], key);
         }
 
-        //reset the synced objects total, it'll get fixed by spawning the objects
-        syncedObjectsTotal = 0;
+        //reset the synced objects total
+        syncedObjectsTotal = newSyncedObjects.Count;
     }
 
     public void ChangeScene(string sceneName)

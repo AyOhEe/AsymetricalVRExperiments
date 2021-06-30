@@ -38,11 +38,15 @@ public class MultiSyncedObject : MonoBehaviour
         SendMessageToOther += client.SendMessageToServer;
         client.MessageReceived += MessageReceived;
 
+
         if (doSyncedObjectsDictSetup)
         {
             ID = client.syncedObjectsTotal;
             client.syncedObjects.Add(client.syncedObjectsTotal, this);
+            //increment the total synced objects count
+            client.syncedObjectsTotal += 1;
         }
+
 
         //if the parent is locally owned, so are we
         if (parent)

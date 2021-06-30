@@ -6,26 +6,20 @@ using UnityEngine.UI;
 
 public class PlayerPrefabHandler : MonoBehaviour
 {
-    public InputMethod inputMethod;
     public int[] prefabIDs = new int[2];
     public MultiClient gameClient;
 
-    //updates the input method to the value in inputMethodDropdown
-    public void UpdateInputMethod(Dropdown dropdown)
+    private IEnumerator SpawnPlayer()
     {
-        inputMethod = (InputMethod)dropdown.value;
-    }
+        yield return new WaitForSeconds(0.2f);
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
         if (!gameClient)
             gameClient = FindObjectOfType<MultiClient>();
-        gameClient.LocalSpawnObject(prefabIDs[(int)inputMethod]);
+        gameClient.LocalSpawnObject(prefabIDs[(int)gameClient.inputMethod]);
     }
 
     private void Start()
     {
-        DontDestroyOnLoad(this);
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        StartCoroutine(SpawnPlayer());
     }
 }
