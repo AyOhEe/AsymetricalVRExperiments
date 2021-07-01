@@ -11,10 +11,17 @@ public class PlayerPrefabHandler : MonoBehaviour
 
     private IEnumerator SpawnPlayer()
     {
-        yield return new WaitForSeconds(0.2f);
+        gameClient = FindObjectOfType<MultiClient>();
+		
+        yield return new WaitForSeconds(1f);
 
-        if (!gameClient)
-            gameClient = FindObjectOfType<MultiClient>();
+        if(gameClient.inputMethod == InputMethod.VR && !UnityEngine.XR.XRSettings.enabled)
+        {
+            //enable vr
+            UnityEngine.XR.XRSettings.enabled = true;
+            UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
+            Valve.VR.SteamVR.Initialize(true);
+        }
         gameClient.LocalSpawnObject(prefabIDs[(int)gameClient.inputMethod]);
     }
 

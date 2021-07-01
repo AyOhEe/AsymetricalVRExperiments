@@ -56,14 +56,7 @@ public class MultiNetworkHandler : MonoBehaviour
 
         //keep client between scenes
         DontDestroyOnLoad(client);
-
-        if(inputMethod == InputMethod.VR)
-        {
-            //enable vr
-            UnityEngine.XR.XRSettings.enabled = true;
-            UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
-            Valve.VR.SteamVR.Initialize(true);
-        }
+        
         return multiClient;
     }
 
