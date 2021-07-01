@@ -355,7 +355,7 @@ public class MultiClient : MonoBehaviour
             //send a change scene request
             MultiChangeSceneRequest sceneRequest = new MultiChangeSceneRequest(currentScene);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, JsonUtility.ToJson(sceneRequest));
-
+            SendMessageToServer(JsonUtility.ToJson(baseRequest));
         }
     }
 }

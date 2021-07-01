@@ -190,6 +190,8 @@ MonoBehaviour:
   playerCamera: {fileID: 2252660307992800205}
   playerMainObject: {fileID: 2252660307449281911}
   syncedObject: {fileID: 6643460462658140364}
+  UIInteract: MenuToggle
+  inMenu: 0
 --- !u!114 &6643460462658140364
 MonoBehaviour:
   m_ObjectHideFlags: 0
