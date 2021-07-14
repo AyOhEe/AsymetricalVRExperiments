@@ -240,8 +240,8 @@ Rigidbody:
   m_GameObject: {fileID: 7967883405897334564}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 1
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
@@ -259,8 +259,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9801fdb0ff22614b986c81d275977d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerAccel: 2000
-  playerSlowdown: 0.9
+  playerAccel: 3000
+  playerSlowdown: 0.95
   maxCamXRot: 70
   cameraRotSpeedLeftRight: 5
   cameraRotSpeedUpDown: 3
@@ -273,6 +273,8 @@ MonoBehaviour:
   playerCamera: {fileID: 7967883405366389150}
   playerMainObject: {fileID: 7967883405897334564}
   syncedObject: {fileID: 3306421917414111903}
+  UIInteract: MenuToggle
+  inMenu: 0
 --- !u!114 &3306421917414111903
 MonoBehaviour:
   m_ObjectHideFlags: 0
