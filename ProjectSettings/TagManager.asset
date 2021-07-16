@@ -15,6 +15,7 @@ TagManager:
   - CamRigRightHand
   - CamRigLeftHand
   - Ground
+  - Water
   layers:
   - Default
   - TransparentFX
