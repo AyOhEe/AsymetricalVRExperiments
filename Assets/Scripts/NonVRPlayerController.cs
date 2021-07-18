@@ -149,7 +149,7 @@ public class NonVRPlayerController : MonoBehaviour
                 }
                 movedThisFrame = true;
             }
-            Debug.Log("Horizontal: " + (Input.GetAxis("Horizontal") + -Input.GetAxis("Joystick Horizontal")) + ", Vertical: " + (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")).ToString());
+            //Debug.Log("Horizontal: " + (Input.GetAxis("Horizontal") + -Input.GetAxis("Joystick Horizontal")) + ", Vertical: " + (Input.GetAxis("Vertical") + -Input.GetAxis("Joystick Vertical")).ToString());
             //jump if we are allowed to and the player wants to
             if (Input.GetAxis("Jump") != 0 & jumpEnabled)
             {

@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class CTFPlayer : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    //the team this player is on
+    public CTFGameLogic.CTFTeams team;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //is the player holding a flag?
+    public bool isHoldingFlag;
 }
