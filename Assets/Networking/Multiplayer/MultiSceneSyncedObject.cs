@@ -9,6 +9,9 @@ public class MultiSceneSyncedObject : MultiSyncedObject
     public new delegate void SendMessageToOtherDelegate(string _message);
     public new event SendMessageToOtherDelegate SendMessageToOther;
 
+    //list of behaviours that should be active when this object is local owned
+    public List<MonoBehaviour> behaviours;
+
     private new void Start()
     {
         //get the gameServer/Client
@@ -22,6 +25,11 @@ public class MultiSceneSyncedObject : MultiSyncedObject
         localOwned = client.hostAuthority;
         client.MessageReceived += MessageReceived;
         client.sceneSyncedObjects.Add(ID, this);
+
+        foreach (MonoBehaviour mono in behaviours)
+        {
+            mono.enabled = localOwned;
+        }
 
         Invoke("SyncObject", syncInterval);
     }
@@ -41,7 +49,7 @@ public class MultiSceneSyncedObject : MultiSyncedObject
             SendMessageToOther(JsonUtility.ToJson(baseRequest));
             Debug.Log("Scene Object " + ID.ToString() + " sent sync request");
         }
-
+        
         //sync again after syncInterval seconds
         Invoke("SyncObject", syncInterval);
     }
@@ -54,6 +62,11 @@ public class MultiSceneSyncedObject : MultiSyncedObject
         {
             //it was, we're locally owned now
             localOwned = true;
+
+            foreach (MonoBehaviour mono in behaviours)
+            {
+                mono.enabled = localOwned;
+            }
         }
     }
 }
