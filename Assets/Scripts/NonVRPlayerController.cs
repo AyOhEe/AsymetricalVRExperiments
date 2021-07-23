@@ -42,6 +42,9 @@ public class NonVRPlayerController : MonoBehaviour
     public string UIInteract;
     public bool inMenu;
 
+    //UI to spawn on start if local
+    public GameObject UIifLocal;
+
     //run on the first frame the object is active
     private void Start()
     {
@@ -78,6 +81,10 @@ public class NonVRPlayerController : MonoBehaviour
             transform.localEulerAngles = startingPos.NonVRRot;
             transform.localScale = startingPos.NonVRScale;
         }
+
+        //if there's ui to instantiate, instantiate it
+        if(UIifLocal)
+            Instantiate(UIifLocal);
     }
     
     // Update is called once per frame

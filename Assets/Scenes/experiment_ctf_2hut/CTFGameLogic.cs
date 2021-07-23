@@ -34,13 +34,13 @@ public class CTFGameLogic : MonoBehaviour
         redPickupZone.onTriggerEntered += ((Collider caller, Collider other) =>
         {
             //does the other collider have a CTFPlayer component?
-            CTFPlayer player;
+            CTFNonVR player;
             Debug.Log("redPickupZone entered");
-            if ((player = other.GetComponent<CTFPlayer>()))
+            if ((player = other.GetComponent<CTFNonVR>()))
             {
                 Debug.Log("redPickupZone entered by CTFPlayer");
                 //yes, is it's team blue?
-                if (player.team == CTFTeams.Blue)
+                if (player.player.team == CTFTeams.Blue)
                 {
                     Debug.Log("redPickupZone entered by Enemy CTFPlayer");
                     //yes, pickup the flag
@@ -51,13 +51,13 @@ public class CTFGameLogic : MonoBehaviour
         bluePickupZone.onTriggerEntered += ((Collider caller, Collider other) =>
         {
             //does the other collider have a CTFPlayer component?
-            CTFPlayer player;
+            CTFNonVR player;
             Debug.Log("bluePickupZone entered");
-            if ((player = other.GetComponent<CTFPlayer>()))
+            if ((player = other.GetComponent<CTFNonVR>()))
             {
                 Debug.Log("bluePickupZone entered by CTFPlayer");
                 //yes, is it's team red?
-                if (player.team == CTFTeams.Red)
+                if (player.player.team == CTFTeams.Red)
                 {
                     Debug.Log("bluePickupZone entered by Enemy CTFPlayer");
                     //yes, pickup the flag
@@ -70,13 +70,13 @@ public class CTFGameLogic : MonoBehaviour
         redCapZone.onTriggerEntered += ((Collider caller, Collider other) =>
         {
             //does the other collider have a CTFPlayer component
-            CTFPlayer player;
+            CTFNonVR player;
             Debug.Log("redCapZone entered");
-            if((player = other.GetComponent<CTFPlayer>()))
+            if((player = other.GetComponent<CTFNonVR>()))
             {
                 Debug.Log("redCapZone entered by CTFPlayer");
                 //yes, is it's team red and does it have a flag?
-                if(player.team == CTFTeams.Red & player.isHoldingFlag)
+                if(player.player.team == CTFTeams.Red & player.isHoldingFlag)
                 {
                     Debug.Log("POINT RED");
                     //yes, trigger a capture
@@ -87,13 +87,13 @@ public class CTFGameLogic : MonoBehaviour
         redCapZone.onTriggerEntered += ((Collider caller, Collider other) =>
         {
             //does the other collider have a CTFPlayer component
-            CTFPlayer player;
+            CTFNonVR player;
             Debug.Log("blueCapZone entered");
-            if ((player = other.GetComponent<CTFPlayer>()))
+            if ((player = other.GetComponent<CTFNonVR>()))
             {
                 Debug.Log("blueCapZone entered by CTFPlayer");
                 //yes, is it's team red and does it have a flag?
-                if (player.team == CTFTeams.Blue & player.isHoldingFlag)
+                if (player.player.team == CTFTeams.Blue & player.isHoldingFlag)
                 {
                     Debug.Log("POINT BLUE");
                     //yes, trigger a capture

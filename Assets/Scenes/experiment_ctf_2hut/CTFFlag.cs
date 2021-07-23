@@ -10,7 +10,7 @@ public class CTFFlag : MonoBehaviour
     //are we being held?
     public bool isBeingHeld;
     //what's holding us?
-    private CTFPlayer heldBy;
+    private CTFNonVR heldBy;
 
     //default position and rotation of the flag when we're not being held
     private Vector3 defaultPosition;
@@ -23,7 +23,7 @@ public class CTFFlag : MonoBehaviour
         defaultRotation = transform.rotation;
     }
 
-    public void FlagPickup(CTFPlayer player)
+    public void FlagPickup(CTFNonVR player)
     {
         //if we're not already being held, become held
         if (!isBeingHeld)
