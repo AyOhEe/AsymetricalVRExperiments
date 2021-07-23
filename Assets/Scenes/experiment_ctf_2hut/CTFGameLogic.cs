@@ -27,6 +27,10 @@ public class CTFGameLogic : MonoBehaviour
     //game client
     public MultiClient client;
 
+    //team scores
+    public int RedScore;
+    public int BlueScore;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -79,12 +83,13 @@ public class CTFGameLogic : MonoBehaviour
                 if(player.player.team == CTFTeams.Red & player.isHoldingFlag)
                 {
                     Debug.Log("POINT RED");
+                    RedScore++;
                     //yes, trigger a capture
                     blueFlag.FlagCapture();
                 }
             }
         });
-        redCapZone.onTriggerEntered += ((Collider caller, Collider other) =>
+        blueCapZone.onTriggerEntered += ((Collider caller, Collider other) =>
         {
             //does the other collider have a CTFPlayer component
             CTFNonVR player;
@@ -96,6 +101,7 @@ public class CTFGameLogic : MonoBehaviour
                 if (player.player.team == CTFTeams.Blue & player.isHoldingFlag)
                 {
                     Debug.Log("POINT BLUE");
+                    BlueScore++;
                     //yes, trigger a capture
                     redFlag.FlagCapture();
                 }

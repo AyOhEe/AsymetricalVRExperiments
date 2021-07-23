@@ -1618,7 +1618,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1061108692}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 575.63, y: 105, z: 214.95}
+  m_LocalPosition: {x: 428.34, y: 105, z: 685.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1637910611}
@@ -2254,6 +2254,8 @@ MonoBehaviour:
   redCapZone: {fileID: 1517732943}
   blueCapZone: {fileID: 1061108693}
   client: {fileID: 0}
+  RedScore: 0
+  BlueScore: 0
 --- !u!4 &1637910611
 Transform:
   m_ObjectHideFlags: 0
