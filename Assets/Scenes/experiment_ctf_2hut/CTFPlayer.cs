@@ -5,5 +5,5 @@ using UnityEngine;
 public class CTFPlayer : MonoBehaviour
 {
     //the team this player is on
-    public CTFGameLogic.CTFTeams team;
+    public CTFGameManager.CTFTeams team;
 }

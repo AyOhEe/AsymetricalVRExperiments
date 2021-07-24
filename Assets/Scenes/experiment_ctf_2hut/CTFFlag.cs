@@ -5,7 +5,7 @@ using UnityEngine;
 public class CTFFlag : MonoBehaviour
 {
     //the team this flag belongs to
-    public CTFGameLogic.CTFTeams team;
+    public CTFGameManager.CTFTeams team;
 
     //are we being held?
     public bool isBeingHeld;

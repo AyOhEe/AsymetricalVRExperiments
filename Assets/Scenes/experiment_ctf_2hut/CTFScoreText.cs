@@ -10,21 +10,21 @@ public class CTFScoreText : MonoBehaviour
     private Text scoreText;
 
     //the ctfgamelogic object
-    private CTFGameLogic gameLogic;
+    private CTFGameManager gameLogic;
     //the team who's score we're to keep track of
-    public CTFGameLogic.CTFTeams team;
+    public CTFGameManager.CTFTeams team;
 
     private void Start()
     {
         //get text and game logic
         scoreText = GetComponent<Text>();
-        gameLogic = FindObjectOfType<CTFGameLogic>();
+        gameLogic = FindObjectOfType<CTFGameManager>();
     }
 
     private void Update()
     {
         //update the text every 30 frames
         if(Time.frameCount % 30 == 0)
-            scoreText.text = team == CTFGameLogic.CTFTeams.Red ? gameLogic.RedScore.ToString() : gameLogic.BlueScore.ToString();
+            scoreText.text = team == CTFGameManager.CTFTeams.Red ? gameLogic.RedScore.ToString() : gameLogic.BlueScore.ToString();
     }
 }

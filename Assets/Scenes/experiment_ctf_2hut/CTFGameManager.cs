@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CTFGameLogic : MonoBehaviour
+public class CTFGameManager : GameManagerBase
 {
     public enum CTFTeams
     {
@@ -11,6 +11,17 @@ public class CTFGameLogic : MonoBehaviour
         Yellow,
         Green
     };
+
+    public enum CTFData
+    {
+        SyncScore,
+        AssignTeams,
+        DamagePlayer,
+        KillPlayer,
+        FireWeapon,
+        ChangeWeapon,
+
+    }
 
     //flag transforms
     public CTFFlag redFlag;
@@ -23,9 +34,6 @@ public class CTFGameLogic : MonoBehaviour
     //flag capture zones
     public TriggerEnterBroadcast redCapZone;
     public TriggerEnterBroadcast blueCapZone;
-
-    //game client
-    public MultiClient client;
 
     //team scores
     public int RedScore;
@@ -111,5 +119,15 @@ public class CTFGameLogic : MonoBehaviour
 
         //get game client
         client = GameObject.FindGameObjectWithTag("GameClient").GetComponent<MultiClient>();
+    }
+
+    public override void HandleMessage(GameManagerData message)
+    {
+
+    }
+
+    public override void SyncGameManager()
+    {
+
     }
 }

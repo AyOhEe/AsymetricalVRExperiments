@@ -13,7 +13,8 @@ public enum MultiPossibleRequest
     MultiHostAuthChange,
     MultiNewConnection,
     MultiSceneObjects,
-    MultiDespawnObject
+    MultiDespawnObject,
+    GameManagerData
 }
 
 //surface of mosts requests, contains type of request and request
@@ -159,5 +160,23 @@ public struct MultiDespawnObject
     public MultiDespawnObject(int _id)
     {
         ID = _id;
+    }
+}
+
+//data to be passed among game managers
+[Serializable]
+public struct GameManagerData
+{
+    //data string
+    [SerializeField]
+    public string D;
+    //data type, should be casted to an enum
+    [SerializeField]
+    public int T;
+
+    public GameManagerData(string _D, int _T)
+    {
+        D = _D;
+        T = _T;
     }
 }
