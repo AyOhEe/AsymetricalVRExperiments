@@ -50,6 +50,9 @@ public class MultiClient : MonoBehaviour
     //game manager in this scene
     public GameManagerBase GameManager;
 
+    //the client id of this client
+    public int _ClientID;
+
     // Update is called once per frame
     void Update()
     {
@@ -197,6 +200,14 @@ public class MultiClient : MonoBehaviour
             MultiBaseRequest baseRequest = JsonUtility.FromJson<MultiBaseRequest>(_message);
             switch ((MultiPossibleRequest)baseRequest.RT)
             {
+                //initial data for setup
+                case MultiPossibleRequest.MultiInitialData:
+                    MultiInitialData initialData = JsonUtility.FromJson<MultiInitialData>(baseRequest.R);
+
+                    //store the thread key as the client id, they're the same thing
+                    _ClientID = initialData.T;
+                    break;
+
                 //the server would like to spawn an object
                 case MultiPossibleRequest.MultiSpawnObject:
                     MultiSpawnRequest multiSpawnRequest = JsonUtility.FromJson<MultiSpawnRequest>(baseRequest.R);

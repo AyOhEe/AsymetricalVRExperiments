@@ -108,6 +108,10 @@ public class MultiServer : MonoBehaviour
         MultiNewConnection newConnection = new MultiNewConnection(threadKey);
         MultiBaseRequest baseRequest_NC = new MultiBaseRequest(MultiPossibleRequest.MultiNewConnection, JsonUtility.ToJson(newConnection));
         SendMessageToClient(JsonUtility.ToJson(baseRequest_NC), listenerThreads.Keys.ElementAt(0));
+        
+        MultiInitialData initialData = new MultiInitialData(threadKey);
+        MultiBaseRequest baseRequest_Init = new MultiBaseRequest(MultiPossibleRequest.MultiInitialData, JsonUtility.ToJson(initialData));
+        SendMessageToClient(JsonUtility.ToJson(baseRequest_Init), listenerThreads.Keys.ElementAt(threadKey));
 
         //listen only while connected
         while (handler.Connected)

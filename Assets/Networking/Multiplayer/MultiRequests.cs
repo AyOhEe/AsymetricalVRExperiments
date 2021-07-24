@@ -6,6 +6,7 @@ using UnityEngine;
 //request types
 public enum MultiPossibleRequest
 {
+    MultiInitialData,
     MultiSpawnObject,
     MultiSyncObject,
     MultiChangeScene,
@@ -177,6 +178,20 @@ public struct GameManagerData
     public GameManagerData(string _D, int _T)
     {
         D = _D;
+        T = _T;
+    }
+}
+
+//initial data sent to help keep track of clients
+[Serializable]
+public struct MultiInitialData
+{
+    //thread key
+    [SerializeField]
+    public int T;
+
+    public MultiInitialData(int _T)
+    {
         T = _T;
     }
 }
