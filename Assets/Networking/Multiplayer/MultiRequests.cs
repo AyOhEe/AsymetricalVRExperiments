@@ -15,7 +15,7 @@ public enum MultiPossibleRequest
     MultiNewConnection,
     MultiSceneObjects,
     MultiDespawnObject,
-    GameManagerData
+    GameSystemData
 }
 
 //surface of mosts requests, contains type of request and request
@@ -164,24 +164,6 @@ public struct MultiDespawnObject
     }
 }
 
-//data to be passed among game managers
-[Serializable]
-public struct GameManagerData
-{
-    //data string
-    [SerializeField]
-    public string D;
-    //data type, should be casted to an enum
-    [SerializeField]
-    public int T;
-
-    public GameManagerData(string _D, int _T)
-    {
-        D = _D;
-        T = _T;
-    }
-}
-
 //initial data sent to help keep track of clients
 [Serializable]
 public struct MultiInitialData
@@ -193,5 +175,24 @@ public struct MultiInitialData
     public MultiInitialData(int _T)
     {
         T = _T;
+    }
+}
+
+//data sent between game systems
+[Serializable]
+public struct GameSystemData
+{
+    //service id
+    [SerializeField]
+    public int S;
+
+    //data string
+    [SerializeField]
+    public string D;
+
+    public GameSystemData(int _S, string _D)
+    {
+        S = _S;
+        D = _D;
     }
 }

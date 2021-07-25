@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class GameManagerBase : MonoBehaviour
+public abstract class GameSystem : MonoBehaviour
 {
     //game client
     public MultiClient client;
+
+    //the id of this system
+    public int SystemID;
 
     private void Awake()
     {
@@ -14,13 +17,12 @@ public abstract class GameManagerBase : MonoBehaviour
             client = FindObjectOfType<MultiClient>();
     }
 
-    //game managers must implement these methods
-    public abstract void HandleMessage(GameManagerData message);
-    public abstract void SyncGameManager();
+    public abstract void SyncSystem();
+    public abstract void HandleMessage(GameSystemData data);
 
     private void SendMessageToOtherManagers(string message, int type)
     {
-        GameManagerData data = new GameManagerData(message, type);
+        GameSystemData data = new GameSystemData();
         client.SendMessageToServer(JsonUtility.ToJson(data));
     }
 }

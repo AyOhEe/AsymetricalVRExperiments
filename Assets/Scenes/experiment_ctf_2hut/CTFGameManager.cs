@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CTFGameManager : GameManagerBase
+public class CTFGameManager : GameSystem
 {
     public enum CTFTeams
     {
@@ -121,12 +121,12 @@ public class CTFGameManager : GameManagerBase
         client = GameObject.FindGameObjectWithTag("GameClient").GetComponent<MultiClient>();
     }
 
-    public override void HandleMessage(GameManagerData message)
+    public override void HandleMessage(GameSystemData message)
     {
 
     }
 
-    public override void SyncGameManager()
+    public override void SyncSystem()
     {
 
     }

@@ -47,8 +47,8 @@ public class MultiClient : MonoBehaviour
     //queue of objects that need to be locally spawned
     private Queue<Action> localSpawnActions = new Queue<Action>();
 
-    //game manager in this scene
-    public GameManagerBase GameManager;
+    //all of the game services in this scene;
+    public Dictionary<int, GameSystem> gameSystems = new Dictionary<int, GameSystem>();
 
     //the client id of this client
     public int _ClientID;
@@ -231,9 +231,17 @@ public class MultiClient : MonoBehaviour
                     //queue the scene change
                     actions.Enqueue(() => SceneManager.LoadScene(multiChangeScene.N));
                     currentScene = multiChangeScene.N;
-
-                    //get the game manager in the new scene
-                    actions.Enqueue(() => { GameManager = FindObjectOfType<GameManagerBase>(); });
+                    
+                    actions.Enqueue(() =>
+                    {
+                        //get all of the systems in this scene
+                        GameSystem[] systems = FindObjectsOfType<GameSystem>();
+                        //iterate through them, storing a reference to each of them
+                        foreach (GameSystem system in systems)
+                        {
+                            gameSystems.Add(system.SystemID, system);
+                        }
+                    });
                     break;
 
                 //the server would like to sync a scene object
@@ -283,12 +291,11 @@ public class MultiClient : MonoBehaviour
                     actions.Enqueue(() => Destroy(syncedObjects[despawnObject.ID].gameObject));
                     break;
 
-                //the game managers need to talk to eachother
-                case MultiPossibleRequest.GameManagerData:
-                    GameManagerData data = JsonUtility.FromJson<GameManagerData>(baseRequest.R);
+                case MultiPossibleRequest.GameSystemData:
+                    GameSystemData systemData = JsonUtility.FromJson<GameSystemData>(baseRequest.R);
 
-                    //pass on the data, the game manager knows what to do with it
-                    GameManager.HandleMessage(data);
+                    //pass on this data, the game system knows what to do with it
+                    gameSystems[systemData.S].HandleMessage(systemData);
                     break;
             }
         }
