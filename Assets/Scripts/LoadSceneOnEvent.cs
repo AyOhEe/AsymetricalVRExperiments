@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class LoadSceneOnEvent : MonoBehaviour
 {
-    public string sceneName;
+    public int sceneIndex;
 
     private MultiClient client;
 
@@ -16,6 +16,6 @@ public class LoadSceneOnEvent : MonoBehaviour
 
     public void LoadScene()
     {
-        client.ChangeScene(sceneName);
+        client.ChangeScene(sceneIndex);
     }
 }

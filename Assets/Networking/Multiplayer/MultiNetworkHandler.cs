@@ -23,7 +23,7 @@ public class MultiNetworkHandler : MonoBehaviour
     //list of spawnable objects
     public List<GameObject> spawnableObjects;
     //list of loadable scenese
-    public List<Scene> loadableScenes;
+    public List<SceneInfo> loadableScenes;
  
     //updates the ip to the value in IPInput
     public void UpdateIP()
@@ -72,7 +72,7 @@ public class MultiNetworkHandler : MonoBehaviour
         server.GetComponent<MultiServer>().IPString = IP;
         server.GetComponent<MultiServer>().StartServer();
         yield return new WaitForSeconds(1);
-        _Connect().ChangeScene("ExperimentSelector");
+        _Connect().ChangeScene(0);
         DontDestroyOnLoad(server);
     }
 

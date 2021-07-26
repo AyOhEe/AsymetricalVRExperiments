@@ -61,4 +61,6 @@ MonoBehaviour:
   inputMethod: 0
   playerSpawned: 0
   hostAuthority: 0
-  currentScene: ExperimentSelector
+  currentScene: {fileID: 11400000, guid: 48c214cd1a8d6c24cbabc571198d56b4, type: 2}
+  player: {fileID: 0}
+  _ClientID: 0

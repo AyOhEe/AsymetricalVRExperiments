@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(BaseNonVRPlayer))]
 public class NonVRPlayerController : MonoBehaviour
 {
     //the acceleration modifier of the player
@@ -35,8 +36,8 @@ public class NonVRPlayerController : MonoBehaviour
     //the desired euler rotation of the rigidbody
     private Vector3 desiredRotationEuler;
 
-    //the synced object for this player
-    public MultiSyncedObject syncedObject;
+    //the player for this player
+    public BaseNonVRPlayer Player;
 
     //Input name for ui interact
     public string UIInteract;
@@ -48,6 +49,8 @@ public class NonVRPlayerController : MonoBehaviour
     //run on the first frame the object is active
     private void Start()
     {
+        Player = GetComponent<BaseNonVRPlayer>();
+
         //make ourselves a cool colour
         GetComponent<MeshRenderer>().material = new Material(GetComponent<MeshRenderer>().material);
         GetComponent<MeshRenderer>().material.SetColor("_Color", new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)255));
@@ -59,7 +62,7 @@ public class NonVRPlayerController : MonoBehaviour
         playerRB = playerMainObject.GetComponent<Rigidbody>();
 
         //don't run if this instance isn't locally owned
-        if (!syncedObject.localOwned)
+        if (!Player.LocalOwned)
         {
             //make the rigidbody kinematic if this isn't the local instance
             playerRB.isKinematic = true;
@@ -91,7 +94,7 @@ public class NonVRPlayerController : MonoBehaviour
     void Update()
     {
         //don't run if this instance isn't locally owned
-        if (!syncedObject.localOwned)
+        if (!Player.LocalOwned)
             return;
 
         //test if the player opened a menu

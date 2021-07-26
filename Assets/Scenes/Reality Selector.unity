@@ -1381,11 +1381,9 @@ MonoBehaviour:
     type: 3}
   gameServerPrefab: {fileID: 6871928096178175108, guid: 39484b569dd51274cbf1e853640b47c1,
     type: 3}
-  spawnableObjects:
-  - {fileID: 1006868883727806159, guid: e08d3a6610b239e42855d94d77b8d0f1, type: 3}
-  - {fileID: 2252660307449281911, guid: 4cef2776ae010204582b9112e87b8fbe, type: 3}
+  spawnableObjects: []
   loadableScenes:
-  - m_Handle: 1
+  - {fileID: 11400000, guid: 48c214cd1a8d6c24cbabc571198d56b4, type: 2}
 --- !u!114 &670780407
 MonoBehaviour:
   m_ObjectHideFlags: 0

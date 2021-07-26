@@ -28,7 +28,7 @@ public class GunWeaponComponent : WeaponComponent
     {
         if (weaponSystem)
         {
-            if ((Input.GetMouseButton(0) | Input.GetAxis("MainFire") > 0.5f) & !fireCooldown & weaponSystem.playerController.syncedObject.localOwned)
+            if ((Input.GetMouseButton(0) | Input.GetAxis("MainFire") > 0.5f) & !fireCooldown & weaponSystem.playerController.Player.LocalOwned)
             {
                 fireCooldown = true;
                 Fire();

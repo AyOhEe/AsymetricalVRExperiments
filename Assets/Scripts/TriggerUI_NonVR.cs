@@ -28,7 +28,7 @@ public class TriggerUI_NonVR : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<NonVRPlayerController>().syncedObject.localOwned)
+        if (other.GetComponent<NonVRPlayerController>().Player.LocalOwned)
         {
             if (!pressKeyUIInstance)
             {

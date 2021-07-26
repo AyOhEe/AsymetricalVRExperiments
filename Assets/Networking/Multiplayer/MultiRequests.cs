@@ -15,7 +15,9 @@ public enum MultiPossibleRequest
     MultiNewConnection,
     MultiSceneObjects,
     MultiDespawnObject,
-    GameSystemData
+    GameSystemData,
+    MultiSpawnPlayer,
+    MultiSyncPlayer
 }
 
 //surface of mosts requests, contains type of request and request
@@ -82,12 +84,12 @@ public struct MultiChangeSceneRequest
 {
     //index of the scene to change to
     [SerializeField]
-    public string N;
+    public int N;
 
     //construct a new scene change request
-    public MultiChangeSceneRequest(string _name)
+    public MultiChangeSceneRequest(int _index)
     {
-        N = _name;
+        N = _index;
     }
 }
 
@@ -115,9 +117,15 @@ public struct MultiSceneObjects
     [SerializeField]
     public int[] sOK;
 
-    //current scene name
+    //dict of gameplayer types with their client ids
     [SerializeField]
-    public string sN;
+    public int[] gOC;
+    [SerializeField]
+    public int[] gOT;
+
+    //current scene index
+    [SerializeField]
+    public int sI;
 
     //total number of scene objects
     [SerializeField]
@@ -128,13 +136,17 @@ public struct MultiSceneObjects
     public int tN;
 
     //construct a scene objects request
-    public MultiSceneObjects(Dictionary<int, int> _syncedObjects, string _sceneName, int _syncedObjectsTotal, int _threadN)
+    public MultiSceneObjects(Dictionary<int, int> _syncedObjects, Dictionary<int, int> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
     {
         sOK = new int[_syncedObjects.Count];
         sOI = new int[_syncedObjects.Count];
         _syncedObjects.Keys.CopyTo(sOK, 0);
         _syncedObjects.Values.CopyTo(sOI, 0);
-        sN = _sceneName;
+        gOC = new int[_gamePlayers.Count];
+        gOT = new int[_gamePlayers.Count];
+        _gamePlayers.Values.CopyTo(gOC, 0);
+        _gamePlayers.Keys.CopyTo(gOT, 0);
+        sI = _sceneIndex;
         sOT = _syncedObjectsTotal;
         tN = _threadN;
     }
@@ -145,6 +157,16 @@ public struct MultiSceneObjects
         for (int i = 0; i < sOK.Length; i++)
         {
             retVal.Add(sOK[i], sOI[i]);
+        }
+        return retVal;
+    }
+
+    public Dictionary<int, int> gamePlayerDict()
+    {
+        Dictionary<int, int> retVal = new Dictionary<int, int>();
+        for (int i = 0; i < gOC.Length; i++)
+        {
+            retVal.Add(gOC[i], gOT[i]);
         }
         return retVal;
     }
@@ -194,5 +216,43 @@ public struct GameSystemData
     {
         S = _S;
         D = _D;
+    }
+}
+
+//request to spawn player
+[Serializable]
+public struct MultiSpawnPlayer
+{
+    //player type
+    [SerializeField]
+    public int T;
+
+    //client id
+    [SerializeField]
+    public int C;
+
+    public MultiSpawnPlayer(int _T, int _C)
+    {
+        T = _T;
+        C = _C;
+    }
+}
+
+//request to sync player
+[Serializable]
+public struct MultiSyncPlayer
+{
+    //client id
+    [SerializeField]
+    public int C;
+
+    //sync string
+    [SerializeField]
+    public string S;
+
+    public MultiSyncPlayer(int _C, string _S)
+    {
+        C = _C;
+        S = _S;
     }
 }

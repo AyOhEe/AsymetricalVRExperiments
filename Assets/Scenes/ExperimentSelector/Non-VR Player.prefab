@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 2252660307449281914}
   - component: {fileID: 2252660307449281915}
   - component: {fileID: 2252660307449281908}
-  - component: {fileID: 6643460462658140364}
+  - component: {fileID: 4923442612667168572}
   - component: {fileID: 2252660307449281910}
   - component: {fileID: 5156772614384398983}
   - component: {fileID: 1391726946718074928}
@@ -189,10 +189,11 @@ MonoBehaviour:
   playerShadesParent: {fileID: 2252660307168737666}
   playerCamera: {fileID: 2252660307992800205}
   playerMainObject: {fileID: 2252660307449281911}
-  syncedObject: {fileID: 6643460462658140364}
+  Player: {fileID: 4923442612667168572}
   UIInteract: MenuToggle
   inMenu: 0
---- !u!114 &6643460462658140364
+  UIifLocal: {fileID: 0}
+--- !u!114 &4923442612667168572
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -201,19 +202,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2252660307449281911}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2974b20e81b34da43a927b2487d6e3c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b830a9be222d124db28bc9aa01aed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  doSyncedObjectsDictSetup: 1
-  syncedTransforms:
-  - {fileID: 2252660307449281914}
-  - {fileID: 2252660307168737664}
-  ID: 0
-  index: 0
+  ClientID: 0
   client: {fileID: 0}
-  localOwned: 0
-  parent: {fileID: 0}
+  LocalOwned: 0
+  PlayerController: {fileID: 2252660307449281908}
 --- !u!136 &2252660307449281910
 CapsuleCollider:
   m_ObjectHideFlags: 0

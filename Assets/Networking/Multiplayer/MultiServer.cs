@@ -116,7 +116,7 @@ public class MultiServer : MonoBehaviour
         //listen only while connected
         while (handler.Connected)
         {
-            bytes = new byte[1024];
+            bytes = new byte[2048];
             int bytesRec = handler.Receive(bytes);
             data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
             if (data.Count(f => f == '{') == data.Count(f => f == '}') & data.Count(f => f == '{') != 0)
