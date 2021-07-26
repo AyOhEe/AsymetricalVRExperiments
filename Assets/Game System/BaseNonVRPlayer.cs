@@ -37,7 +37,7 @@ public class BaseNonVRPlayer : GamePlayer
                 PlayerController.playerShadesParent.transform.localRotation));
         SendSyncMessage(message);
 
-        Invoke("SyncPlayer", 0.1f);
+        Invoke("SyncPlayer", 0.2f);
     }
 
     public override void HandleMessage(string data)

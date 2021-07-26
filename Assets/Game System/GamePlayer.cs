@@ -15,11 +15,10 @@ public abstract class GamePlayer : MonoBehaviour
     public void Awake()
     {
         client = FindObjectOfType<MultiClient>();
-        ClientID = client._ClientID;
         client.gamePlayers.Add(ClientID, this);
 
         LocalOwned = ClientID == client._ClientID;
-        Invoke("SyncPlayer", 0.1f);
+        Invoke("SyncPlayer", 0.2f);
     }
     
     public abstract void SyncPlayer();

@@ -144,8 +144,8 @@ public struct MultiSceneObjects
         _syncedObjects.Values.CopyTo(sOI, 0);
         gOC = new int[_gamePlayers.Count];
         gOT = new int[_gamePlayers.Count];
-        _gamePlayers.Values.CopyTo(gOC, 0);
-        _gamePlayers.Keys.CopyTo(gOT, 0);
+        _gamePlayers.Keys.CopyTo(gOC, 0);
+        _gamePlayers.Values.CopyTo(gOT, 0);
         sI = _sceneIndex;
         sOT = _syncedObjectsTotal;
         tN = _threadN;

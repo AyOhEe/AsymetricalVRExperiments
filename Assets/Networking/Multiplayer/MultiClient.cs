@@ -66,7 +66,17 @@ public class MultiClient : MonoBehaviour
         {
             lock (actions)
             {
-                while (actions.Count != 0) actions.Dequeue().Invoke();
+                while (actions.Count != 0)
+                {
+                    try
+                    {
+                        actions.Dequeue().Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError(ex);
+                    }
+                }
             }
         }
 
@@ -168,14 +178,20 @@ public class MultiClient : MonoBehaviour
         sender.Connect(remoteEP);
 
         Debug.Log(String.Format("Socket connected to {0}", sender.RemoteEndPoint.ToString()));
-
-        while (sender.Connected)
+        try
         {
-            // Receive the response from the remote device.    
-            int bytesRec = sender.Receive(bytes);
-            string data = Encoding.ASCII.GetString(bytes);// Convert.FromBase64String(Encoding.ASCII.GetString(bytes)));
-            MessageReceived(data);
-            data = null;
+            while (sender.Connected)
+            {
+                // Receive the response from the remote device.    
+                int bytesRec = sender.Receive(bytes);
+                string data = Encoding.ASCII.GetString(bytes);// Convert.FromBase64String(Encoding.ASCII.GetString(bytes)));
+                MessageReceived(data);
+                data = null;
+            }
+        }
+        catch(Exception ex)
+        {
+            Debug.LogError(ex);
         }
 
         // Release the socket.    
@@ -346,7 +362,7 @@ public class MultiClient : MonoBehaviour
                 case MultiPossibleRequest.MultiSyncPlayer:
                     MultiSyncPlayer syncPlayer = JsonUtility.FromJson<MultiSyncPlayer>(baseRequest.R);
 
-                    gamePlayers[syncPlayer.C].HandleMessage(syncPlayer.S);
+                    actions.Enqueue(() => gamePlayers[syncPlayer.C].HandleMessage(syncPlayer.S));
 
                     break;
             }
