@@ -20,14 +20,17 @@ public class GunWeapon : Weapon
     public float Falloff;
     public float Recoil;
     public GameObject Projectile;
+
     [Header("Gun Settings: Ammo")]
     public AmmoType AmmoType;
     public int MaxClip;
     public int MaxAmmo;
+
     [Header("Gun Settings: Reloading")]
     public float ReloadTime;
     public bool IndividualRounds;
     public bool Animated;
+
     [Header("Gun Settings: Misc")]
     public bool Sighted;
     public float fireSpeed;
