@@ -55,9 +55,6 @@ public class NonVRPlayerController : MonoBehaviour
         GetComponent<MeshRenderer>().material = new Material(GetComponent<MeshRenderer>().material);
         GetComponent<MeshRenderer>().material.SetColor("_Color", new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)255));
 
-        //add our levelwasloaded event to activeSceneChanged so we can update our transform
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();
 
@@ -189,26 +186,5 @@ public class NonVRPlayerController : MonoBehaviour
             if (collision.transform.CompareTag(s))
                 jumpEnabled = true;
         }
-    }
-
-    IEnumerator SetTransformInfo(Scene scene, LoadSceneMode mode)
-    {
-        //get the scene info object
-        List<GameObject> sceneObjects = new List<GameObject>();
-        scene.GetRootGameObjects(sceneObjects);
-        GameObject sceneInfo = sceneObjects[0];
-        //get the startingpos info
-        PlayerStartingPos startingPos = sceneInfo.GetComponent<PlayerStartingPos>();
-        //update our position, rotation and scale
-        transform.localPosition = startingPos.NonVRPos;
-        transform.localEulerAngles = startingPos.NonVRRot;
-        transform.localScale = startingPos.NonVRScale;
-
-        yield return new WaitForSeconds(0.1f);
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        StartCoroutine(SetTransformInfo(scene, mode));
     }
 }
