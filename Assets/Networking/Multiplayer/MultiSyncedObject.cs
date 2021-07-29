@@ -24,10 +24,6 @@ public class MultiSyncedObject : MonoBehaviour
     //parent object of this gameobject, if it exists.
     public GameObject parent;
 
-    //function pointer type to sendmessage on either client or server, whatever we're on
-    public delegate void SendMessageToOtherDelegate(string _message);
-    public event SendMessageToOtherDelegate SendMessageToOther;
-
     public void Start()
     {
         //get the gameServer/Client
@@ -35,9 +31,7 @@ public class MultiSyncedObject : MonoBehaviour
 
         //get the client and setup events
         client = gameClient.GetComponent<MultiClient>();
-        SendMessageToOther += client.SendMessageToServer;
         client.MessageReceived += MessageReceived;
-
 
         if (doSyncedObjectsDictSetup)
         {
@@ -68,7 +62,7 @@ public class MultiSyncedObject : MonoBehaviour
             MultiSyncRequest syncRequest = new MultiSyncRequest(ID, syncedTransforms);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncObject, JsonUtility.ToJson(syncRequest));
             //send the message away
-            SendMessageToOther(JsonUtility.ToJson(baseRequest));
+            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
             Debug.Log("Object " + ID.ToString() + " sent sync request");
         }
 
@@ -101,7 +95,7 @@ public class MultiSyncedObject : MonoBehaviour
         {
             MultiDespawnObject destroyObject = new MultiDespawnObject(ID);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiDespawnObject, JsonUtility.ToJson(destroyObject));
-            SendMessageToOther(JsonUtility.ToJson(baseRequest));
+            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
         }
     }
 }

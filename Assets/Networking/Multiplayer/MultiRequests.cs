@@ -13,7 +13,6 @@ public enum MultiPossibleRequest
     MultiSceneSyncObject,
     MultiHostAuthChange,
     MultiNewConnection,
-    MultiSceneObjects,
     MultiDespawnObject,
     GameSystemData,
     MultiSpawnPlayer,
@@ -107,10 +106,28 @@ public struct MultiNewConnection
     }
 }
 
-//sent from the host after recieving a MultiNewConnection request
+//sent when an object is destroyed
 [Serializable]
-public struct MultiSceneObjects
+public struct MultiDespawnObject
 {
+    //ID of the object to be despawned
+    [SerializeField]
+    public int ID;
+
+    public MultiDespawnObject(int _id)
+    {
+        ID = _id;
+    }
+}
+
+//initial data sent to help keep track of clients
+[Serializable]
+public struct MultiInitialData
+{
+    //thread key
+    [SerializeField]
+    public int T;
+
     //dict of synced object ids with their prefab indexes
     [SerializeField]
     public int[] sOI;
@@ -135,9 +152,10 @@ public struct MultiSceneObjects
     [SerializeField]
     public int tN;
 
-    //construct a scene objects request
-    public MultiSceneObjects(Dictionary<int, int> _syncedObjects, Dictionary<int, int> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
+    public MultiInitialData(int _T, Dictionary<int, int> _syncedObjects, Dictionary<int, int> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
     {
+        T = _T;
+
         sOK = new int[_syncedObjects.Count];
         sOI = new int[_syncedObjects.Count];
         _syncedObjects.Keys.CopyTo(sOK, 0);
@@ -169,34 +187,6 @@ public struct MultiSceneObjects
             retVal.Add(gOC[i], gOT[i]);
         }
         return retVal;
-    }
-}
-
-//sent when an object is destroyed
-[Serializable]
-public struct MultiDespawnObject
-{
-    //ID of the object to be despawned
-    [SerializeField]
-    public int ID;
-
-    public MultiDespawnObject(int _id)
-    {
-        ID = _id;
-    }
-}
-
-//initial data sent to help keep track of clients
-[Serializable]
-public struct MultiInitialData
-{
-    //thread key
-    [SerializeField]
-    public int T;
-
-    public MultiInitialData(int _T)
-    {
-        T = _T;
     }
 }
 

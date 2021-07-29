@@ -6,13 +6,4 @@ using UnityEngine;
 public class SceneSyncedObjectList : MonoBehaviour
 {
     public GameObject[] sceneSyncedObjects;
-
-    private void Start()
-    {
-        GameObject.FindGameObjectWithTag("GameClient").GetComponent<MultiClient>().sceneSyncedObjects = new Dictionary<int, MultiSyncedObject>();
-        foreach (GameObject g in sceneSyncedObjects)
-        {
-            Instantiate(g);
-        }
-    }
 }

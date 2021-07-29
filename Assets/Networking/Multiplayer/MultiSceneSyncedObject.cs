@@ -5,10 +5,6 @@ using UnityEngine;
 //very similar to a syncedobject, except from the fact that it always will belong to the server and must belong to a scene object
 public class MultiSceneSyncedObject : MultiSyncedObject
 {
-    //function pointer type to sendmessage on either client or server, whatever we're on
-    public new delegate void SendMessageToOtherDelegate(string _message);
-    public new event SendMessageToOtherDelegate SendMessageToOther;
-
     //list of behaviours that should be active when this object is local owned
     public List<MonoBehaviour> behaviours;
 
@@ -46,7 +42,7 @@ public class MultiSceneSyncedObject : MultiSyncedObject
             MultiSyncRequest syncRequest = new MultiSyncRequest(ID, syncedTransforms);
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSceneSyncObject, JsonUtility.ToJson(syncRequest));
             //send the message away
-            SendMessageToOther(JsonUtility.ToJson(baseRequest));
+            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
             Debug.Log("Scene Object " + ID.ToString() + " sent sync request");
         }
         

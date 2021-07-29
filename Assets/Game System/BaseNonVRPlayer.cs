@@ -11,6 +11,8 @@ public class BaseNonVRPlayer : GamePlayer
     {
         base.Awake();
         PlayerController = GetComponent<NonVRPlayerController>();
+
+        Invoke("SyncPlayer", 0.2f);
     }
 
     [Serializable]

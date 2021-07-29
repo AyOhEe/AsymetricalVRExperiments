@@ -108,10 +108,6 @@ public class MultiServer : MonoBehaviour
         MultiNewConnection newConnection = new MultiNewConnection(threadKey);
         MultiBaseRequest baseRequest_NC = new MultiBaseRequest(MultiPossibleRequest.MultiNewConnection, JsonUtility.ToJson(newConnection));
         SendMessageToClient(JsonUtility.ToJson(baseRequest_NC), listenerThreads.Keys.ElementAt(0));
-        
-        MultiInitialData initialData = new MultiInitialData(threadKey);
-        MultiBaseRequest baseRequest_Init = new MultiBaseRequest(MultiPossibleRequest.MultiInitialData, JsonUtility.ToJson(initialData));
-        SendMessageToClient(JsonUtility.ToJson(baseRequest_Init), listenerThreads.Keys.ElementAt(threadKey));
 
         //listen only while connected
         while (handler.Connected)
@@ -168,11 +164,11 @@ public class MultiServer : MonoBehaviour
         Debug.Log(String.Format("<<<Thread {0}>>>: Recieved \"{1}\"", clientID, _message));
 
         //test if we've recieved a sceneObjects request
-        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiSceneObjects)
+        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiInitialData)
         {
             //we have, relay it to the thread requesting it(the most recent connection)
             MultiBaseRequest baseRequest = JsonUtility.FromJson<MultiBaseRequest>(_message);
-            MultiSceneObjects sceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.R);
+            MultiInitialData sceneObjects = JsonUtility.FromJson<MultiInitialData>(baseRequest.R);
             SendMessageToClient(_message, sceneObjects.tN);
             return;
         }
@@ -193,6 +189,14 @@ public class MultiServer : MonoBehaviour
         if (instantStart)
         {
             StartServer();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (Tuple<Thread, Socket, bool> t in listenerThreads.Values)
+        {
+            t.Item1.Abort();
         }
     }
 }

@@ -227,6 +227,7 @@ public class MultiClient : MonoBehaviour
 
                     //store the thread key as the client id, they're the same thing
                     _ClientID = initialData.T;
+                    actions.Enqueue(() => StartCoroutine(HandleMultiInitialData(initialData)));
                     break;
 
                 //the server would like to spawn an object
@@ -317,18 +318,10 @@ public class MultiClient : MonoBehaviour
                     }
 
                     //Send the request
-                    MultiSceneObjects sceneObjects = new MultiSceneObjects(idIndexes, playerTypes, possibleScenes.IndexOf(currentScene), syncedObjectsTotal, newConnection.tN);
-                    MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiSceneObjects, JsonUtility.ToJson(sceneObjects));
+                    MultiInitialData sceneObjects = new MultiInitialData(newConnection.tN, idIndexes, playerTypes, possibleScenes.IndexOf(currentScene), syncedObjectsTotal, newConnection.tN);
+                    MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiInitialData, JsonUtility.ToJson(sceneObjects));
                     SendMessageToServer(JsonUtility.ToJson(request));
-
-                    break;
-
-                //we've recieved a list of scene objects. deal with it
-                case MultiPossibleRequest.MultiSceneObjects:
-                    MultiSceneObjects multiSceneObjects = JsonUtility.FromJson<MultiSceneObjects>(baseRequest.R);
-
-                    actions.Enqueue(() => StartCoroutine(HandleMultiSceneObjects(multiSceneObjects)));
-
+                    
                     break;
 
                 //the server would like us to despawn an object
@@ -381,7 +374,7 @@ public class MultiClient : MonoBehaviour
 
     }
 
-    private IEnumerator HandleMultiSceneObjects(MultiSceneObjects multiSceneObjects)
+    private IEnumerator HandleMultiInitialData(MultiInitialData multiSceneObjects)
     {
         //clear the old synced objects dict and destroy the old synced objects
         foreach (int key in syncedObjects.Keys)
@@ -452,10 +445,10 @@ public class MultiClient : MonoBehaviour
         }
     }
 
-    public void ChangeScene(int sceneIndex)
+    public void ChangeScene(int sceneIndex, bool forceSceneChange = false)
     {
-        //only order a scene change if we're host
-        if (hostAuthority)
+        //only order a scene change if we're host or it is forced(basically only in MultiNetworkHandler.cs:75)
+        if (hostAuthority | forceSceneChange)
         {
             //change the scene
             actions.Enqueue(() => SceneManager.LoadScene(possibleScenes[sceneIndex].name));

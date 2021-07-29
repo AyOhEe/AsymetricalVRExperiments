@@ -440,7 +440,6 @@ GameObject:
   - component: {fileID: 160483095}
   - component: {fileID: 160483094}
   - component: {fileID: 160483097}
-  - component: {fileID: 160483098}
   - component: {fileID: 160483099}
   - component: {fileID: 160483093}
   - component: {fileID: 160483092}
@@ -561,7 +560,7 @@ MonoBehaviour:
   playerShadesParent: {fileID: 1530602714}
   playerCamera: {fileID: 2139719030}
   playerMainObject: {fileID: 160483089}
-  syncedObject: {fileID: 160483093}
+  Player: {fileID: 160483097}
   UIInteract: MenuToggle
   inMenu: 0
   UIifLocal: {fileID: 8230146307289768201, guid: ac3e57f243fc7024f968aca611f9bcdd,
@@ -607,27 +606,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 160483089}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91bdca5d8ba6f884aa0378384f668644, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b830a9be222d124db28bc9aa01aed39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 1
   ClientID: 0
-  team: 1
---- !u!114 &160483098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 160483089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a22aa0b5e43334a865674d311cc35d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 160483097}
-  RedMaterial: {fileID: 2100000, guid: 369c2cc3042538c4ca5d1cac510583e2, type: 2}
-  BlueMaterial: {fileID: 2100000, guid: 187184e7504eb7944b80505765ffe3d3, type: 2}
-  isHoldingFlag: 0
+  client: {fileID: 0}
+  LocalOwned: 1
+  PlayerController: {fileID: 160483094}
 --- !u!114 &160483099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -648,7 +634,7 @@ MonoBehaviour:
   MediumAmmo: 0
   HeavyAmmo: 0
   ShellsAmmo: 0
-  playerController: {fileID: 0}
+  playerController: {fileID: 160483094}
 --- !u!1 &193851366
 GameObject:
   m_ObjectHideFlags: 0

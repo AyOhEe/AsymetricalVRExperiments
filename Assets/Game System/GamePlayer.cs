@@ -18,7 +18,6 @@ public abstract class GamePlayer : MonoBehaviour
         client.gamePlayers.Add(ClientID, this);
 
         LocalOwned = ClientID == client._ClientID;
-        Invoke("SyncPlayer", 0.2f);
     }
     
     public abstract void SyncPlayer();
