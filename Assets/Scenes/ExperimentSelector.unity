@@ -732,6 +732,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4923442612667168572, guid: 4cef2776ae010204582b9112e87b8fbe,
+        type: 3}
+      propertyPath: LocalOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6643460462658140364, guid: 4cef2776ae010204582b9112e87b8fbe,
         type: 3}
       propertyPath: m_Enabled
@@ -1682,15 +1687,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: sceneSyncedObjects.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: sceneSyncedObjects.Array.data[0]
-      value: 
-      objectReference: {fileID: 1322113365173761691, guid: 8f9111e0038f22b45b0a2ff952337a2e,
-        type: 3}
     - target: {fileID: 8201348809055248317, guid: e4c787badd3cf0548a8c2421b3912ae7,
         type: 3}
       propertyPath: m_Name

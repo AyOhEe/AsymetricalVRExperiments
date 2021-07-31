@@ -10,6 +10,10 @@ public class BaseNonVRPlayer : GamePlayer
     {
         PlayerController = GetComponent<NonVRPlayerController>();
 
+#if UNITY_EDITOR
+        Debug.Log(String.Format("Player {0} Spawned", ClientID));
+#endif
+
         Invoke("SyncPlayer", 0.2f);
     }
 
@@ -34,7 +38,8 @@ public class BaseNonVRPlayer : GamePlayer
             new PlayerInfo(
                 transform.localPosition, 
                 transform.localRotation, 
-                PlayerController.playerShadesParent.transform.localRotation));
+                PlayerController.playerShadesParent.transform.localRotation),
+                MessagePack.Resolvers.ContractlessStandardResolver.Options);
         SendSyncMessage(message);
 
         Invoke("SyncPlayer", 0.2f);
@@ -48,4 +53,11 @@ public class BaseNonVRPlayer : GamePlayer
         transform.localRotation = info.rotation;
         PlayerController.playerShadesParent.transform.localRotation = info.lookDir;
     }
+
+#if UNITY_EDITOR
+    public void OnDestroy()
+    {
+        Debug.Log(String.Format("Player {0} Destroyed", ClientID));
+    }
+#endif
 }

@@ -12,7 +12,7 @@ public class CTFPlayer : GamePlayer
         throw new System.NotImplementedException();
     }
 
-    public override void HandleMessage(string data)
+    public override void HandleMessage(byte[] data)
     {
         throw new System.NotImplementedException();
     }

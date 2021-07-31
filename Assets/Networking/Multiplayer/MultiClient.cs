@@ -160,7 +160,11 @@ public class MultiClient : MonoBehaviour
     /// </summary>     
     private void ListenForData()
     {
-        byte[] bytes = new byte[2048];
+        //we need to make sure the listener delegate isn't null
+        if (MessageReceived == null)
+        {
+            MessageReceived += messageReceivedListener;
+        }
 
         // Connect to a Remote server  
         // Get Host IP Address that is used to establish a connection   
@@ -180,6 +184,7 @@ public class MultiClient : MonoBehaviour
             while (sender.Connected)
             {
                 // Receive the response from the remote device.    
+                byte[] bytes = new byte[2048];
                 int bytesRec = sender.Receive(bytes);
                 MessageReceived(bytes);
             }
@@ -200,7 +205,7 @@ public class MultiClient : MonoBehaviour
         if (sender.Connected)
         {
             //send the message, we're connected
-            Debug.Log(String.Format("<<<Client>>>: sent \"{0}\"", _message));
+            Debug.Log(String.Format("<<<Client>>>: sent \"{0}\"", MessagePackSerializer.ConvertToJson(_message)));
             sender.Send(_message);
         }
     }
@@ -208,11 +213,11 @@ public class MultiClient : MonoBehaviour
     //listen for requests
     void messageReceivedListener(byte[] _message)
     {
-        Debug.Log(String.Format("<<<Client>>>: Recieved \"{0}\"", _message));
         try
         {
             //get the base request object
             MultiBaseRequest baseRequest = MessagePackSerializer.Deserialize<MultiBaseRequest>(_message);
+            Debug.Log(String.Format("<<<Client>>>: Recieved \"{0}\"", MessagePackSerializer.ConvertToJson(_message)));
             switch ((MultiPossibleRequest)baseRequest.RT)
             {
                 //initial data for setup
