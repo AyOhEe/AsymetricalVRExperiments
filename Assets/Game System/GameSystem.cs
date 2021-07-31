@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MessagePack;
 
 public abstract class GameSystem : MonoBehaviour
 {
@@ -23,6 +24,6 @@ public abstract class GameSystem : MonoBehaviour
     private void SendMessageToOtherManagers(string message, int type)
     {
         GameSystemData data = new GameSystemData();
-        client.SendMessageToServer(JsonUtility.ToJson(data));
+        client.SendMessageToServer(MessagePackSerializer.Serialize(data));
     }
 }

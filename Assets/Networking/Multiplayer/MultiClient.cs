@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MessagePack;
 
 public class MultiClient : MonoBehaviour
 {
@@ -16,14 +17,13 @@ public class MultiClient : MonoBehaviour
     Socket sender;
 
     //delegate type for message received
-    public delegate void MessageReceiveEvent(string _messsage);
+    public delegate void MessageReceiveEvent(byte[] _messsage);
     //called when a message is received;
     public event MessageReceiveEvent MessageReceived;
 
     //dicts of all synced objects
     public Dictionary<int, MultiSyncedObject> syncedObjects = new Dictionary<int, MultiSyncedObject>();
     public Dictionary<int, MultiSyncedObject> sceneSyncedObjects = new Dictionary<int, MultiSyncedObject>();
-    public GamePlayer[] syncedObjectsList = new GamePlayer[10];
     public int syncedObjectsTotal = 0;
     //list of all spawnable objects
     public List<GameObject> spawnableObjects;
@@ -35,8 +35,6 @@ public class MultiClient : MonoBehaviour
 
     //input method the client is using
     public InputMethod inputMethod;
-    //has the player been spawned?
-    public bool playerSpawned;
 
     public bool hostAuthority;
     public SceneInfo currentScene;
@@ -49,11 +47,10 @@ public class MultiClient : MonoBehaviour
 
     //all of the game services in this scene;
     public Dictionary<int, GameSystem> gameSystems = new Dictionary<int, GameSystem>();
-
-    //the player associated with this client
-    public GamePlayer player;
+    
     //all of the players in this scene, keyed by their clientID
     public Dictionary<int, GamePlayer> gamePlayers = new Dictionary<int, GamePlayer>();
+    public GamePlayer[] gamePlayersList = new GamePlayer[10];
 
     //the client id of this client
     public int _ClientID;
@@ -82,7 +79,7 @@ public class MultiClient : MonoBehaviour
 
         //this only exists to see it in the editor
 #if UNITY_EDITOR
-        gamePlayers.Values.CopyTo(syncedObjectsList, 0);
+        gamePlayers.Values.CopyTo(gamePlayersList, 0);
 #endif
     }
 
@@ -136,8 +133,8 @@ public class MultiClient : MonoBehaviour
 
         //send a request to all other clients to spawn in this object
         MultiSpawnRequest spawnRequest = new MultiSpawnRequest(index);
-        MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnObject, JsonUtility.ToJson(spawnRequest));
-        SendMessageToServer(JsonUtility.ToJson(baseRequest));
+        MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnObject, MessagePackSerializer.Serialize(spawnRequest));
+        SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
         return instance;
     }
 
@@ -184,9 +181,7 @@ public class MultiClient : MonoBehaviour
             {
                 // Receive the response from the remote device.    
                 int bytesRec = sender.Receive(bytes);
-                string data = Encoding.ASCII.GetString(bytes);// Convert.FromBase64String(Encoding.ASCII.GetString(bytes)));
-                MessageReceived(data);
-                data = null;
+                MessageReceived(bytes);
             }
         }
         catch(Exception ex)
@@ -199,31 +194,30 @@ public class MultiClient : MonoBehaviour
         sender.Close();
     }
 
-    public void SendMessageToServer(string _message)
+    public void SendMessageToServer(byte[] _message)
     {
         //only send a message if we're connected
         if (sender.Connected)
         {
             //send the message, we're connected
             Debug.Log(String.Format("<<<Client>>>: sent \"{0}\"", _message));
-            byte[] messageBytes = Encoding.ASCII.GetBytes(_message);//Convert.ToBase64String(Encoding.ASCII.GetBytes(_message)) + "\0");
-            sender.Send(messageBytes);
+            sender.Send(_message);
         }
     }
 
     //listen for requests
-    void messageReceivedListener(string _message)
+    void messageReceivedListener(byte[] _message)
     {
         Debug.Log(String.Format("<<<Client>>>: Recieved \"{0}\"", _message));
         try
         {
             //get the base request object
-            MultiBaseRequest baseRequest = JsonUtility.FromJson<MultiBaseRequest>(_message);
+            MultiBaseRequest baseRequest = MessagePackSerializer.Deserialize<MultiBaseRequest>(_message);
             switch ((MultiPossibleRequest)baseRequest.RT)
             {
                 //initial data for setup
                 case MultiPossibleRequest.MultiInitialData:
-                    MultiInitialData initialData = JsonUtility.FromJson<MultiInitialData>(baseRequest.R);
+                    MultiInitialData initialData = MessagePackSerializer.Deserialize<MultiInitialData>(baseRequest.R);
 
                     //store the thread key as the client id, they're the same thing
                     _ClientID = initialData.T;
@@ -232,7 +226,7 @@ public class MultiClient : MonoBehaviour
 
                 //the server would like to spawn an object
                 case MultiPossibleRequest.MultiSpawnObject:
-                    MultiSpawnRequest multiSpawnRequest = JsonUtility.FromJson<MultiSpawnRequest>(baseRequest.R);
+                    MultiSpawnRequest multiSpawnRequest = MessagePackSerializer.Deserialize<MultiSpawnRequest>(baseRequest.R);
 
                     //queue spawning the object
                     actions.Enqueue(() => SpawnObject(multiSpawnRequest.I));
@@ -240,7 +234,7 @@ public class MultiClient : MonoBehaviour
 
                 //the server would like to sync an object
                 case MultiPossibleRequest.MultiSyncObject:
-                    MultiSyncRequest multiSyncRequest = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.R);
+                    MultiSyncRequest multiSyncRequest = MessagePackSerializer.Deserialize<MultiSyncRequest>(baseRequest.R);
 
                     //queue the synced object handle
                     actions.Enqueue(() => syncedObjects[multiSyncRequest.ID].HandleSyncRequest(multiSyncRequest));
@@ -248,7 +242,7 @@ public class MultiClient : MonoBehaviour
 
                 //the server would like to change scenes
                 case MultiPossibleRequest.MultiChangeScene:
-                    MultiChangeSceneRequest multiChangeScene = JsonUtility.FromJson<MultiChangeSceneRequest>(baseRequest.R);
+                    MultiChangeSceneRequest multiChangeScene = MessagePackSerializer.Deserialize<MultiChangeSceneRequest>(baseRequest.R);
 
                     //queue the scene change
                     actions.Enqueue(() => SceneManager.LoadScene(possibleScenes[multiChangeScene.N].name));
@@ -270,26 +264,28 @@ public class MultiClient : MonoBehaviour
 
                     //spawn our prefab on the network
                     MultiSpawnPlayer spawnPlayerScene = new MultiSpawnPlayer((int)inputMethod, _ClientID);
-                    MultiBaseRequest spawnPlayerBaseScene = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, JsonUtility.ToJson(spawnPlayerScene));
-                    SendMessageToServer(JsonUtility.ToJson(spawnPlayerBaseScene));
+                    MultiBaseRequest spawnPlayerBaseScene = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayerScene));
+                    SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBaseScene));
 
                     //spawn our prefab here
                     actions.Enqueue(() =>
                     {
                         //spawn in the new synced object instance
                         GameObject instance = Instantiate(possibleScenes[multiChangeScene.N].PlayerPrefabs[(int)inputMethod]);
-                        player = instance.GetComponent<GamePlayer>();
+                        GamePlayer player = instance.GetComponent<GamePlayer>();
                         //store its index and its local status
                         player.LocalOwned = true;
 
-                        //store its client id
-                        player.ClientID = _ClientID;
+                        //do setup
+                        player.PlayerSetup(_ClientID);
+                        //store it
+                        gamePlayers[_ClientID] = player;
                     });
                     break;
 
                 //the server would like to sync a scene object
                 case MultiPossibleRequest.MultiSceneSyncObject:
-                    MultiSyncRequest multiSceneSync = JsonUtility.FromJson<MultiSyncRequest>(baseRequest.R);
+                    MultiSyncRequest multiSceneSync = MessagePackSerializer.Deserialize<MultiSyncRequest>(baseRequest.R);
                     
                     //queue the synced object handle
                     actions.Enqueue(() => sceneSyncedObjects[multiSceneSync.ID].HandleSyncRequest(multiSceneSync));
@@ -302,7 +298,7 @@ public class MultiClient : MonoBehaviour
 
                 //there's new connection to the game, send a dict of id's and indexes
                 case MultiPossibleRequest.MultiNewConnection:
-                    MultiNewConnection newConnection = JsonUtility.FromJson<MultiNewConnection>(baseRequest.R);
+                    MultiNewConnection newConnection = MessagePackSerializer.Deserialize<MultiNewConnection>(baseRequest.R);
                     //dictionary of the sceneobjects with non negative indices(root objects)
                     Dictionary<int, int> idIndexes = new Dictionary<int, int>();
                     foreach (int key in syncedObjects.Keys)
@@ -319,14 +315,14 @@ public class MultiClient : MonoBehaviour
 
                     //Send the request
                     MultiInitialData sceneObjects = new MultiInitialData(newConnection.tN, idIndexes, playerTypes, possibleScenes.IndexOf(currentScene), syncedObjectsTotal, newConnection.tN);
-                    MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiInitialData, JsonUtility.ToJson(sceneObjects));
-                    SendMessageToServer(JsonUtility.ToJson(request));
+                    MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiInitialData, MessagePackSerializer.Serialize(sceneObjects));
+                    SendMessageToServer(MessagePackSerializer.Serialize(request));
                     
                     break;
 
                 //the server would like us to despawn an object
                 case MultiPossibleRequest.MultiDespawnObject:
-                    MultiDespawnObject despawnObject = JsonUtility.FromJson<MultiDespawnObject>(baseRequest.R);
+                    MultiDespawnObject despawnObject = MessagePackSerializer.Deserialize<MultiDespawnObject>(baseRequest.R);
 
                     //destroy the object
                     Debug.Log(String.Format("MultiClient.cs:291 Destroying {0}", syncedObjects[despawnObject.ID].gameObject.name));
@@ -334,14 +330,14 @@ public class MultiClient : MonoBehaviour
                     break;
 
                 case MultiPossibleRequest.GameSystemData:
-                    GameSystemData systemData = JsonUtility.FromJson<GameSystemData>(baseRequest.R);
+                    GameSystemData systemData = MessagePackSerializer.Deserialize<GameSystemData>(baseRequest.R);
 
                     //pass on this data, the game system knows what to do with it
                     gameSystems[systemData.S].HandleMessage(systemData);
                     break;
 
                 case MultiPossibleRequest.MultiSpawnPlayer:
-                    MultiSpawnPlayer spawnPlayer = JsonUtility.FromJson<MultiSpawnPlayer>(baseRequest.R);
+                    MultiSpawnPlayer spawnPlayer = MessagePackSerializer.Deserialize<MultiSpawnPlayer>(baseRequest.R);
 
                     //spawn in the player and ensure it knows which client it belongs to
                     actions.Enqueue(() =>
@@ -349,11 +345,15 @@ public class MultiClient : MonoBehaviour
                         GameObject instance = Instantiate(currentScene.PlayerPrefabs[spawnPlayer.T]);
 
                         GamePlayer gamePlayer = instance.GetComponent<GamePlayer>();
-                        gamePlayer.ClientID = spawnPlayer.C;
+                        //do setup
+                        gamePlayer.PlayerSetup(spawnPlayer.C);
+
+                        //store it
+                        gamePlayers[spawnPlayer.C] = gamePlayer;
                     });
                     break;
                 case MultiPossibleRequest.MultiSyncPlayer:
-                    MultiSyncPlayer syncPlayer = JsonUtility.FromJson<MultiSyncPlayer>(baseRequest.R);
+                    MultiSyncPlayer syncPlayer = MessagePackSerializer.Deserialize<MultiSyncPlayer>(baseRequest.R);
 
                     actions.Enqueue(() => gamePlayers[syncPlayer.C].HandleMessage(syncPlayer.S));
 
@@ -413,20 +413,23 @@ public class MultiClient : MonoBehaviour
 
         //spawn our prefab on the network
         MultiSpawnPlayer spawnPlayerScene = new MultiSpawnPlayer((int)inputMethod, _ClientID);
-        MultiBaseRequest spawnPlayerBaseScene = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, JsonUtility.ToJson(spawnPlayerScene));
-        SendMessageToServer(JsonUtility.ToJson(spawnPlayerBaseScene));
+        MultiBaseRequest spawnPlayerBaseScene = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayerScene));
+        SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBaseScene));
 
         //spawn our prefab here
         actions.Enqueue(() =>
         {
             //spawn in the new synced object instance
             GameObject instance = Instantiate(possibleScenes[multiSceneObjects.sI].PlayerPrefabs[(int)inputMethod]);
-            player = instance.GetComponent<GamePlayer>();
+            GamePlayer player = instance.GetComponent<GamePlayer>();
             //store its index and its local status
             player.LocalOwned = true;
 
-            //store its client id
-            player.ClientID = _ClientID;
+            //do setup
+            player.PlayerSetup(_ClientID);
+
+            //store it
+            gamePlayers[_ClientID] = player;
         });
 
         //spawn the rest of the players in
@@ -439,8 +442,11 @@ public class MultiClient : MonoBehaviour
                 GameObject instance = Instantiate(possibleScenes[multiSceneObjects.sI].PlayerPrefabs[newGamePlayers[key]]);
                 GamePlayer newPlayer = instance.GetComponent<GamePlayer>();
 
-                //store its client id
-                newPlayer.ClientID = key;
+                //do setup
+                newPlayer.PlayerSetup(key);
+
+                //store it
+                gamePlayers[key] = newPlayer;
             });
         }
     }
@@ -456,25 +462,26 @@ public class MultiClient : MonoBehaviour
 
             //send a change scene request
             MultiChangeSceneRequest sceneRequest = new MultiChangeSceneRequest(sceneIndex);
-            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, JsonUtility.ToJson(sceneRequest));
-            SendMessageToServer(JsonUtility.ToJson(baseRequest));
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, MessagePackSerializer.Serialize(sceneRequest));
+            SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
 
             //spawn our prefab on the network
             MultiSpawnPlayer spawnPlayer = new MultiSpawnPlayer((int)inputMethod, _ClientID);
-            MultiBaseRequest spawnPlayerBase = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, JsonUtility.ToJson(spawnPlayer));
-            SendMessageToServer(JsonUtility.ToJson(spawnPlayerBase));
+            MultiBaseRequest spawnPlayerBase = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayer));
+            SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBase));
 
             //spawn our prefab here
             actions.Enqueue(() =>
             {
                 //spawn in the new synced object instance
                 GameObject instance = Instantiate(possibleScenes[sceneIndex].PlayerPrefabs[(int)inputMethod]);
-                player = instance.GetComponent<GamePlayer>();
-                //store its index and its local status
-                player.LocalOwned = true;
+                GamePlayer player = instance.GetComponent<GamePlayer>();
 
-                //store its client id
-                player.ClientID = _ClientID;
+                //do setup
+                player.PlayerSetup(_ClientID);
+
+                //store it
+                gamePlayers[_ClientID] = player;
             });
         }
     }

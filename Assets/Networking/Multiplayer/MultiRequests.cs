@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using MessagePack;
 
 //request types
 public enum MultiPossibleRequest
@@ -20,18 +21,18 @@ public enum MultiPossibleRequest
 }
 
 //surface of mosts requests, contains type of request and request
-[Serializable]
+[MessagePackObject]
 public struct MultiBaseRequest
 {
     //type of request
-    [SerializeField]
+    [Key(0)]
     public int RT;
     //request
-    [SerializeField]
-    public string R;
+    [Key(1)]
+    public byte[] R;
 
     //construct a request
-    public MultiBaseRequest(MultiPossibleRequest _requestType, string _request)
+    public MultiBaseRequest(MultiPossibleRequest _requestType, byte[] _request)
     {
         RT = (int)_requestType;
         R = _request;
@@ -39,11 +40,11 @@ public struct MultiBaseRequest
 }
 
 //request to spawn an object
-[Serializable]
+[MessagePackObject]
 public struct MultiSpawnRequest
 {
     //index of object to spawn in spawnable objects
-    [SerializeField]
+    [Key(0)]
     public int I;
 
     //construct a new spawn request
@@ -54,14 +55,14 @@ public struct MultiSpawnRequest
 }
 
 //request to sync an object
-[Serializable]
+[MessagePackObject]
 public struct MultiSyncRequest
 {
     //id of object to sync
-    [SerializeField]
+    [Key(0)]
     public int ID;
     //serialized transform
-    [SerializeField]
+    [Key(1)]
     public List<SerializableTransform> tfs;
 
     //construct a sync request
@@ -78,11 +79,11 @@ public struct MultiSyncRequest
 }
 
 //request to change scenes
-[Serializable]
+[MessagePackObject]
 public struct MultiChangeSceneRequest
 {
     //index of the scene to change to
-    [SerializeField]
+    [Key(0)]
     public int N;
 
     //construct a new scene change request
@@ -93,11 +94,11 @@ public struct MultiChangeSceneRequest
 }
 
 //sent from the server to the host indicating a new connection
-[Serializable]
+[MessagePackObject]
 public struct MultiNewConnection
 {
     //the connection requesting this
-    [SerializeField]
+    [Key(0)]
     public int tN;
 
     public MultiNewConnection(int _threadN)
@@ -107,11 +108,11 @@ public struct MultiNewConnection
 }
 
 //sent when an object is destroyed
-[Serializable]
+[MessagePackObject]
 public struct MultiDespawnObject
 {
     //ID of the object to be despawned
-    [SerializeField]
+    [Key(0)]
     public int ID;
 
     public MultiDespawnObject(int _id)
@@ -121,35 +122,35 @@ public struct MultiDespawnObject
 }
 
 //initial data sent to help keep track of clients
-[Serializable]
+[MessagePackObject]
 public struct MultiInitialData
 {
     //thread key
-    [SerializeField]
+    [Key(0)]
     public int T;
 
     //dict of synced object ids with their prefab indexes
-    [SerializeField]
+    [Key(1)]
     public int[] sOI;
-    [SerializeField]
+    [Key(2)]
     public int[] sOK;
 
     //dict of gameplayer types with their client ids
-    [SerializeField]
+    [Key(3)]
     public int[] gOC;
-    [SerializeField]
+    [Key(4)]
     public int[] gOT;
 
     //current scene index
-    [SerializeField]
+    [Key(5)]
     public int sI;
 
     //total number of scene objects
-    [SerializeField]
+    [Key(6)]
     public int sOT;
 
     //the thread that requested this
-    [SerializeField]
+    [Key(7)]
     public int tN;
 
     public MultiInitialData(int _T, Dictionary<int, int> _syncedObjects, Dictionary<int, int> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
@@ -191,18 +192,18 @@ public struct MultiInitialData
 }
 
 //data sent between game systems
-[Serializable]
+[MessagePackObject]
 public struct GameSystemData
 {
     //service id
-    [SerializeField]
+    [Key(0)]
     public int S;
 
     //data string
-    [SerializeField]
-    public string D;
+    [Key(1)]
+    public byte[] D;
 
-    public GameSystemData(int _S, string _D)
+    public GameSystemData(int _S, byte[] _D)
     {
         S = _S;
         D = _D;
@@ -210,15 +211,15 @@ public struct GameSystemData
 }
 
 //request to spawn player
-[Serializable]
+[MessagePackObject]
 public struct MultiSpawnPlayer
 {
     //player type
-    [SerializeField]
+    [Key(0)]
     public int T;
 
     //client id
-    [SerializeField]
+    [Key(1)]
     public int C;
 
     public MultiSpawnPlayer(int _T, int _C)
@@ -229,18 +230,18 @@ public struct MultiSpawnPlayer
 }
 
 //request to sync player
-[Serializable]
+[MessagePackObject]
 public struct MultiSyncPlayer
 {
     //client id
-    [SerializeField]
+    [Key(0)]
     public int C;
 
     //sync string
-    [SerializeField]
-    public string S;
+    [Key(1)]
+    public byte[] S;
 
-    public MultiSyncPlayer(int _C, string _S)
+    public MultiSyncPlayer(int _C, byte[] _S)
     {
         C = _C;
         S = _S;

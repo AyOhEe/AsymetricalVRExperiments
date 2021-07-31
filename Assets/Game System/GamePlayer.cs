@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MessagePack;
 
 public abstract class GamePlayer : MonoBehaviour
 {
@@ -12,24 +13,24 @@ public abstract class GamePlayer : MonoBehaviour
     
     public bool LocalOwned;
 
-    public void Awake()
+    public void PlayerSetup(int _clientID)
     {
         client = FindObjectOfType<MultiClient>();
-        client.gamePlayers.Add(ClientID, this);
+        ClientID = _clientID;
 
-        LocalOwned = ClientID == client._ClientID;
+        LocalOwned = ClientID == client._ClientID;  
     }
     
     public abstract void SyncPlayer();
-    public abstract void HandleMessage(string data);
+    public abstract void HandleMessage(byte[] data);
 
-    protected void SendSyncMessage(string message)
+    protected void SendSyncMessage(byte[] message)
     {
         if (ClientID == client._ClientID)
         {
             MultiSyncPlayer syncPlayer = new MultiSyncPlayer(ClientID, message);
-            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncPlayer, JsonUtility.ToJson(syncPlayer));
-            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncPlayer, MessagePackSerializer.Serialize(syncPlayer));
+            client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
         }
     }
 }

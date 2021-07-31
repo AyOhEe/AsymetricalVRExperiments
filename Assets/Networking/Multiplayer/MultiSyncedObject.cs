@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using MessagePack;
 
 public class MultiSyncedObject : MonoBehaviour
 {
@@ -60,9 +61,9 @@ public class MultiSyncedObject : MonoBehaviour
         {
             //create sync and base requests
             MultiSyncRequest syncRequest = new MultiSyncRequest(ID, syncedTransforms);
-            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncObject, JsonUtility.ToJson(syncRequest));
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncObject, MessagePackSerializer.Serialize(syncRequest));
             //send the message away
-            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
+            client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
             Debug.Log("Object " + ID.ToString() + " sent sync request");
         }
 
@@ -82,7 +83,7 @@ public class MultiSyncedObject : MonoBehaviour
     }
 
     //called when a message is received on either the game client or game server, whichever is present
-    public void MessageReceived(string _message)
+    public void MessageReceived(byte[] _message)
     {
 
     }
@@ -94,8 +95,8 @@ public class MultiSyncedObject : MonoBehaviour
         if (localOwned)
         {
             MultiDespawnObject destroyObject = new MultiDespawnObject(ID);
-            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiDespawnObject, JsonUtility.ToJson(destroyObject));
-            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiDespawnObject, MessagePackSerializer.Serialize(destroyObject));
+            client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
         }
     }
 }

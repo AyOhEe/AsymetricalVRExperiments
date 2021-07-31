@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MessagePack;
 
 //very similar to a syncedobject, except from the fact that it always will belong to the server and must belong to a scene object
 public class MultiSceneSyncedObject : MultiSyncedObject
@@ -40,9 +41,9 @@ public class MultiSceneSyncedObject : MultiSyncedObject
         {
             //crete sync and base requests
             MultiSyncRequest syncRequest = new MultiSyncRequest(ID, syncedTransforms);
-            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSceneSyncObject, JsonUtility.ToJson(syncRequest));
+            MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSceneSyncObject, MessagePackSerializer.Serialize(syncRequest));
             //send the message away
-            client.SendMessageToServer(JsonUtility.ToJson(baseRequest));
+            client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
             Debug.Log("Scene Object " + ID.ToString() + " sent sync request");
         }
         
@@ -51,10 +52,10 @@ public class MultiSceneSyncedObject : MultiSyncedObject
     }
 
     //called when a message is received on either the game client or game server, whichever is present
-    public new void MessageReceived(string _message)
+    public new void MessageReceived(byte[] _message)
     {
         //check if it's a host auth change, otherwise we don't care
-        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiHostAuthChange)
+        if ((MultiPossibleRequest)MessagePackSerializer.Deserialize<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiHostAuthChange)
         {
             //it was, we're locally owned now
             localOwned = true;

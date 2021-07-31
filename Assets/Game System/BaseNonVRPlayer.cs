@@ -1,15 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System;
 using UnityEngine;
+using MessagePack;
 
 public class BaseNonVRPlayer : GamePlayer
 {
     public NonVRPlayerController PlayerController;
 
-    private new void Awake()
+    private void Awake()
     {
-        base.Awake();
         PlayerController = GetComponent<NonVRPlayerController>();
 
         Invoke("SyncPlayer", 0.2f);
@@ -32,7 +30,7 @@ public class BaseNonVRPlayer : GamePlayer
 
     public override void SyncPlayer()
     {
-        string message = JsonUtility.ToJson(
+        byte[] message = MessagePackSerializer.Serialize(
             new PlayerInfo(
                 transform.localPosition, 
                 transform.localRotation, 
@@ -42,9 +40,9 @@ public class BaseNonVRPlayer : GamePlayer
         Invoke("SyncPlayer", 0.2f);
     }
 
-    public override void HandleMessage(string data)
+    public override void HandleMessage(byte[] data)
     {
-        PlayerInfo info = JsonUtility.FromJson<PlayerInfo>(data);
+        PlayerInfo info = MessagePackSerializer.Deserialize<PlayerInfo>(data);
 
         transform.localPosition = info.position;
         transform.localRotation = info.rotation;

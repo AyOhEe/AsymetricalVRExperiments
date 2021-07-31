@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using MessagePack;
 
 public class MultiServer : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class MultiServer : MonoBehaviour
     public IPAddress ip;
 
     //delegate type for message received
-    public delegate void MessageReceiveEvent(string _messsage, int clientID);
+    public delegate void MessageReceiveEvent(byte[] _messsage, int clientID);
     //called when a message is received;
     public event MessageReceiveEvent MessageReceived;
 
@@ -98,16 +99,16 @@ public class MultiServer : MonoBehaviour
         byte[] bytes = null;
 
         //if this client is supposed to be host, tell them
-        MultiBaseRequest baseRequest_HAC = new MultiBaseRequest(MultiPossibleRequest.MultiHostAuthChange, "");
+        MultiBaseRequest baseRequest_HAC = new MultiBaseRequest(MultiPossibleRequest.MultiHostAuthChange, null);
         if (listenerThreads[threadKey].Item3)
         {
-            SendMessageToClient(JsonUtility.ToJson(baseRequest_HAC), threadKey);
+            SendMessageToClient(MessagePackSerializer.Serialize(baseRequest_HAC), threadKey);
         }
 
         //now that we definitely have a host present, do all the stuff for a new connection
         MultiNewConnection newConnection = new MultiNewConnection(threadKey);
-        MultiBaseRequest baseRequest_NC = new MultiBaseRequest(MultiPossibleRequest.MultiNewConnection, JsonUtility.ToJson(newConnection));
-        SendMessageToClient(JsonUtility.ToJson(baseRequest_NC), listenerThreads.Keys.ElementAt(0));
+        MultiBaseRequest baseRequest_NC = new MultiBaseRequest(MultiPossibleRequest.MultiNewConnection, MessagePackSerializer.Serialize(newConnection));
+        SendMessageToClient(MessagePackSerializer.Serialize(baseRequest_NC), listenerThreads.Keys.ElementAt(0));
 
         //listen only while connected
         while (handler.Connected)
@@ -117,7 +118,7 @@ public class MultiServer : MonoBehaviour
             data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
             if (data.Count(f => f == '{') == data.Count(f => f == '}') & data.Count(f => f == '{') != 0)
             {
-                messageReceivedListener(data, threadKey);//Encoding.ASCII.GetString(Convert.FromBase64String(data)), threadKey);
+                messageReceivedListener(bytes, threadKey);//Encoding.ASCII.GetString(Convert.FromBase64String(data)), threadKey);
                 data = null;
             }
         }
@@ -131,7 +132,7 @@ public class MultiServer : MonoBehaviour
 
         //change host authority to the next client in the dict(not necessarily the oldest!)
         int nextHostIndex = listenerThreads.Keys.ElementAt<int>(0);
-        SendMessageToClient(JsonUtility.ToJson(baseRequest_HAC), nextHostIndex);
+        SendMessageToClient(MessagePackSerializer.Serialize(baseRequest_HAC), nextHostIndex);
         listenerThreads[nextHostIndex] = new Tuple<Thread, Socket, bool>(
             listenerThreads[nextHostIndex].Item1, 
             listenerThreads[nextHostIndex].Item2, 
@@ -139,7 +140,7 @@ public class MultiServer : MonoBehaviour
     }
 
     //sends _message to the client if there is a stream present
-    public void SendMessageToClient(string _message, int clientID)
+    public void SendMessageToClient(byte[] _message, int clientID)
     {
         //test if the client connection at the connection id exists
         if (listenerThreads.TryGetValue(clientID, out _))
@@ -149,8 +150,7 @@ public class MultiServer : MonoBehaviour
 
             //it does, send the message
             Debug.Log(String.Format("<<<Thread {0}>>>: sent \"{1}\"", clientID, _message));
-            byte[] messageBytes = Encoding.ASCII.GetBytes(_message + "\0");//Convert.ToBase64String(Encoding.ASCII.GetBytes(_message)) + "\0");
-            listenerThreads[clientID].Item2.Send(messageBytes);
+            listenerThreads[clientID].Item2.Send(_message);
         }
         else
         {
@@ -159,16 +159,16 @@ public class MultiServer : MonoBehaviour
     }
 
     //listen for requests
-    void messageReceivedListener(string _message, int clientID)
+    void messageReceivedListener(byte[] _message, int clientID)
     {
         Debug.Log(String.Format("<<<Thread {0}>>>: Recieved \"{1}\"", clientID, _message));
 
         //test if we've recieved a sceneObjects request
-        if ((MultiPossibleRequest)JsonUtility.FromJson<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiInitialData)
+        if ((MultiPossibleRequest)MessagePackSerializer.Deserialize<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiInitialData)
         {
             //we have, relay it to the thread requesting it(the most recent connection)
-            MultiBaseRequest baseRequest = JsonUtility.FromJson<MultiBaseRequest>(_message);
-            MultiInitialData sceneObjects = JsonUtility.FromJson<MultiInitialData>(baseRequest.R);
+            MultiBaseRequest baseRequest = MessagePackSerializer.Deserialize<MultiBaseRequest>(_message);
+            MultiInitialData sceneObjects = MessagePackSerializer.Deserialize<MultiInitialData>(baseRequest.R);
             SendMessageToClient(_message, sceneObjects.tN);
             return;
         }
