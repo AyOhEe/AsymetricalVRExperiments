@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using MessagePack;
 
@@ -18,7 +19,8 @@ public abstract class GamePlayer : MonoBehaviour
         client = FindObjectOfType<MultiClient>();
         ClientID = _clientID;
 
-        LocalOwned = ClientID == client._ClientID;  
+        LocalOwned = ClientID == client._ClientID;
+        Debug.Log(String.Format("Player {0} Setup", _clientID));
     }
     
     public abstract void SyncPlayer();

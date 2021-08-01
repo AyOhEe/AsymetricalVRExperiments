@@ -49,22 +49,23 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(14)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(15)
             {
                 { typeof(global::System.Collections.Generic.List<global::SerializableTransform>), 0 },
-                { typeof(global::GameSystemData), 1 },
-                { typeof(global::MultiBaseRequest), 2 },
-                { typeof(global::MultiChangeSceneRequest), 3 },
-                { typeof(global::MultiDespawnObject), 4 },
-                { typeof(global::MultiInitialData), 5 },
-                { typeof(global::MultiNewConnection), 6 },
-                { typeof(global::MultiSpawnPlayer), 7 },
-                { typeof(global::MultiSpawnRequest), 8 },
-                { typeof(global::MultiSyncPlayer), 9 },
-                { typeof(global::MultiSyncRequest), 10 },
-                { typeof(global::SerializableQuaternion), 11 },
-                { typeof(global::SerializableTransform), 12 },
-                { typeof(global::SerializableVector3), 13 },
+                { typeof(global::BaseNonVRPlayer.PlayerInfo), 1 },
+                { typeof(global::GameSystemData), 2 },
+                { typeof(global::MultiBaseRequest), 3 },
+                { typeof(global::MultiChangeSceneRequest), 4 },
+                { typeof(global::MultiDespawnObject), 5 },
+                { typeof(global::MultiInitialData), 6 },
+                { typeof(global::MultiNewConnection), 7 },
+                { typeof(global::MultiSpawnPlayer), 8 },
+                { typeof(global::MultiSpawnRequest), 9 },
+                { typeof(global::MultiSyncPlayer), 10 },
+                { typeof(global::MultiSyncRequest), 11 },
+                { typeof(global::SerializableQuaternion), 12 },
+                { typeof(global::SerializableTransform), 13 },
+                { typeof(global::SerializableVector3), 14 },
             };
         }
 
@@ -79,19 +80,20 @@ namespace MessagePack.Resolvers
             switch (key)
             {
                 case 0: return new global::MessagePack.Formatters.ListFormatter<global::SerializableTransform>();
-                case 1: return new MessagePack.Formatters.GameSystemDataFormatter();
-                case 2: return new MessagePack.Formatters.MultiBaseRequestFormatter();
-                case 3: return new MessagePack.Formatters.MultiChangeSceneRequestFormatter();
-                case 4: return new MessagePack.Formatters.MultiDespawnObjectFormatter();
-                case 5: return new MessagePack.Formatters.MultiInitialDataFormatter();
-                case 6: return new MessagePack.Formatters.MultiNewConnectionFormatter();
-                case 7: return new MessagePack.Formatters.MultiSpawnPlayerFormatter();
-                case 8: return new MessagePack.Formatters.MultiSpawnRequestFormatter();
-                case 9: return new MessagePack.Formatters.MultiSyncPlayerFormatter();
-                case 10: return new MessagePack.Formatters.MultiSyncRequestFormatter();
-                case 11: return new MessagePack.Formatters.SerializableQuaternionFormatter();
-                case 12: return new MessagePack.Formatters.SerializableTransformFormatter();
-                case 13: return new MessagePack.Formatters.SerializableVector3Formatter();
+                case 1: return new MessagePack.Formatters.BaseNonVRPlayer_PlayerInfoFormatter();
+                case 2: return new MessagePack.Formatters.GameSystemDataFormatter();
+                case 3: return new MessagePack.Formatters.MultiBaseRequestFormatter();
+                case 4: return new MessagePack.Formatters.MultiChangeSceneRequestFormatter();
+                case 5: return new MessagePack.Formatters.MultiDespawnObjectFormatter();
+                case 6: return new MessagePack.Formatters.MultiInitialDataFormatter();
+                case 7: return new MessagePack.Formatters.MultiNewConnectionFormatter();
+                case 8: return new MessagePack.Formatters.MultiSpawnPlayerFormatter();
+                case 9: return new MessagePack.Formatters.MultiSpawnRequestFormatter();
+                case 10: return new MessagePack.Formatters.MultiSyncPlayerFormatter();
+                case 11: return new MessagePack.Formatters.MultiSyncRequestFormatter();
+                case 12: return new MessagePack.Formatters.SerializableQuaternionFormatter();
+                case 13: return new MessagePack.Formatters.SerializableTransformFormatter();
+                case 14: return new MessagePack.Formatters.SerializableVector3Formatter();
                 default: return null;
             }
         }
@@ -130,6 +132,57 @@ namespace MessagePack.Formatters
 {
     using global::System.Buffers;
     using global::MessagePack;
+
+    public sealed class BaseNonVRPlayer_PlayerInfoFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::BaseNonVRPlayer.PlayerInfo>
+    {
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::BaseNonVRPlayer.PlayerInfo value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(3);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Serialize(ref writer, value.position, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.rotation, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.lookDir, options);
+        }
+
+        public global::BaseNonVRPlayer.PlayerInfo Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
+            }
+
+            options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __position__ = default(global::UnityEngine.Vector3);
+            var __rotation__ = default(global::UnityEngine.Quaternion);
+            var __lookDir__ = default(global::UnityEngine.Quaternion);
+
+            for (int i = 0; i < length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        __position__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Deserialize(ref reader, options);
+                        break;
+                    case 1:
+                        __rotation__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        break;
+                    case 2:
+                        __lookDir__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::BaseNonVRPlayer.PlayerInfo(__position__, __rotation__, __lookDir__);
+            reader.Depth--;
+            return ____result;
+        }
+    }
 
     public sealed class GameSystemDataFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::GameSystemData>
     {

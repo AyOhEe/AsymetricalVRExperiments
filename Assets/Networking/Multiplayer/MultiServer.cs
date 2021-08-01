@@ -14,11 +14,6 @@ public class MultiServer : MonoBehaviour
     public string IPString;
     public IPAddress ip;
 
-    //delegate type for message received
-    public delegate void MessageReceiveEvent(byte[] _messsage, int clientID);
-    //called when a message is received;
-    public event MessageReceiveEvent MessageReceived;
-
     //dict of listenerThreads
     public Dictionary<int, Tuple<Thread, Socket, bool>> listenerThreads = new Dictionary<int, Tuple<Thread, Socket, bool>>();
     //main socket
@@ -95,7 +90,6 @@ public class MultiServer : MonoBehaviour
         newThread.Start(threadKey + 1);
 
         // Incoming data from the client.    
-        string data = null;
         byte[] bytes = null;
 
         //if this client is supposed to be host, tell them
@@ -106,21 +100,19 @@ public class MultiServer : MonoBehaviour
         }
 
         //now that we definitely have a host present, do all the stuff for a new connection
-        MultiNewConnection newConnection = new MultiNewConnection(threadKey);
-        MultiBaseRequest baseRequest_NC = new MultiBaseRequest(MultiPossibleRequest.MultiNewConnection, MessagePackSerializer.Serialize(newConnection));
-        SendMessageToClient(MessagePackSerializer.Serialize(baseRequest_NC), listenerThreads.Keys.ElementAt(0));
+        if (threadKey != 0)
+        {
+            MultiNewConnection newConnection = new MultiNewConnection(threadKey);
+            MultiBaseRequest baseRequest_NC = new MultiBaseRequest(MultiPossibleRequest.MultiNewConnection, MessagePackSerializer.Serialize(newConnection));
+            SendMessageToClient(MessagePackSerializer.Serialize(baseRequest_NC), listenerThreads.Keys.ElementAt(0));
+        }
 
         //listen only while connected
         while (handler.Connected)
         {
             bytes = new byte[2048];
             int bytesRec = handler.Receive(bytes);
-            data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-            if (data.Count(f => f == '{') == data.Count(f => f == '}') & data.Count(f => f == '{') != 0)
-            {
-                messageReceivedListener(bytes, threadKey);//Encoding.ASCII.GetString(Convert.FromBase64String(data)), threadKey);
-                data = null;
-            }
+            messageReceivedListener(bytes, threadKey);//Encoding.ASCII.GetString(Convert.FromBase64String(data)), threadKey);
         }
 
         //shutdown the socket once the client disconnects
@@ -149,7 +141,7 @@ public class MultiServer : MonoBehaviour
                 return;
 
             //it does, send the message
-            Debug.Log(String.Format("<<<Thread {0}>>>: sent \"{1}\"", clientID, _message));
+            Debug.Log(String.Format("<<<Thread {0}>>>: sent \"{1}\"", clientID, MessagePackSerializer.ConvertToJson(_message)));
             listenerThreads[clientID].Item2.Send(_message);
         }
         else
@@ -161,7 +153,7 @@ public class MultiServer : MonoBehaviour
     //listen for requests
     void messageReceivedListener(byte[] _message, int clientID)
     {
-        Debug.Log(String.Format("<<<Thread {0}>>>: Recieved \"{1}\"", clientID, _message));
+        Debug.Log(String.Format("<<<Thread {0}>>>: Recieved \"{1}\"", clientID, MessagePackSerializer.ConvertToJson(_message)));
 
         //test if we've recieved a sceneObjects request
         if ((MultiPossibleRequest)MessagePackSerializer.Deserialize<MultiBaseRequest>(_message).RT == MultiPossibleRequest.MultiInitialData)
@@ -184,8 +176,6 @@ public class MultiServer : MonoBehaviour
 
     private void Start()
     {
-        //add our message received listener to the message received event
-        MessageReceived += messageReceivedListener;
         if (instantStart)
         {
             StartServer();

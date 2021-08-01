@@ -72,7 +72,8 @@ public class MultiNetworkHandler : MonoBehaviour
         server.GetComponent<MultiServer>().IPString = IP;
         server.GetComponent<MultiServer>().StartServer();
         yield return new WaitForSeconds(1);
-        _Connect().ChangeScene(0, forceSceneChange:true);
+        MultiClient multiClient = _Connect();
+        multiClient.actions.Enqueue(() => StartCoroutine(multiClient.ChangeScene(0, forceSceneChange:true)));
         DontDestroyOnLoad(server);
     }
 

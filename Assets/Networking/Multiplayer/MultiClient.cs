@@ -31,7 +31,7 @@ public class MultiClient : MonoBehaviour
     public List<SceneInfo> possibleScenes;
 
     //queue of actions to be done
-    private Queue<Action> actions = new Queue<Action>();
+    public Queue<Action> actions = new Queue<Action>();
 
     //input method the client is using
     public InputMethod inputMethod;
@@ -456,13 +456,13 @@ public class MultiClient : MonoBehaviour
         }
     }
 
-    public void ChangeScene(int sceneIndex, bool forceSceneChange = false)
+    public IEnumerator ChangeScene(int sceneIndex, bool forceSceneChange = false)
     {
         //only order a scene change if we're host or it is forced(basically only in MultiNetworkHandler.cs:75)
         if (hostAuthority | forceSceneChange)
         {
             //change the scene
-            actions.Enqueue(() => SceneManager.LoadScene(possibleScenes[sceneIndex].name));
+            SceneManager.LoadScene(possibleScenes[sceneIndex].name);
             currentScene = possibleScenes[sceneIndex];
 
             //send a change scene request
@@ -470,12 +470,13 @@ public class MultiClient : MonoBehaviour
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiChangeScene, MessagePackSerializer.Serialize(sceneRequest));
             SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
 
+            yield return new WaitForEndOfFrame();
+
             //spawn our prefab on the network
             MultiSpawnPlayer spawnPlayer = new MultiSpawnPlayer((int)inputMethod, _ClientID);
             MultiBaseRequest spawnPlayerBase = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayer));
             SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBase));
 
-            //spawn our prefab here
             actions.Enqueue(() =>
             {
                 //spawn in the new synced object instance
