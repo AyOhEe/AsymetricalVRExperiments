@@ -49,23 +49,24 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(15)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(16)
             {
                 { typeof(global::System.Collections.Generic.List<global::SerializableTransform>), 0 },
                 { typeof(global::BaseNonVRPlayer.PlayerInfo), 1 },
-                { typeof(global::GameSystemData), 2 },
-                { typeof(global::MultiBaseRequest), 3 },
-                { typeof(global::MultiChangeSceneRequest), 4 },
-                { typeof(global::MultiDespawnObject), 5 },
-                { typeof(global::MultiInitialData), 6 },
-                { typeof(global::MultiNewConnection), 7 },
-                { typeof(global::MultiSpawnPlayer), 8 },
-                { typeof(global::MultiSpawnRequest), 9 },
-                { typeof(global::MultiSyncPlayer), 10 },
-                { typeof(global::MultiSyncRequest), 11 },
-                { typeof(global::SerializableQuaternion), 12 },
-                { typeof(global::SerializableTransform), 13 },
-                { typeof(global::SerializableVector3), 14 },
+                { typeof(global::BaseVRPlayer.PlayerInfo), 2 },
+                { typeof(global::GameSystemData), 3 },
+                { typeof(global::MultiBaseRequest), 4 },
+                { typeof(global::MultiChangeSceneRequest), 5 },
+                { typeof(global::MultiDespawnObject), 6 },
+                { typeof(global::MultiInitialData), 7 },
+                { typeof(global::MultiNewConnection), 8 },
+                { typeof(global::MultiSpawnPlayer), 9 },
+                { typeof(global::MultiSpawnRequest), 10 },
+                { typeof(global::MultiSyncPlayer), 11 },
+                { typeof(global::MultiSyncRequest), 12 },
+                { typeof(global::SerializableQuaternion), 13 },
+                { typeof(global::SerializableTransform), 14 },
+                { typeof(global::SerializableVector3), 15 },
             };
         }
 
@@ -81,19 +82,20 @@ namespace MessagePack.Resolvers
             {
                 case 0: return new global::MessagePack.Formatters.ListFormatter<global::SerializableTransform>();
                 case 1: return new MessagePack.Formatters.BaseNonVRPlayer_PlayerInfoFormatter();
-                case 2: return new MessagePack.Formatters.GameSystemDataFormatter();
-                case 3: return new MessagePack.Formatters.MultiBaseRequestFormatter();
-                case 4: return new MessagePack.Formatters.MultiChangeSceneRequestFormatter();
-                case 5: return new MessagePack.Formatters.MultiDespawnObjectFormatter();
-                case 6: return new MessagePack.Formatters.MultiInitialDataFormatter();
-                case 7: return new MessagePack.Formatters.MultiNewConnectionFormatter();
-                case 8: return new MessagePack.Formatters.MultiSpawnPlayerFormatter();
-                case 9: return new MessagePack.Formatters.MultiSpawnRequestFormatter();
-                case 10: return new MessagePack.Formatters.MultiSyncPlayerFormatter();
-                case 11: return new MessagePack.Formatters.MultiSyncRequestFormatter();
-                case 12: return new MessagePack.Formatters.SerializableQuaternionFormatter();
-                case 13: return new MessagePack.Formatters.SerializableTransformFormatter();
-                case 14: return new MessagePack.Formatters.SerializableVector3Formatter();
+                case 2: return new MessagePack.Formatters.BaseVRPlayer_PlayerInfoFormatter();
+                case 3: return new MessagePack.Formatters.GameSystemDataFormatter();
+                case 4: return new MessagePack.Formatters.MultiBaseRequestFormatter();
+                case 5: return new MessagePack.Formatters.MultiChangeSceneRequestFormatter();
+                case 6: return new MessagePack.Formatters.MultiDespawnObjectFormatter();
+                case 7: return new MessagePack.Formatters.MultiInitialDataFormatter();
+                case 8: return new MessagePack.Formatters.MultiNewConnectionFormatter();
+                case 9: return new MessagePack.Formatters.MultiSpawnPlayerFormatter();
+                case 10: return new MessagePack.Formatters.MultiSpawnRequestFormatter();
+                case 11: return new MessagePack.Formatters.MultiSyncPlayerFormatter();
+                case 12: return new MessagePack.Formatters.MultiSyncRequestFormatter();
+                case 13: return new MessagePack.Formatters.SerializableQuaternionFormatter();
+                case 14: return new MessagePack.Formatters.SerializableTransformFormatter();
+                case 15: return new MessagePack.Formatters.SerializableVector3Formatter();
                 default: return null;
             }
         }
@@ -140,9 +142,9 @@ namespace MessagePack.Formatters
         {
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             writer.WriteArrayHeader(3);
-            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Serialize(ref writer, value.position, options);
-            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.rotation, options);
-            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.lookDir, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Serialize(ref writer, value.p, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.r, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.l, options);
         }
 
         public global::BaseNonVRPlayer.PlayerInfo Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -155,22 +157,22 @@ namespace MessagePack.Formatters
             options.Security.DepthStep(ref reader);
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __position__ = default(global::UnityEngine.Vector3);
-            var __rotation__ = default(global::UnityEngine.Quaternion);
-            var __lookDir__ = default(global::UnityEngine.Quaternion);
+            var __p__ = default(global::UnityEngine.Vector3);
+            var __r__ = default(global::UnityEngine.Quaternion);
+            var __l__ = default(global::UnityEngine.Quaternion);
 
             for (int i = 0; i < length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        __position__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Deserialize(ref reader, options);
+                        __p__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Deserialize(ref reader, options);
                         break;
                     case 1:
-                        __rotation__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        __r__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
                         break;
                     case 2:
-                        __lookDir__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        __l__ = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -178,7 +180,67 @@ namespace MessagePack.Formatters
                 }
             }
 
-            var ____result = new global::BaseNonVRPlayer.PlayerInfo(__position__, __rotation__, __lookDir__);
+            var ____result = new global::BaseNonVRPlayer.PlayerInfo(__p__, __r__, __l__);
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class BaseVRPlayer_PlayerInfoFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::BaseVRPlayer.PlayerInfo>
+    {
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::BaseVRPlayer.PlayerInfo value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(6);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Serialize(ref writer, value.lP, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.lR, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Serialize(ref writer, value.hP, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.hR, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Serialize(ref writer, value.rP, options);
+            formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Serialize(ref writer, value.rR, options);
+        }
+
+        public global::BaseVRPlayer.PlayerInfo Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
+            }
+
+            options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var ____result = new global::BaseVRPlayer.PlayerInfo();
+
+            for (int i = 0; i < length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        ____result.lP = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Deserialize(ref reader, options);
+                        break;
+                    case 1:
+                        ____result.lR = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        break;
+                    case 2:
+                        ____result.hP = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Deserialize(ref reader, options);
+                        break;
+                    case 3:
+                        ____result.hR = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        break;
+                    case 4:
+                        ____result.rP = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Vector3>().Deserialize(ref reader, options);
+                        break;
+                    case 5:
+                        ____result.rR = formatterResolver.GetFormatterWithVerify<global::UnityEngine.Quaternion>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
             reader.Depth--;
             return ____result;
         }

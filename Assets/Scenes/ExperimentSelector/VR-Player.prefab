@@ -108,7 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8319322476640392901}
   - component: {fileID: 8094067873123433379}
-  - component: {fileID: 5062948309360485106}
+  - component: {fileID: 3443951588225998907}
   m_Layer: 0
   m_Name: VR-Player
   m_TagString: Untagged
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraRig: {fileID: 1869203802204221052}
---- !u!114 &5062948309360485106
+--- !u!114 &3443951588225998907
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -156,20 +156,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1006868883727806159}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2974b20e81b34da43a927b2487d6e3c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 325a03b621078044ba13f3c1505ab943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  doSyncedObjectsDictSetup: 1
-  syncedTransforms:
-  - {fileID: 7408087449779402897}
-  - {fileID: 7194257431609180991}
-  - {fileID: 1935004164917448635}
-  ID: 0
-  index: 1
+  type: 0
+  ClientID: 0
   client: {fileID: 0}
-  localOwned: 0
-  parent: {fileID: 0}
+  LocalOwned: 0
+  controller: {fileID: 8094067873123433379}
+  Head: {fileID: 7408087449779402897}
+  LeftHand: {fileID: 7194257431609180991}
+  RightHand: {fileID: 1935004164917448635}
 --- !u!1 &1869203802204221052
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,8 +515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731564a51e8028b46bf542db4ae41627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mTag: CamRigHead
-  syncedObject: {fileID: 5062948309360485106}
+  player: {fileID: 3443951588225998907}
   toMimic: {fileID: 6426613552696388578}
 --- !u!54 &2331591066402004334
 Rigidbody:
@@ -644,8 +640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731564a51e8028b46bf542db4ae41627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mTag: CamRigLeftHand
-  syncedObject: {fileID: 5062948309360485106}
+  player: {fileID: 3443951588225998907}
   toMimic: {fileID: 3452728158033283137}
 --- !u!54 &2778384266351821958
 Rigidbody:
@@ -866,8 +861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731564a51e8028b46bf542db4ae41627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mTag: CamRigRightHand
-  syncedObject: {fileID: 5062948309360485106}
+  player: {fileID: 3443951588225998907}
   toMimic: {fileID: 2502413610474997990}
 --- !u!54 &3688540356647921884
 Rigidbody:

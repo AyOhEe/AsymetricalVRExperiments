@@ -8,16 +8,23 @@ using MessagePack;
 public enum MultiPossibleRequest
 {
     MultiInitialData,
+
     MultiSpawnObject,
     MultiSyncObject,
+
     MultiChangeScene,
+
     MultiSceneSyncObject,
+
     MultiHostAuthChange,
     MultiNewConnection,
+
     MultiDespawnObject,
-    GameSystemData,
+
+    MultiGameData,
+
     MultiSpawnPlayer,
-    MultiSyncPlayer
+    MultiSyncPlayer,
 }
 
 //surface of mosts requests, contains type of request and request

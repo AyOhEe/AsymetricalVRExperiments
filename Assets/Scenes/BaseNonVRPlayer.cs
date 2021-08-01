@@ -10,10 +10,6 @@ public class BaseNonVRPlayer : GamePlayer
     {
         PlayerController = GetComponent<NonVRPlayerController>();
 
-#if UNITY_EDITOR
-        Debug.Log(String.Format("Player {0} Spawned in {1}", ClientID, UnityEngine.SceneManagement.SceneManager.GetActiveScene().name));
-#endif
-
         Invoke("SyncPlayer", 0.05f);
     }
 
@@ -21,17 +17,17 @@ public class BaseNonVRPlayer : GamePlayer
     public struct PlayerInfo
     {
         [Key(0)]
-        public Vector3 position;
+        public Vector3 p;
         [Key(1)]
-        public Quaternion rotation;
+        public Quaternion r;
         [Key(2)]
-        public Quaternion lookDir;
+        public Quaternion l;
 
         public PlayerInfo(Vector3 _pos, Quaternion _rot, Quaternion _lookDir)
         {
-            position = _pos;
-            rotation = _rot;
-            lookDir = _lookDir;
+            p = _pos;
+            r = _rot;
+            l = _lookDir;
         }
     }
 
@@ -51,15 +47,8 @@ public class BaseNonVRPlayer : GamePlayer
     {
         PlayerInfo info = MessagePackSerializer.Deserialize<PlayerInfo>(data);
 
-        transform.localPosition = info.position;
-        transform.localRotation = info.rotation;
-        PlayerController.playerShadesParent.transform.localRotation = info.lookDir;
+        transform.localPosition = info.p;
+        transform.localRotation = info.r;
+        PlayerController.playerShadesParent.transform.localRotation = info.l;
     }
-
-#if UNITY_EDITOR
-    public void OnDestroy()
-    {
-        Debug.Log(String.Format("Player {0} Destroyed in {1}", ClientID, UnityEngine.SceneManagement.SceneManager.GetActiveScene().name));
-    }
-#endif
 }

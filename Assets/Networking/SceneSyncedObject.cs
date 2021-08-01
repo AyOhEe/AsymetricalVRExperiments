@@ -32,7 +32,7 @@ public class SceneSyncedObject : SyncedObject
                 retVal = server;
                 break;
             case LocalWhen.VR:
-                retVal = GameObject.FindObjectOfType<VRPlayer>().GetComponent<SyncedObject>().localOwned;
+                retVal = GameObject.FindObjectOfType<VRController>().GetComponent<SyncedObject>().localOwned;
                 break;
             case LocalWhen.NonVR:
                 retVal = GameObject.FindObjectOfType<NonVRPlayerController>().GetComponent<SyncedObject>().localOwned;

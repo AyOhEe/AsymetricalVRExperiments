@@ -20,9 +20,12 @@ public abstract class GamePlayer : MonoBehaviour
         ClientID = _clientID;
 
         LocalOwned = ClientID == client._ClientID;
-        Debug.Log(String.Format("Player {0} Setup", _clientID));
+
+#if UNITY_EDITOR
+        Debug.Log(String.Format("Player {0} Spawned in {1}", ClientID, UnityEngine.SceneManagement.SceneManager.GetActiveScene().name));
+#endif
     }
-    
+
     public abstract void SyncPlayer();
     public abstract void HandleMessage(byte[] data);
 
@@ -35,4 +38,11 @@ public abstract class GamePlayer : MonoBehaviour
             client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
         }
     }
+
+#if UNITY_EDITOR
+    public void OnDestroy()
+    {
+        Debug.Log(String.Format("Player {0} Destroyed in {1}", ClientID, UnityEngine.SceneManagement.SceneManager.GetActiveScene().name));
+    }
+#endif
 }

@@ -334,7 +334,7 @@ public class MultiClient : MonoBehaviour
                     actions.Enqueue(() => Destroy(syncedObjects[despawnObject.ID].gameObject));
                     break;
 
-                case MultiPossibleRequest.GameSystemData:
+                case MultiPossibleRequest.MultiGameData:
                     GameSystemData systemData = MessagePackSerializer.Deserialize<GameSystemData>(baseRequest.R);
 
                     //pass on this data, the game system knows what to do with it

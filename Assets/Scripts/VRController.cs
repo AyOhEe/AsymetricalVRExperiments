@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class VRPlayer : MonoBehaviour
+public class VRController : MonoBehaviour
 {
     public GameObject cameraRig;
     
@@ -35,8 +35,12 @@ public class VRPlayer : MonoBehaviour
         transform.localScale = startingPos.VrScale;
 
         //if the vr object isn't locally owned, disable this object so there is only 1 active camera 
-        if (GetComponent<MultiSyncedObject>().localOwned)
+        if (GetComponent<GamePlayer>().LocalOwned)
         {
+            //enable vr
+            UnityEngine.XR.XRSettings.enabled = true;
+            UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
+            Valve.VR.SteamVR.Initialize(true);
             cameraRig.SetActive(true);
         }
     }
