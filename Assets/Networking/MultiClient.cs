@@ -9,6 +9,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using MessagePack;
 
+public enum InputMethod
+{
+    VR,
+    NonVR
+}
+
 public class MultiClient : MonoBehaviour
 {
     //ip to connect to

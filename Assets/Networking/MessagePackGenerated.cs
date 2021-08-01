@@ -49,7 +49,7 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(16)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(14)
             {
                 { typeof(global::System.Collections.Generic.List<global::SerializableTransform>), 0 },
                 { typeof(global::BaseNonVRPlayer.PlayerInfo), 1 },
@@ -64,9 +64,7 @@ namespace MessagePack.Resolvers
                 { typeof(global::MultiSpawnRequest), 10 },
                 { typeof(global::MultiSyncPlayer), 11 },
                 { typeof(global::MultiSyncRequest), 12 },
-                { typeof(global::SerializableQuaternion), 13 },
-                { typeof(global::SerializableTransform), 14 },
-                { typeof(global::SerializableVector3), 15 },
+                { typeof(global::SerializableTransform), 13 },
             };
         }
 
@@ -93,9 +91,7 @@ namespace MessagePack.Resolvers
                 case 10: return new MessagePack.Formatters.MultiSpawnRequestFormatter();
                 case 11: return new MessagePack.Formatters.MultiSyncPlayerFormatter();
                 case 12: return new MessagePack.Formatters.MultiSyncRequestFormatter();
-                case 13: return new MessagePack.Formatters.SerializableQuaternionFormatter();
-                case 14: return new MessagePack.Formatters.SerializableTransformFormatter();
-                case 15: return new MessagePack.Formatters.SerializableVector3Formatter();
+                case 13: return new MessagePack.Formatters.SerializableTransformFormatter();
                 default: return null;
             }
         }
@@ -688,60 +684,6 @@ namespace MessagePack.Formatters
         }
     }
 
-    public sealed class SerializableQuaternionFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::SerializableQuaternion>
-    {
-
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::SerializableQuaternion value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            writer.WriteArrayHeader(4);
-            writer.Write(value.x);
-            writer.Write(value.y);
-            writer.Write(value.z);
-            writer.Write(value.w);
-        }
-
-        public global::SerializableQuaternion Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
-            }
-
-            options.Security.DepthStep(ref reader);
-            var length = reader.ReadArrayHeader();
-            var __x__ = default(float);
-            var __y__ = default(float);
-            var __z__ = default(float);
-            var __w__ = default(float);
-
-            for (int i = 0; i < length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        __x__ = reader.ReadSingle();
-                        break;
-                    case 1:
-                        __y__ = reader.ReadSingle();
-                        break;
-                    case 2:
-                        __z__ = reader.ReadSingle();
-                        break;
-                    case 3:
-                        __w__ = reader.ReadSingle();
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::SerializableQuaternion(__x__, __y__, __z__, __w__);
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
     public sealed class SerializableTransformFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::SerializableTransform>
     {
 
@@ -781,55 +723,6 @@ namespace MessagePack.Formatters
                 }
             }
 
-            reader.Depth--;
-            return ____result;
-        }
-    }
-
-    public sealed class SerializableVector3Formatter : global::MessagePack.Formatters.IMessagePackFormatter<global::SerializableVector3>
-    {
-
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::SerializableVector3 value, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            writer.WriteArrayHeader(3);
-            writer.Write(value.x);
-            writer.Write(value.y);
-            writer.Write(value.z);
-        }
-
-        public global::SerializableVector3 Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
-        {
-            if (reader.TryReadNil())
-            {
-                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
-            }
-
-            options.Security.DepthStep(ref reader);
-            var length = reader.ReadArrayHeader();
-            var __x__ = default(float);
-            var __y__ = default(float);
-            var __z__ = default(float);
-
-            for (int i = 0; i < length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        __x__ = reader.ReadSingle();
-                        break;
-                    case 1:
-                        __y__ = reader.ReadSingle();
-                        break;
-                    case 2:
-                        __z__ = reader.ReadSingle();
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            var ____result = new global::SerializableVector3(__x__, __y__, __z__);
             reader.Depth--;
             return ____result;
         }
