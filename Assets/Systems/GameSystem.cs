@@ -21,9 +21,10 @@ public abstract class GameSystem : MonoBehaviour
     public abstract void SyncSystem();
     public abstract void HandleMessage(GameSystemData data);
 
-    private void SendMessageToOtherManagers(string message, int type)
+    private void SendMessageToOtherManagers(byte[] message, int type)
     {
-        GameSystemData data = new GameSystemData();
-        client.SendMessageToServer(MessagePackSerializer.Serialize(data));
+        GameSystemData data = new GameSystemData(SystemID, message);
+        MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize(data));
+        client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
     }
 }

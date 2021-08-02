@@ -18,7 +18,7 @@ public class CTFNonVR : MonoBehaviour
         //get the ctfplayer
         player = GetComponent<CTFPlayer>();
         //set the material based on the team
-        GetComponent<MeshRenderer>().material = player.team == CTFGameManager.CTFTeams.Red ? RedMaterial : BlueMaterial;
+        GetComponent<MeshRenderer>().material = player.team == TeamSystem.Team.A ? RedMaterial : BlueMaterial;
     }
 
     // Update is called once per frame

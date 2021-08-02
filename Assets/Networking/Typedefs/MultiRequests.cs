@@ -144,23 +144,25 @@ public struct MultiInitialData
 
     //dict of gameplayer types with their client ids
     [Key(3)]
-    public int[] gOC;
+    public int[] gC;
     [Key(4)]
-    public int[] gOT;
+    public int[] gT;
+    [Key(5)]
+    public int[] gt;
 
     //current scene index
-    [Key(5)]
+    [Key(6)]
     public int sI;
 
     //total number of scene objects
-    [Key(6)]
+    [Key(7)]
     public int sOT;
 
     //the thread that requested this
-    [Key(7)]
+    [Key(8)]
     public int tN;
 
-    public MultiInitialData(int _T, Dictionary<int, int> _syncedObjects, Dictionary<int, int> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
+    public MultiInitialData(int _T, Dictionary<int, int> _syncedObjects, Dictionary<int, GamePlayer> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
     {
         T = _T;
 
@@ -168,10 +170,17 @@ public struct MultiInitialData
         sOI = new int[_syncedObjects.Count];
         _syncedObjects.Keys.CopyTo(sOK, 0);
         _syncedObjects.Values.CopyTo(sOI, 0);
-        gOC = new int[_gamePlayers.Count];
-        gOT = new int[_gamePlayers.Count];
-        _gamePlayers.Keys.CopyTo(gOC, 0);
-        _gamePlayers.Values.CopyTo(gOT, 0);
+
+        gC = new int[_gamePlayers.Count];
+        gT = new int[_gamePlayers.Count];
+        gt = new int[_gamePlayers.Count];
+        _gamePlayers.Keys.CopyTo(gC, 0);
+        for (int i = 0; i < _gamePlayers.Count; i++)
+        {
+            gT[i] = _gamePlayers[gC[i]].type;
+            gt[i] = (int)_gamePlayers[gC[i]].team;
+        }
+
         sI = _sceneIndex;
         sOT = _syncedObjectsTotal;
         tN = _threadN;
@@ -187,12 +196,12 @@ public struct MultiInitialData
         return retVal;
     }
 
-    public Dictionary<int, int> gamePlayerDict()
+    public Dictionary<int, Tuple<int, int>> gamePlayerDict()
     {
-        Dictionary<int, int> retVal = new Dictionary<int, int>();
-        for (int i = 0; i < gOC.Length; i++)
+        Dictionary<int, Tuple<int, int>> retVal = new Dictionary<int, Tuple<int, int>>();
+        for (int i = 0; i < gC.Length; i++)
         {
-            retVal.Add(gOC[i], gOT[i]);
+            retVal.Add(gC[i], new Tuple<int, int>(gT[i], gt[i]));
         }
         return retVal;
     }
@@ -229,10 +238,15 @@ public struct MultiSpawnPlayer
     [Key(1)]
     public int C;
 
-    public MultiSpawnPlayer(int _T, int _C)
+    //player team
+    [Key(2)]
+    public int t;
+
+    public MultiSpawnPlayer(int _T, int _C, TeamSystem.Team _t)
     {
         T = _T;
         C = _C;
+        t = (int)_t;
     }
 }
 

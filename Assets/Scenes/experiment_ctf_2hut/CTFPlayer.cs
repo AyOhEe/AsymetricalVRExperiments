@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class CTFPlayer : GamePlayer
 {
-    //the team this player is on
-    public CTFGameManager.CTFTeams team;
-
     public override void SyncPlayer()
     {
         throw new System.NotImplementedException();

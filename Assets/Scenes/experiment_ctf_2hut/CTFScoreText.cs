@@ -12,7 +12,7 @@ public class CTFScoreText : MonoBehaviour
     //the ctfgamelogic object
     private CTFGameManager gameLogic;
     //the team who's score we're to keep track of
-    public CTFGameManager.CTFTeams team;
+    public TeamSystem.Team team;
 
     private void Start()
     {
@@ -25,6 +25,6 @@ public class CTFScoreText : MonoBehaviour
     {
         //update the text every 30 frames
         if(Time.frameCount % 30 == 0)
-            scoreText.text = team == CTFGameManager.CTFTeams.Red ? gameLogic.RedScore.ToString() : gameLogic.BlueScore.ToString();
+            scoreText.text = team == TeamSystem.Team.A ? gameLogic.RedScore.ToString() : gameLogic.BlueScore.ToString();
     }
 }

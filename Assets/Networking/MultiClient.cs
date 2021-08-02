@@ -274,7 +274,7 @@ public class MultiClient : MonoBehaviour
                     gamePlayers = new Dictionary<int, GamePlayer>();
 
                     //spawn our prefab on the network
-                    MultiSpawnPlayer spawnPlayerScene = new MultiSpawnPlayer((int)inputMethod, _ClientID);
+                    MultiSpawnPlayer spawnPlayerScene = new MultiSpawnPlayer((int)inputMethod, _ClientID, FindObjectOfType<TeamSystem>().localTeam);
                     MultiBaseRequest spawnPlayerBaseScene = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayerScene));
                     SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBaseScene));
 
@@ -288,7 +288,7 @@ public class MultiClient : MonoBehaviour
                         player.LocalOwned = true;
 
                         //do setup
-                        player.PlayerSetup(_ClientID);
+                        player.PlayerSetup(_ClientID, FindObjectOfType<TeamSystem>().localTeam);
                         //store it
                         gamePlayers[_ClientID] = player;
                     });
@@ -316,16 +316,10 @@ public class MultiClient : MonoBehaviour
                     {
                         idIndexes.Add(key, syncedObjects[key].index);
                     }
-
-                    //dictionary of the gamePlayers
-                    Dictionary<int, int> playerTypes = new Dictionary<int, int>();
-                    foreach (int key in gamePlayers.Keys)
-                    {
-                        playerTypes.Add(key, gamePlayers[key].type);
-                    }
+                    
 
                     //Send the request
-                    MultiInitialData sceneObjects = new MultiInitialData(newConnection.tN, idIndexes, playerTypes, possibleScenes.IndexOf(currentScene), syncedObjectsTotal, newConnection.tN);
+                    MultiInitialData sceneObjects = new MultiInitialData(newConnection.tN, idIndexes, gamePlayers, possibleScenes.IndexOf(currentScene), syncedObjectsTotal, newConnection.tN);
                     MultiBaseRequest request = new MultiBaseRequest(MultiPossibleRequest.MultiInitialData, MessagePackSerializer.Serialize(sceneObjects));
                     SendMessageToServer(MessagePackSerializer.Serialize(request));
                     
@@ -357,7 +351,7 @@ public class MultiClient : MonoBehaviour
 
                         GamePlayer gamePlayer = instance.GetComponent<GamePlayer>();
                         //do setup
-                        gamePlayer.PlayerSetup(spawnPlayer.C);
+                        gamePlayer.PlayerSetup(spawnPlayer.C, (TeamSystem.Team)spawnPlayer.t);
 
                         //store it
                         gamePlayers[spawnPlayer.C] = gamePlayer;
@@ -423,7 +417,7 @@ public class MultiClient : MonoBehaviour
         });
 
         //spawn our prefab on the network
-        MultiSpawnPlayer spawnPlayerScene = new MultiSpawnPlayer((int)inputMethod, _ClientID);
+        MultiSpawnPlayer spawnPlayerScene = new MultiSpawnPlayer((int)inputMethod, _ClientID, FindObjectOfType<TeamSystem>().localTeam);
         MultiBaseRequest spawnPlayerBaseScene = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayerScene));
         SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBaseScene));
 
@@ -437,24 +431,24 @@ public class MultiClient : MonoBehaviour
             player.LocalOwned = true;
 
             //do setup
-            player.PlayerSetup(_ClientID);
+            player.PlayerSetup(_ClientID, FindObjectOfType<TeamSystem>().localTeam);
 
             //store it
             gamePlayers[_ClientID] = player;
         });
 
         //spawn the rest of the players in
-        Dictionary<int, int> newGamePlayers = multiSceneObjects.gamePlayerDict();
+        Dictionary<int, Tuple<int,int>> newGamePlayers = multiSceneObjects.gamePlayerDict();
         foreach (int key in newGamePlayers.Keys)
         {
             actions.Enqueue(() => 
             {
                 //spawn in the new synced object instance
-                GameObject instance = Instantiate(possibleScenes[multiSceneObjects.sI].PlayerPrefabs[newGamePlayers[key]]);
+                GameObject instance = Instantiate(possibleScenes[multiSceneObjects.sI].PlayerPrefabs[newGamePlayers[key].Item1]);
                 GamePlayer newPlayer = instance.GetComponent<GamePlayer>();
 
                 //do setup
-                newPlayer.PlayerSetup(key);
+                newPlayer.PlayerSetup(key, (TeamSystem.Team)newGamePlayers[key].Item2);
 
                 //store it
                 gamePlayers[key] = newPlayer;
@@ -479,7 +473,7 @@ public class MultiClient : MonoBehaviour
             yield return new WaitForEndOfFrame();
 
             //spawn our prefab on the network
-            MultiSpawnPlayer spawnPlayer = new MultiSpawnPlayer((int)inputMethod, _ClientID);
+            MultiSpawnPlayer spawnPlayer = new MultiSpawnPlayer((int)inputMethod, _ClientID, FindObjectOfType<TeamSystem>().localTeam);
             MultiBaseRequest spawnPlayerBase = new MultiBaseRequest(MultiPossibleRequest.MultiSpawnPlayer, MessagePackSerializer.Serialize(spawnPlayer));
             SendMessageToServer(MessagePackSerializer.Serialize(spawnPlayerBase));
 
@@ -490,7 +484,7 @@ public class MultiClient : MonoBehaviour
                 GamePlayer player = instance.GetComponent<GamePlayer>();
 
                 //do setup
-                player.PlayerSetup(_ClientID);
+                player.PlayerSetup(_ClientID, FindObjectOfType<TeamSystem>().localTeam);
 
                 //store it
                 gamePlayers[_ClientID] = player;

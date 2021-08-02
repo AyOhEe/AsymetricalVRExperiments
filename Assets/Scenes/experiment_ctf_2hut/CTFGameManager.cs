@@ -4,14 +4,6 @@ using UnityEngine;
 
 public class CTFGameManager : GameSystem
 {
-    public enum CTFTeams
-    {
-        Red,
-        Blue,
-        Yellow,
-        Green
-    };
-
     public enum CTFData
     {
         SyncScore,
@@ -52,7 +44,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("redPickupZone entered by CTFPlayer");
                 //yes, is it's team blue?
-                if (player.player.team == CTFTeams.Blue)
+                if (player.player.team == TeamSystem.Team.B)
                 {
                     Debug.Log("redPickupZone entered by Enemy CTFPlayer");
                     //yes, pickup the flag
@@ -69,7 +61,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("bluePickupZone entered by CTFPlayer");
                 //yes, is it's team red?
-                if (player.player.team == CTFTeams.Red)
+                if (player.player.team == TeamSystem.Team.A)
                 {
                     Debug.Log("bluePickupZone entered by Enemy CTFPlayer");
                     //yes, pickup the flag
@@ -88,7 +80,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("redCapZone entered by CTFPlayer");
                 //yes, is it's team red and does it have a flag?
-                if(player.player.team == CTFTeams.Red & player.isHoldingFlag)
+                if(player.player.team == TeamSystem.Team.A & player.isHoldingFlag)
                 {
                     Debug.Log("POINT RED");
                     RedScore++;
@@ -105,8 +97,8 @@ public class CTFGameManager : GameSystem
             if ((player = other.GetComponent<CTFNonVR>()))
             {
                 Debug.Log("blueCapZone entered by CTFPlayer");
-                //yes, is it's team red and does it have a flag?
-                if (player.player.team == CTFTeams.Blue & player.isHoldingFlag)
+                //yes, is it's team blue and does it have a flag?
+                if (player.player.team == TeamSystem.Team.B & player.isHoldingFlag)
                 {
                     Debug.Log("POINT BLUE");
                     BlueScore++;

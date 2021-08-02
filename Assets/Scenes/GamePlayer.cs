@@ -7,6 +7,7 @@ using MessagePack;
 public abstract class GamePlayer : MonoBehaviour
 {
     public int type;
+    public TeamSystem.Team team;
 
     //the client this object belongs to
     public int ClientID;
@@ -14,10 +15,11 @@ public abstract class GamePlayer : MonoBehaviour
     
     public bool LocalOwned;
 
-    public void PlayerSetup(int _clientID)
+    public void PlayerSetup(int _clientID, TeamSystem.Team _team)
     {
         client = FindObjectOfType<MultiClient>();
         ClientID = _clientID;
+        team = _team;
 
         LocalOwned = ClientID == client._ClientID;
 
