@@ -243,6 +243,8 @@ MonoBehaviour:
   pressKeyUI: {fileID: 3288811744364587187, guid: 19716e2b2e0db0d469061b14a759fb38,
     type: 3}
   spawnUI: {fileID: 4491329829728690418, guid: 33ceda73bc555cd46a4df3294f65e7f4, type: 3}
+  SelectedScene: {fileID: 0}
+  TeamSetupUI: {fileID: 0}
   uiCanvas: {fileID: 1530814011}
 --- !u!65 &292082775
 BoxCollider:
@@ -675,7 +677,7 @@ PrefabInstance:
     - target: {fileID: 2252660307449281911, guid: 4cef2776ae010204582b9112e87b8fbe,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2252660307449281914, guid: 4cef2776ae010204582b9112e87b8fbe,
         type: 3}
@@ -1729,4 +1731,50 @@ Transform:
   - {fileID: 619478881}
   m_Father: {fileID: 1780788993}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2123662263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2123662265}
+  - component: {fileID: 2123662264}
+  m_Layer: 0
+  m_Name: TeamSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2123662264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123662263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f42a7287b38c50d4cb79242cb48e3dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  client: {fileID: 0}
+  SystemID: 0
+  localTeam: 0
+--- !u!4 &2123662265
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123662263}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 40.88876, y: 28.09085, z: -15.6680355}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

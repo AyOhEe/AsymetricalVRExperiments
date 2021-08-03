@@ -160,6 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  team: 0
   ClientID: 0
   client: {fileID: 0}
   LocalOwned: 0
@@ -167,6 +168,9 @@ MonoBehaviour:
   Head: {fileID: 7408087449779402897}
   LeftHand: {fileID: 7194257431609180991}
   RightHand: {fileID: 1935004164917448635}
+  CamrigHead: {fileID: 5855945479094884843}
+  CamrigLeftHand: {fileID: 4706215917098723135}
+  CamrigRightHand: {fileID: 792715623397887502}
 --- !u!1 &1869203802204221052
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +423,6 @@ GameObject:
   - component: {fileID: 7602198333460817680}
   - component: {fileID: 4153294115185910955}
   - component: {fileID: 8462871640125068914}
-  - component: {fileID: 8889964520339072254}
   - component: {fileID: 2331591066402004334}
   m_Layer: 0
   m_Name: Head
@@ -503,20 +506,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8889964520339072254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4152247773379289681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 731564a51e8028b46bf542db4ae41627, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 3443951588225998907}
-  toMimic: {fileID: 6426613552696388578}
 --- !u!54 &2331591066402004334
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -545,7 +534,6 @@ GameObject:
   - component: {fileID: 1625021701749309965}
   - component: {fileID: 2235006595888050188}
   - component: {fileID: 3825998932124651653}
-  - component: {fileID: 351459918219976335}
   - component: {fileID: 2778384266351821958}
   m_Layer: 0
   m_Name: LeftHand
@@ -628,20 +616,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &351459918219976335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4577917409009572639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 731564a51e8028b46bf542db4ae41627, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 3443951588225998907}
-  toMimic: {fileID: 3452728158033283137}
 --- !u!54 &2778384266351821958
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -766,7 +740,6 @@ GameObject:
   - component: {fileID: 4866206421366614118}
   - component: {fileID: 8357582540056114009}
   - component: {fileID: 3702185501795015435}
-  - component: {fileID: 3556399008553665709}
   - component: {fileID: 3688540356647921884}
   m_Layer: 0
   m_Name: RightHand
@@ -849,20 +822,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3556399008553665709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6698532798915715648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 731564a51e8028b46bf542db4ae41627, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 3443951588225998907}
-  toMimic: {fileID: 2502413610474997990}
 --- !u!54 &3688540356647921884
 Rigidbody:
   m_ObjectHideFlags: 0

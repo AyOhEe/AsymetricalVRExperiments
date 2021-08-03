@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab203bc946c81de468d03eee96687101, type: 3}
   m_Name: experiment_ctf_2hut
   m_EditorClassIdentifier: 
-  SceneName: 
-  PlayerPrefabs: []
+  SceneName: experiment_ctf_2hut
+  PlayerPrefabs:
+  - {fileID: 0}
+  - {fileID: 0}

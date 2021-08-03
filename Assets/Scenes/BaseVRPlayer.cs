@@ -11,6 +11,10 @@ public class BaseVRPlayer : GamePlayer
     public Transform LeftHand;
     public Transform RightHand;
 
+    public Transform CamrigHead;
+    public Transform CamrigLeftHand;
+    public Transform CamrigRightHand;
+
     public void Awake()
     {
         controller = GetComponent<VRController>();
@@ -47,7 +51,7 @@ public class BaseVRPlayer : GamePlayer
 
     public override void SyncPlayer()
     {
-        byte[] message = MessagePackSerializer.Serialize(new PlayerInfo(LeftHand, RightHand, Head));
+        byte[] message = MessagePackSerializer.Serialize(new PlayerInfo(CamrigLeftHand, CamrigRightHand, CamrigHead));
         SendSyncMessage(message);
 
         Invoke("SyncPlayer", 0.05f);
