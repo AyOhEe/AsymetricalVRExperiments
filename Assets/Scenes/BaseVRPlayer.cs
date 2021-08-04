@@ -53,6 +53,13 @@ public class BaseVRPlayer : GamePlayer
     {
         byte[] message = MessagePackSerializer.Serialize(new PlayerInfo(CamrigLeftHand, CamrigRightHand, CamrigHead));
         SendSyncMessage(message);
+        
+        LeftHand.localPosition = CamrigLeftHand.localPosition;
+        LeftHand.localRotation = CamrigLeftHand.localRotation;
+        RightHand.localPosition = CamrigRightHand.localPosition;
+        RightHand.localRotation = CamrigRightHand.localRotation;
+        Head.localPosition = CamrigHead.localPosition;
+        Head.localRotation = CamrigHead.localRotation;
 
         Invoke("SyncPlayer", 0.05f);
     }
