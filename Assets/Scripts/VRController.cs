@@ -33,15 +33,5 @@ public class VRController : MonoBehaviour
         transform.localPosition = startingPos.VrPos;
         transform.localEulerAngles = startingPos.VrRot;
         transform.localScale = startingPos.VrScale;
-
-        //if the vr object isn't locally owned, disable this object so there is only 1 active camera 
-        if (GetComponent<GamePlayer>().LocalOwned)
-        {
-            //enable vr
-            UnityEngine.XR.XRSettings.enabled = true;
-            UnityEngine.XR.XRSettings.LoadDeviceByName("OpenVR");
-            Valve.VR.SteamVR.Initialize(true);
-            cameraRig.SetActive(true);
-        }
     }
 }

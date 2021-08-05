@@ -22,6 +22,7 @@ public class TeamSystem : GameSystem
         DontDestroyOnLoad(gameObject);
     }
 
+    #region Requests
     [MessagePackObject]
     public struct TeamAllocationData
     {
@@ -51,11 +52,46 @@ public class TeamSystem : GameSystem
             return retVal;
         }
     }
-   
+
+    [MessagePackObject]
+    public struct ChangeTeamRequest
+    {
+        //the client to change Teams
+        [Key(0)]
+        public int C;
+
+        //the requested team
+        [Key(1)]
+        public Team R;
+
+        public ChangeTeamRequest(int _C, Team _R)
+        {
+            C = _C;
+            R = _R;
+        }
+    }
+
+    private enum TeamSystemRequest
+    {
+        TeamAllocationData,
+        ChangeTeamRequest
+    }
+    #endregion Requests
+
     public override void HandleMessage(GameSystemData data)
     {
-        TeamAllocationData teamData = MessagePackSerializer.Deserialize<TeamAllocationData>(data.D);
-        ClientTeams = teamData.ClientTeams();
+        TeamSystemRequest request = (TeamSystemRequest)data.D[0];
+        data.D = data.D.AsMemory().Slice(1).ToArray();
+        switch (request)
+        {
+            case TeamSystemRequest.TeamAllocationData:
+                TeamAllocationData teamData = MessagePackSerializer.Deserialize<TeamAllocationData>(data.D);
+                ClientTeams = teamData.ClientTeams();
+                break;
+            case TeamSystemRequest.ChangeTeamRequest:
+                ChangeTeamRequest teamRequest = MessagePackSerializer.Deserialize<ChangeTeamRequest>(data.D);
+                break;
+        }
     }
 
     public override void SyncSystem()
@@ -67,5 +103,13 @@ public class TeamSystem : GameSystem
             MultiBaseRequest baseRequest = 
                 new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize<GameSystemData>(systemData));
         }
+    }
+
+    public void ChangeTeam(Team team)
+    {
+        ChangeTeamRequest teamRequest = new ChangeTeamRequest(client._ClientID, team);
+        GameSystemData systemData = new GameSystemData(SystemID, MessagePackSerializer.Serialize<ChangeTeamRequest>(teamRequest));
+        MultiBaseRequest baseRequest = 
+            new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize<GameSystemData>(systemData));
     }
 }

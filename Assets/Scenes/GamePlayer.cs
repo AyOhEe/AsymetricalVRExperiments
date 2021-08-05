@@ -2,24 +2,34 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using MessagePack;
 
 public abstract class GamePlayer : MonoBehaviour
 {
+    public Text nameText;
+
     public int type;
     public TeamSystem.Team team;
+
+    public string PlayerName;
 
     //the client this object belongs to
     public int ClientID;
     public MultiClient client;
+
+    private PlayerData data;
     
     public bool LocalOwned;
 
-    public void PlayerSetup(int _clientID, TeamSystem.Team _team)
+    public void PlayerSetup(int _clientID, TeamSystem.Team _team, string _name)
     {
         client = FindObjectOfType<MultiClient>();
         ClientID = _clientID;
         team = _team;
+        PlayerName = _name;
+
+        nameText.text = PlayerName;
 
         LocalOwned = ClientID == client._ClientID;
 
@@ -39,6 +49,18 @@ public abstract class GamePlayer : MonoBehaviour
             MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiSyncPlayer, MessagePackSerializer.Serialize(syncPlayer));
             client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
         }
+    }
+
+    public PlayerData AsPlayerData()
+    {
+        if (!data)
+            data = (PlayerData)PlayerData.CreateInstance(PlayerName);
+
+        data.name = PlayerName;
+        data.InputMethod = (InputMethod)type;
+        data.Team = team;
+        data.Player = this;
+        return data;
     }
 
 #if UNITY_EDITOR

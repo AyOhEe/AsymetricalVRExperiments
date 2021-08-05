@@ -149,17 +149,19 @@ public struct MultiInitialData
     public int[] gT;
     [Key(5)]
     public int[] gt;
+    [Key(6)]
+    public string[] gN;
 
     //current scene index
-    [Key(6)]
+    [Key(7)]
     public int sI;
 
     //total number of scene objects
-    [Key(7)]
+    [Key(8)]
     public int sOT;
 
     //the thread that requested this
-    [Key(8)]
+    [Key(9)]
     public int tN;
 
     public MultiInitialData(int _T, Dictionary<int, int> _syncedObjects, Dictionary<int, GamePlayer> _gamePlayers, int _sceneIndex, int _syncedObjectsTotal, int _threadN)
@@ -174,11 +176,13 @@ public struct MultiInitialData
         gC = new int[_gamePlayers.Count];
         gT = new int[_gamePlayers.Count];
         gt = new int[_gamePlayers.Count];
+        gN = new string[_gamePlayers.Count];
         _gamePlayers.Keys.CopyTo(gC, 0);
         for (int i = 0; i < _gamePlayers.Count; i++)
         {
             gT[i] = _gamePlayers[gC[i]].type;
             gt[i] = (int)_gamePlayers[gC[i]].team;
+            gN[i] = _gamePlayers[gC[i]].PlayerName;
         }
 
         sI = _sceneIndex;
@@ -196,12 +200,12 @@ public struct MultiInitialData
         return retVal;
     }
 
-    public Dictionary<int, Tuple<int, int>> gamePlayerDict()
+    public Dictionary<int, Tuple<int, int, string>> gamePlayerDict()
     {
-        Dictionary<int, Tuple<int, int>> retVal = new Dictionary<int, Tuple<int, int>>();
+        Dictionary<int, Tuple<int, int, string>> retVal = new Dictionary<int, Tuple<int, int, string>>();
         for (int i = 0; i < gC.Length; i++)
         {
-            retVal.Add(gC[i], new Tuple<int, int>(gT[i], gt[i]));
+            retVal.Add(gC[i], new Tuple<int, int, string>(gT[i], gt[i], gN[i]));
         }
         return retVal;
     }
@@ -242,11 +246,16 @@ public struct MultiSpawnPlayer
     [Key(2)]
     public int t;
 
-    public MultiSpawnPlayer(int _T, int _C, TeamSystem.Team _t)
+    //player name
+    [Key(3)]
+    public string P;
+
+    public MultiSpawnPlayer(int _T, int _C, TeamSystem.Team _t, string _P)
     {
         T = _T;
         C = _C;
         t = (int)_t;
+        P = _P;
     }
 }
 

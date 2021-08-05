@@ -52,8 +52,14 @@ public class NonVRPlayerController : MonoBehaviour
         Player = GetComponent<BaseNonVRPlayer>();
 
         //make ourselves a cool colour
+        int hue = Random.Range(0, 767);
+        Color32 color = new Color32(
+            (byte)Mathf.Clamp(hue, 0, 255),
+            (byte)(Mathf.Clamp(hue, 256, 511) - 256),
+            (byte)(Mathf.Clamp(hue, 512, 767) - 256),
+            (byte)255);
         GetComponent<MeshRenderer>().material = new Material(GetComponent<MeshRenderer>().material);
-        GetComponent<MeshRenderer>().material.SetColor("_Color", new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)255));
+        GetComponent<MeshRenderer>().material.SetColor("_Color", color);
 
         //get the player's rigidbody
         playerRB = playerMainObject.GetComponent<Rigidbody>();

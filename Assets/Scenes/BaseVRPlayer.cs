@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 using MessagePack;
 
 public class BaseVRPlayer : GamePlayer
@@ -15,11 +16,47 @@ public class BaseVRPlayer : GamePlayer
     public Transform CamrigLeftHand;
     public Transform CamrigRightHand;
 
-    public void Awake()
+    public void Start()
+    {
+        //make ourselves a cool colour
+        int hue = Random.Range(0, 767);
+        Color32 color = new Color32(
+            (byte)Mathf.Clamp(hue, 0, 255), 
+            (byte)(Mathf.Clamp(hue, 256, 511) - 256), 
+            (byte)(Mathf.Clamp(hue, 512, 767) - 256), 
+            (byte)255);
+        Material material = new Material(GetComponent<MeshRenderer>().material);
+        material.SetColor("_Color", color);
+
+        Head.GetComponent<MeshRenderer>().material = material;
+        LeftHand.GetComponent<MeshRenderer>().material = material;
+        RightHand.GetComponent<MeshRenderer>().material = material;
+
+        StartCoroutine(_start());
+    }
+
+    private IEnumerator _start()
     {
         controller = GetComponent<VRController>();
 
-        Invoke("SyncPlayer", 0.1f);
+
+        //if the vr object is locally owned, force load openvr
+        if (ClientID == client._ClientID)
+        {
+            //enable vr
+            XRSettings.enabled = true;
+            XRSettings.LoadDeviceByName("OpenVR");
+
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+
+            Valve.VR.SteamVR.Initialize(true);
+            controller.cameraRig.SetActive(true);
+            
+            Invoke("SyncPlayer", 0.1f);
+        }
+
+        yield return null;
     }
 
     [MessagePackObject]

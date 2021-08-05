@@ -49,7 +49,7 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(17)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(18)
             {
                 { typeof(global::System.Collections.Generic.List<global::SerializableTransform>), 0 },
                 { typeof(global::TeamSystem.Team[]), 1 },
@@ -67,7 +67,8 @@ namespace MessagePack.Resolvers
                 { typeof(global::MultiSyncPlayer), 13 },
                 { typeof(global::MultiSyncRequest), 14 },
                 { typeof(global::SerializableTransform), 15 },
-                { typeof(global::TeamSystem.TeamAllocationData), 16 },
+                { typeof(global::TeamSystem.ChangeTeamRequest), 16 },
+                { typeof(global::TeamSystem.TeamAllocationData), 17 },
             };
         }
 
@@ -97,7 +98,8 @@ namespace MessagePack.Resolvers
                 case 13: return new MessagePack.Formatters.MultiSyncPlayerFormatter();
                 case 14: return new MessagePack.Formatters.MultiSyncRequestFormatter();
                 case 15: return new MessagePack.Formatters.SerializableTransformFormatter();
-                case 16: return new MessagePack.Formatters.TeamSystem_TeamAllocationDataFormatter();
+                case 16: return new MessagePack.Formatters.TeamSystem_ChangeTeamRequestFormatter();
+                case 17: return new MessagePack.Formatters.TeamSystem_TeamAllocationDataFormatter();
                 default: return null;
             }
         }
@@ -460,13 +462,14 @@ namespace MessagePack.Formatters
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::MultiInitialData value, global::MessagePack.MessagePackSerializerOptions options)
         {
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(9);
+            writer.WriteArrayHeader(10);
             writer.Write(value.T);
             formatterResolver.GetFormatterWithVerify<int[]>().Serialize(ref writer, value.sOI, options);
             formatterResolver.GetFormatterWithVerify<int[]>().Serialize(ref writer, value.sOK, options);
             formatterResolver.GetFormatterWithVerify<int[]>().Serialize(ref writer, value.gC, options);
             formatterResolver.GetFormatterWithVerify<int[]>().Serialize(ref writer, value.gT, options);
             formatterResolver.GetFormatterWithVerify<int[]>().Serialize(ref writer, value.gt, options);
+            formatterResolver.GetFormatterWithVerify<string[]>().Serialize(ref writer, value.gN, options);
             writer.Write(value.sI);
             writer.Write(value.sOT);
             writer.Write(value.tN);
@@ -507,12 +510,15 @@ namespace MessagePack.Formatters
                         ____result.gt = formatterResolver.GetFormatterWithVerify<int[]>().Deserialize(ref reader, options);
                         break;
                     case 6:
-                        ____result.sI = reader.ReadInt32();
+                        ____result.gN = formatterResolver.GetFormatterWithVerify<string[]>().Deserialize(ref reader, options);
                         break;
                     case 7:
-                        ____result.sOT = reader.ReadInt32();
+                        ____result.sI = reader.ReadInt32();
                         break;
                     case 8:
+                        ____result.sOT = reader.ReadInt32();
+                        break;
+                    case 9:
                         ____result.tN = reader.ReadInt32();
                         break;
                     default:
@@ -570,10 +576,12 @@ namespace MessagePack.Formatters
 
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::MultiSpawnPlayer value, global::MessagePack.MessagePackSerializerOptions options)
         {
-            writer.WriteArrayHeader(3);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(4);
             writer.Write(value.T);
             writer.Write(value.C);
             writer.Write(value.t);
+            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.P, options);
         }
 
         public global::MultiSpawnPlayer Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -584,6 +592,7 @@ namespace MessagePack.Formatters
             }
 
             options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
             var ____result = new global::MultiSpawnPlayer();
 
@@ -599,6 +608,9 @@ namespace MessagePack.Formatters
                         break;
                     case 2:
                         ____result.t = reader.ReadInt32();
+                        break;
+                    case 3:
+                        ____result.P = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -777,6 +789,52 @@ namespace MessagePack.Formatters
                 }
             }
 
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class TeamSystem_ChangeTeamRequestFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::TeamSystem.ChangeTeamRequest>
+    {
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::TeamSystem.ChangeTeamRequest value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(2);
+            writer.Write(value.C);
+            formatterResolver.GetFormatterWithVerify<global::TeamSystem.Team>().Serialize(ref writer, value.R, options);
+        }
+
+        public global::TeamSystem.ChangeTeamRequest Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
+            }
+
+            options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __C__ = default(int);
+            var __R__ = default(global::TeamSystem.Team);
+
+            for (int i = 0; i < length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        __C__ = reader.ReadInt32();
+                        break;
+                    case 1:
+                        __R__ = formatterResolver.GetFormatterWithVerify<global::TeamSystem.Team>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::TeamSystem.ChangeTeamRequest(__C__, __R__);
             reader.Depth--;
             return ____result;
         }

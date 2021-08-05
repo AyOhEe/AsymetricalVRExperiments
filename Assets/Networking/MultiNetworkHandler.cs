@@ -16,6 +16,9 @@ public class MultiNetworkHandler : MonoBehaviour
     //input field for the IP(hosting/connecting)
     public InputField IPInput;
 
+    //the input field for the player name
+    public InputField playerNameInput;
+
     //prefabs
     public GameObject gameClientPrefab;
     public GameObject gameServerPrefab;
@@ -50,6 +53,7 @@ public class MultiNetworkHandler : MonoBehaviour
         MultiClient multiClient = client.GetComponent<MultiClient>();
         multiClient.ConnectionIP = IP;
         multiClient.inputMethod = inputMethod;
+        multiClient.PlayerName = playerNameInput.text;
         multiClient.spawnableObjects = spawnableObjects;
         multiClient.possibleScenes = loadableScenes;
         multiClient.ConnectToTcpServer();
