@@ -1543,6 +1543,7 @@ MonoBehaviour:
   spawnableObjects: []
   loadableScenes:
   - {fileID: 11400000, guid: 48c214cd1a8d6c24cbabc571198d56b4, type: 2}
+  - {fileID: 11400000, guid: 62bdf4c1401fd8040876a0491e6ed665, type: 2}
 --- !u!114 &670780407
 MonoBehaviour:
   m_ObjectHideFlags: 0

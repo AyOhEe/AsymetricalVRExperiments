@@ -27,4 +27,27 @@ public abstract class GameSystem : MonoBehaviour
         MultiBaseRequest baseRequest = new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize(data));
         client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
     }
+
+    protected void SendRequest<T>(T request, int requestType)
+    {
+        //get the team request as bytes
+        byte[] serializedRequest = MessagePackSerializer.Serialize(request);
+        //store the request with type
+        List<byte> serializedRequestWType = new List<byte>(serializedRequest.Length + 1);
+        serializedRequestWType.Add((byte)requestType);
+        //store the rest of the request
+        for (int i = 0; i < serializedRequest.Length; i++)
+        {
+            serializedRequestWType.Add(serializedRequest[i]);
+        }
+
+        //create the systemData request
+        GameSystemData systemData = new GameSystemData(SystemID, serializedRequestWType.ToArray());
+        //create the base request with the serialized gamesystemdata object
+        MultiBaseRequest baseRequest =
+            new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize(systemData));
+
+        //send the serialized request
+        client.SendMessageToServer(MessagePackSerializer.Serialize(baseRequest));
+    }
 }

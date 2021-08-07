@@ -17,9 +17,25 @@ public class PlayerListUI : MonoBehaviour
 
     [Header("Other Variables")]
     //we need to keep track of all of the player panels
-    public Dictionary<string, Tuple<GameObject, TeamSystem.Team>> playerPannels = new Dictionary<string, Tuple<GameObject, TeamSystem.Team>>();
+    private Dictionary<string, Tuple<GameObject, TeamSystem.Team>> playerPannels = new Dictionary<string, Tuple<GameObject, TeamSystem.Team>>();
     //we also need to keep track of how many players are in each team
-    public Dictionary<TeamSystem.Team, int> playersInTeam = new Dictionary<TeamSystem.Team, int>();
+    private Dictionary<TeamSystem.Team, int> playersInTeam = new Dictionary<TeamSystem.Team, int>();
+
+    //prefab for the player pannel
+    public GameObject playerPannelPrefab;
+
+    private void Start()
+    {
+        //find the team system and store ourselves there
+        FindObjectOfType<TeamSystem>().playerListUI = this;
+
+        //get all of the players from the client and create playerpannels for them
+        MultiClient client = FindObjectOfType<MultiClient>();
+        foreach (int key in client.gamePlayers.Keys)
+        {
+            AddPlayerToTeamList(client.gamePlayers[key].AsPlayerData(), client.gamePlayers[key].team);
+        }
+    }
 
     public void Update()
     {
@@ -45,10 +61,38 @@ public class PlayerListUI : MonoBehaviour
         //see if the player pannel exists for this player
         if (playerPannels.TryGetValue(data.PlayerName, out Tuple<GameObject, TeamSystem.Team> pannel))
         {
-            //yep, destroy it and recreate it under a new team
+            //yep, destroy it and recreate it under a new team. and also, remove one member from the old team
             Destroy(pannel.Item1);
-
-
+            playersInTeam[pannel.Item2]--;
         }
+
+        //create the new pannel
+        CreatePannelForPlayer(data, newTeam);
+    }
+
+    //creates a player info pannel for the player data given under the team given
+    private void CreatePannelForPlayer(PlayerData player, TeamSystem.Team team)
+    {
+        //spawn the object in
+        GameObject instance = Instantiate(playerPannelPrefab, scrollRects[(int)team].GetComponent<ScrollRect>().content);
+        //move it down for formatting
+        instance.transform.Translate(
+            0, 
+            -(instance.GetComponent<RectTransform>().rect.height * (playersInTeam[team] - 1)) -((playersInTeam[team] - 1) * 5), 
+            0);
+
+        //fill the player pannel in with the data from the playerdata object
+        player.FillUIElement(instance.GetComponent<PlayerDescriptionUI>());
+        //store it in the playerPannels dictionary
+        playerPannels.Add(player.PlayerName, new Tuple<GameObject, TeamSystem.Team>(instance, team));
+
+        //increase the amount of players in that team
+        playersInTeam[team]++;
+    }
+
+    private void OnDestroy()
+    {
+        //find the team system and store ourselves there
+        FindObjectOfType<TeamSystem>().playerListUI = null;
     }
 }

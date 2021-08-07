@@ -33,6 +33,10 @@ public abstract class GamePlayer : MonoBehaviour
 
         LocalOwned = ClientID == client._ClientID;
 
+        TeamSystem teamSystem = FindObjectOfType<TeamSystem>();
+        if(teamSystem)
+            teamSystem.ChangeTeam(_team);
+
 #if UNITY_EDITOR
         Debug.Log(String.Format("Player {0} Spawned in {1}", ClientID, UnityEngine.SceneManagement.SceneManager.GetActiveScene().name));
 #endif
@@ -53,10 +57,9 @@ public abstract class GamePlayer : MonoBehaviour
 
     public PlayerData AsPlayerData()
     {
-        if (!data)
-            data = (PlayerData)PlayerData.CreateInstance(PlayerName);
+        data = new PlayerData();
 
-        data.name = PlayerName;
+        data.PlayerName = PlayerName;
         data.InputMethod = (InputMethod)type;
         data.Team = team;
         data.Player = this;

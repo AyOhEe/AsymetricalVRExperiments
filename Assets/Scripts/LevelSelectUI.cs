@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelSelectUI : MonoBehaviour
 {
@@ -21,15 +22,19 @@ public class LevelSelectUI : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetButtonDown(Button) & !TeamSetupInstance)
+        if (Input.GetButtonDown(Button))
         {
-            if (pressKeyUIInstance & !spawnUIInstance)
+            if (pressKeyUIInstance & !spawnUIInstance & !TeamSetupInstance)
             {
                 spawnUIInstance = Instantiate(spawnUI, uiCanvas.transform);
             }
-            else if(pressKeyUIInstance & spawnUIInstance)
+            else if (spawnUIInstance)
             {
                 Destroy(spawnUIInstance);
+            }
+            else if (TeamSetupInstance)
+            {
+                Destroy(TeamSetupInstance);
             }
         }
     }
@@ -39,6 +44,11 @@ public class LevelSelectUI : MonoBehaviour
         SelectedScene = scene;
         Destroy(spawnUIInstance);
         TeamSetupInstance = Instantiate(TeamSetupUI, uiCanvas.transform);
+    }
+
+    public void LoadSelectedScene()
+    {
+        SceneManager.LoadScene(SelectedScene.SceneName);
     }
 
     private void OnTriggerEnter(Collider other)

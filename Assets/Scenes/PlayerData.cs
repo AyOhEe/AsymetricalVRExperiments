@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerData : ScriptableObject
+public struct PlayerData
 {
     public string PlayerName;
     public TeamSystem.Team Team;

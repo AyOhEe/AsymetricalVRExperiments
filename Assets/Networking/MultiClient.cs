@@ -289,11 +289,11 @@ public class MultiClient : MonoBehaviour
                         GamePlayer player = instance.GetComponent<GamePlayer>();
                         //store its index and its local status
                         player.LocalOwned = true;
+                        //store it
+                        gamePlayers[_ClientID] = player;
 
                         //do setup
                         player.PlayerSetup(_ClientID, TeamSystem.Team.A, PlayerName); //FindObjectOfType<TeamSystem>().localTeam);
-                        //store it
-                        gamePlayers[_ClientID] = player;
                     });
                     break;
 
@@ -353,11 +353,11 @@ public class MultiClient : MonoBehaviour
                         GameObject instance = Instantiate(currentScene.PlayerPrefabs[spawnPlayer.T]);
 
                         GamePlayer gamePlayer = instance.GetComponent<GamePlayer>();
-                        //do setup
-                        gamePlayer.PlayerSetup(spawnPlayer.C, (TeamSystem.Team)spawnPlayer.t, spawnPlayer.P);
-
                         //store it
                         gamePlayers[spawnPlayer.C] = gamePlayer;
+
+                        //do setup
+                        gamePlayer.PlayerSetup(spawnPlayer.C, (TeamSystem.Team)spawnPlayer.t, spawnPlayer.P);
                     });
                     break;
                 case MultiPossibleRequest.MultiSyncPlayer:
@@ -433,12 +433,11 @@ public class MultiClient : MonoBehaviour
             GamePlayer player = instance.GetComponent<GamePlayer>();
             //store its index and its local status
             player.LocalOwned = true;
+            //store it
+            gamePlayers[_ClientID] = player;
 
             //do setup
             player.PlayerSetup(_ClientID, TeamSystem.Team.A, PlayerName); //FindObjectOfType<TeamSystem>().localTeam);
-
-            //store it
-            gamePlayers[_ClientID] = player;
         });
 
         //spawn the rest of the players in
@@ -450,12 +449,11 @@ public class MultiClient : MonoBehaviour
                 //spawn in the new synced object instance
                 GameObject instance = Instantiate(possibleScenes[multiSceneObjects.sI].PlayerPrefabs[newGamePlayers[key].Item1]);
                 GamePlayer newPlayer = instance.GetComponent<GamePlayer>();
+                //store it
+                gamePlayers[key] = newPlayer;
 
                 //do setup
                 newPlayer.PlayerSetup(key, (TeamSystem.Team)newGamePlayers[key].Item2, newGamePlayers[key].Item3);
-
-                //store it
-                gamePlayers[key] = newPlayer;
             });
         }
     }
@@ -486,12 +484,11 @@ public class MultiClient : MonoBehaviour
                 //spawn in the new synced object instance
                 GameObject instance = Instantiate(possibleScenes[sceneIndex].PlayerPrefabs[(int)inputMethod]);
                 GamePlayer player = instance.GetComponent<GamePlayer>();
+                //store it
+                gamePlayers[_ClientID] = player;
 
                 //do setup
                 player.PlayerSetup(_ClientID, TeamSystem.Team.A, PlayerName); //FindObjectOfType<TeamSystem>().localTeam);
-
-                //store it
-                gamePlayers[_ClientID] = player;
             });
         }
     }
