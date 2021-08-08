@@ -8,14 +8,14 @@ TagManager:
   - GameServer
   - NonVRPlayer
   - NonVRShadesParent
-  - VRLeftHand
   - VRHead
-  - VRRightHand
   - CamRigHead
   - CamRigRightHand
   - CamRigLeftHand
   - Ground
   - Water
+  - VRHands
+  - GameSystem
   layers:
   - Default
   - TransparentFX

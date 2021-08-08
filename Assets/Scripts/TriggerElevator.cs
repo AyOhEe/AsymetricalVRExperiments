@@ -31,7 +31,7 @@ public class TriggerElevator : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //check if the object is a nonvrplayer or a hand
-        if (other.transform.GetComponent<NonVRPlayerController>() | other.transform.CompareTag("VRRightHand") | other.transform.CompareTag("VRLeftHand"))
+        if (other.transform.GetComponent<NonVRPlayerController>() | other.transform.CompareTag("VRHands"))
         {
             //start moving the elevator if it's not already moving
 
@@ -46,7 +46,7 @@ public class TriggerElevator : MonoBehaviour
         }
 
         //add the transform to the list of transforms on the elevator, but only if it has a rigidbody
-        if (other.transform.GetComponent<Rigidbody>() & !(other.transform.CompareTag("VRRightHand") | other.transform.CompareTag("VRLeftHand")))
+        if (other.transform.GetComponent<Rigidbody>() & !other.transform.CompareTag("VRHands"))
         {
             onElevator.Add(other.transform.parent, other.transform);
             other.transform.SetParent(transform);
@@ -56,7 +56,7 @@ public class TriggerElevator : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         //if it's a rigidbody, remove it from the list of transforms
-        if (other.transform.GetComponent<Rigidbody>() & !(other.transform.CompareTag("VRRightHand") | other.transform.CompareTag("VRLeftHand")))
+        if (other.transform.GetComponent<Rigidbody>() & !other.transform.CompareTag("VRHands"))
         {
             other.transform.SetParent(onElevator.First(kvp => kvp.Value == other.transform).Key);
             onElevator.Remove(onElevator.First(kvp => kvp.Value == other.transform).Key);

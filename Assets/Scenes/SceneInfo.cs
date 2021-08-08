@@ -6,5 +6,6 @@ using UnityEngine;
 public class SceneInfo : ScriptableObject
 {
     public string SceneName;
+    public int index;
     public List<GameObject> PlayerPrefabs;
 }

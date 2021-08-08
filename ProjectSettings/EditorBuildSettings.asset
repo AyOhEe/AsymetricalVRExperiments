@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/experiment_blendin_aztec.unity
     guid: 96db79b4fd2713d4fb06adcca640e710
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/experiment_ctf_2hut.unity
     guid: 5ebaf3c95f0c5d84bad17f560fc98a81
   m_configObjects: {}

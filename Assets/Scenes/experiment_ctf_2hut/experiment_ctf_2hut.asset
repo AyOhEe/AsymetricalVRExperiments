@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: experiment_ctf_2hut
   m_EditorClassIdentifier: 
   SceneName: experiment_ctf_2hut
+  index: 0
   PlayerPrefabs:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 6418875451566724453, guid: b0c17c96656bf1f4d99e2ced1a9a4a85, type: 3}
+  - {fileID: 4248433636490005502, guid: 6d6beead96800364c96968e9f61e6e3f, type: 3}

@@ -342,7 +342,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8374917071719149901}
   m_Direction: 3
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.8502994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -562,7 +562,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.000015258789}
+  m_AnchoredPosition: {x: 0, y: 0.0002593994}
   m_SizeDelta: {x: -188, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8374917070840032519
@@ -677,7 +677,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.000015258789}
+  m_AnchoredPosition: {x: 0, y: 0.0002593994}
   m_SizeDelta: {x: -188, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8374917071049311620
@@ -1344,6 +1344,7 @@ MonoBehaviour:
   padding: 15
   playerPannelPrefab: {fileID: 7072275671265318572, guid: 0532ca380de140c44ba09815ddc396bf,
     type: 3}
+  LoadLevelButton: {fileID: 4274711403625200467}
 --- !u!1 &8374917071998736636
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,7 +1761,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8374917072013544028}
   m_Direction: 3
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.8502994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

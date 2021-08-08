@@ -24,6 +24,9 @@ public class PlayerListUI : MonoBehaviour
     //prefab for the player pannel
     public GameObject playerPannelPrefab;
 
+    //the button for loading the scene
+    public Button LoadLevelButton;
+
     private void Start()
     {
         //find the team system and store ourselves there
@@ -35,6 +38,11 @@ public class PlayerListUI : MonoBehaviour
         {
             AddPlayerToTeamList(client.gamePlayers[key].AsPlayerData(), client.gamePlayers[key].team);
         }
+
+        LoadLevelButton.onClick.AddListener(() =>
+        {
+            FindObjectOfType<LevelSelectUI>().LoadSelectedScene();
+        });
     }
 
     public void Update()
@@ -51,7 +59,7 @@ public class PlayerListUI : MonoBehaviour
     public void AddPlayerToTeamList(PlayerData data, TeamSystem.Team newTeam)
     {
         //check if we're keeping track of how many players are in the team
-        if(playersInTeam.TryGetValue(newTeam, out _))
+        if(!playersInTeam.TryGetValue(newTeam, out _))
         {
             //we aren't, add an entry for the team
             playersInTeam.Add(newTeam, 1);

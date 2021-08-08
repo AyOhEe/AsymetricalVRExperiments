@@ -265,11 +265,11 @@ public class MultiClient : MonoBehaviour
                     actions.Enqueue(() =>
                     {
                         //get all of the systems in this scene
-                        GameSystem[] systems = FindObjectsOfType<GameSystem>();
+                        GameObject[] systems = GameObject.FindGameObjectsWithTag("GameSystem");
                         //iterate through them, storing a reference to each of them
-                        foreach (GameSystem system in systems)
+                        foreach (GameObject system in systems)
                         {
-                            gameSystems.Add(system.SystemID, system);
+                            gameSystems.Add(system.GetComponent<GameSystem>().SystemID, system.GetComponent<GameSystem>());
                         }
                     });
 
@@ -412,11 +412,11 @@ public class MultiClient : MonoBehaviour
         actions.Enqueue(() =>
         {
             //get all of the systems in this scene
-            GameSystem[] systems = FindObjectsOfType<GameSystem>();
+            GameObject[] systems = GameObject.FindGameObjectsWithTag("GameSystem");
             //iterate through them, storing a reference to each of them
-            foreach (GameSystem system in systems)
+            foreach (GameObject system in systems)
             {
-                gameSystems.Add(system.SystemID, system);
+                gameSystems.Add(system.GetComponent<GameSystem>().SystemID, system.GetComponent<GameSystem>());
             }
         });
 
@@ -489,6 +489,17 @@ public class MultiClient : MonoBehaviour
 
                 //do setup
                 player.PlayerSetup(_ClientID, TeamSystem.Team.A, PlayerName); //FindObjectOfType<TeamSystem>().localTeam);
+            });
+
+            actions.Enqueue(() =>
+            {
+                //get all of the systems in this scene
+                GameObject[] systems = GameObject.FindGameObjectsWithTag("GameSystem");
+                //iterate through them, storing a reference to each of them
+                foreach (GameObject system in systems)
+                {
+                    gameSystems.Add(system.GetComponent<GameSystem>().SystemID, system.GetComponent<GameSystem>());
+                }
             });
         }
     }

@@ -17,6 +17,8 @@ public class LevelSelectUI : MonoBehaviour
     public GameObject TeamSetupUI;
     private GameObject TeamSetupInstance;
 
+    private GameObject SelectTeamInstance;
+
 
     public Canvas uiCanvas;
 
@@ -44,11 +46,28 @@ public class LevelSelectUI : MonoBehaviour
         SelectedScene = scene;
         Destroy(spawnUIInstance);
         TeamSetupInstance = Instantiate(TeamSetupUI, uiCanvas.transform);
+        FindObjectOfType<TeamSystem>().SendSelectTeamRequest();
+    }
+
+    public void OpenNonVRSelectTeamUI(TeamSystem teamSystem)
+    {
+        if (spawnUIInstance)
+        {
+            Destroy(spawnUIInstance);
+        }
+        if (TeamSetupInstance)
+        {
+            Destroy(TeamSetupInstance);
+        }
+
+        SelectTeamInstance = Instantiate(teamSystem.SelectTeamUI, uiCanvas.transform);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = true;
     }
 
     public void LoadSelectedScene()
     {
-        SceneManager.LoadScene(SelectedScene.SceneName);
+        FindObjectOfType<MultiClient>().ChangeScene(SelectedScene.index);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -19,7 +19,7 @@ public class TeamSystem : GameSystem
     //the team of this client
     public Team localTeam;
     //the teams of all clients
-    public Dictionary<int, Team> ClientTeams;
+    public Dictionary<int, Team> ClientTeams = new Dictionary<int, Team>();
 
     //select team UI prefabs
     public GameObject SelectTeamUI;
@@ -146,7 +146,11 @@ public class TeamSystem : GameSystem
             //we've been asked to select a team, so we need to ask the player
             case TeamSystemRequest.SelectTeamRequest:
                 //spawn the correct select team ui depending on the input method
-                Instantiate(client.inputMethod == InputMethod.NonVR ? SelectTeamUI : SelectTeamPhysicalUI);
+                LevelSelectUI levelUI;
+                if (client.inputMethod == InputMethod.VR)
+                    Instantiate(SelectTeamPhysicalUI);
+                else if (levelUI = FindObjectOfType<LevelSelectUI>())
+                    levelUI.OpenNonVRSelectTeamUI(this);
                 break;
         }
     }
@@ -173,6 +177,10 @@ public class TeamSystem : GameSystem
         //create the changeteamrequest object
         ChangeTeamRequest teamRequest = new ChangeTeamRequest(client._ClientID, team);
         SendRequest(teamRequest, (int)TeamSystemRequest.ChangeTeamRequest);
+
+        //update the playerlist if it exists
+        if (playerListUI)
+            playerListUI.AddPlayerToTeamList(client.gamePlayers[client._ClientID].AsPlayerData(), team);
     }
 
     //change team from an integer instead of an enum
@@ -185,13 +193,16 @@ public class TeamSystem : GameSystem
     //sends a request to all team managers to tell them to select a team
     public void SendSelectTeamRequest()
     {
-        //store the system id and request type in the gamesystemdata object
-        GameSystemData systemData = new GameSystemData(SystemID, new byte[1] { (byte)TeamSystemRequest.SelectTeamRequest });
-        //create the base request with the serialized gamesystemdata object
-        MultiBaseRequest baseRequest = 
-            new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize<GameSystemData>(systemData));
+        if (client.hostAuthority)
+        {
+            //store the system id and request type in the gamesystemdata object
+            GameSystemData systemData = new GameSystemData(SystemID, new byte[1] { (byte)TeamSystemRequest.SelectTeamRequest });
+            //create the base request with the serialized gamesystemdata object
+            MultiBaseRequest baseRequest =
+                new MultiBaseRequest(MultiPossibleRequest.MultiGameData, MessagePackSerializer.Serialize<GameSystemData>(systemData));
 
-        //send the serialized request
-        client.SendMessageToServer(MessagePackSerializer.Serialize<MultiBaseRequest>(baseRequest));
+            //send the serialized request
+            client.SendMessageToServer(MessagePackSerializer.Serialize<MultiBaseRequest>(baseRequest));
+        }
     }
 }

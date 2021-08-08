@@ -25,7 +25,7 @@ public class BaseVRPlayer : GamePlayer
             (byte)(Mathf.Clamp(hue, 256, 511) - 256), 
             (byte)(Mathf.Clamp(hue, 512, 767) - 256), 
             (byte)255);
-        Material material = new Material(GetComponent<MeshRenderer>().material);
+        Material material = new Material(Head.GetComponent<MeshRenderer>().material);
         material.SetColor("_Color", color);
 
         Head.GetComponent<MeshRenderer>().material = material;
@@ -41,7 +41,7 @@ public class BaseVRPlayer : GamePlayer
 
 
         //if the vr object is locally owned, force load openvr
-        if (ClientID == client._ClientID)
+        if (LocalOwned)
         {
             //enable vr
             XRSettings.enabled = true;
