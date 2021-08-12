@@ -61,7 +61,7 @@ public class LevelSelectUI : MonoBehaviour
         }
 
         SelectTeamInstance = Instantiate(teamSystem.SelectTeamUI, uiCanvas.transform);
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 

@@ -341,7 +341,7 @@ public class MultiClient : MonoBehaviour
                     GameSystemData systemData = MessagePackSerializer.Deserialize<GameSystemData>(baseRequest.R);
 
                     //pass on this data, the game system knows what to do with it
-                    gameSystems[systemData.S].HandleMessage(systemData);
+                    actions.Enqueue(() => gameSystems[systemData.S].HandleMessage(systemData));
                     break;
 
                 case MultiPossibleRequest.MultiSpawnPlayer:
@@ -416,7 +416,10 @@ public class MultiClient : MonoBehaviour
             //iterate through them, storing a reference to each of them
             foreach (GameObject system in systems)
             {
-                gameSystems.Add(system.GetComponent<GameSystem>().SystemID, system.GetComponent<GameSystem>());
+                if(gameSystems.TryGetValue(system.GetComponent<GameSystem>().SystemID, out _))
+                    gameSystems[system.GetComponent<GameSystem>().SystemID] = system.GetComponent<GameSystem>();
+                else
+                    gameSystems.Add(system.GetComponent<GameSystem>().SystemID, system.GetComponent<GameSystem>());
             }
         });
 

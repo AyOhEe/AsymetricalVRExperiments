@@ -92,7 +92,7 @@ public class PlayerListUI : MonoBehaviour
         //fill the player pannel in with the data from the playerdata object
         player.FillUIElement(instance.GetComponent<PlayerDescriptionUI>());
         //store it in the playerPannels dictionary
-        playerPannels.Add(player.PlayerName, new Tuple<GameObject, TeamSystem.Team>(instance, team));
+        playerPannels[player.PlayerName] = new Tuple<GameObject, TeamSystem.Team>(instance, team);
 
         //increase the amount of players in that team
         playersInTeam[team]++;

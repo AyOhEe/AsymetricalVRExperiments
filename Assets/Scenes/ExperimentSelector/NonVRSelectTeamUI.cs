@@ -9,25 +9,32 @@ public class NonVRSelectTeamUI : MonoBehaviour
 
     [Header("Team Buttons")]
     public Button[] Buttons;
+    public TeamSystem.Team[] Teams;
 
     // Start is called before the first frame update
     void Start()
     {
         teamSystem = FindObjectOfType<TeamSystem>();
-
-        //iterate through all of the buttons
-        for (int i = 0; i < Buttons.Length; i++)
+        
+        //when each button is pressed, change our team to that button's team and destroy this object
+        Buttons[0].onClick.AddListener(delegate
         {
-            //when each button is pressed, change our team to that button's team and destroy this object
-            Buttons[i].onClick.AddListener(() =>
-            {
-                teamSystem.ChangeTeam((TeamSystem.Team)i);
+            teamSystem.ChangeTeam(Teams[0]);
 
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
 
-                Destroy(gameObject);
-            });
-        }
+            Destroy(gameObject);
+        });
+        //when each button is pressed, change our team to that button's team and destroy this object
+        Buttons[1].onClick.AddListener(delegate
+        {
+            teamSystem.ChangeTeam(Teams[1]);
+
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            Destroy(gameObject);
+        });
     }
 }

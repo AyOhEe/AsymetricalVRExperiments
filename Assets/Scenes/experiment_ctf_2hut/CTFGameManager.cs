@@ -44,7 +44,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("redPickupZone entered by CTFPlayer");
                 //yes, is it's team blue?
-                if (player.player.team == TeamSystem.Team.B)
+                if (player.team == TeamSystem.Team.B)
                 {
                     Debug.Log("redPickupZone entered by Enemy CTFPlayer");
                     //yes, pickup the flag
@@ -61,7 +61,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("bluePickupZone entered by CTFPlayer");
                 //yes, is it's team red?
-                if (player.player.team == TeamSystem.Team.A)
+                if (player.team == TeamSystem.Team.A)
                 {
                     Debug.Log("bluePickupZone entered by Enemy CTFPlayer");
                     //yes, pickup the flag
@@ -80,7 +80,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("redCapZone entered by CTFPlayer");
                 //yes, is it's team red and does it have a flag?
-                if(player.player.team == TeamSystem.Team.A & player.isHoldingFlag)
+                if(player.team == TeamSystem.Team.A & player.isHoldingFlag)
                 {
                     Debug.Log("POINT RED");
                     RedScore++;
@@ -98,7 +98,7 @@ public class CTFGameManager : GameSystem
             {
                 Debug.Log("blueCapZone entered by CTFPlayer");
                 //yes, is it's team blue and does it have a flag?
-                if (player.player.team == TeamSystem.Team.B & player.isHoldingFlag)
+                if (player.team == TeamSystem.Team.B & player.isHoldingFlag)
                 {
                     Debug.Log("POINT BLUE");
                     BlueScore++;

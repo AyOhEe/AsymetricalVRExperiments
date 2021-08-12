@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CTFPlayer))]
-public class CTFNonVR : MonoBehaviour
+public class CTFNonVR : BaseNonVRPlayer
 {
-    public CTFPlayer player;
     public Material RedMaterial;
     public Material BlueMaterial;
 
@@ -15,15 +13,7 @@ public class CTFNonVR : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //get the ctfplayer
-        player = GetComponent<CTFPlayer>();
         //set the material based on the team
-        GetComponent<MeshRenderer>().material = player.team == TeamSystem.Team.A ? RedMaterial : BlueMaterial;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GetComponent<MeshRenderer>().material = team == TeamSystem.Team.A ? RedMaterial : BlueMaterial;
     }
 }
